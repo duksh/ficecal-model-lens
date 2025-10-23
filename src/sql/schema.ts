@@ -13,6 +13,8 @@ CREATE TABLE vendor_regions (
     PRIMARY KEY (vendor_id, region_code)
 );
 
+CREATE INDEX idx_vendor_regions_vendor_id ON vendor_regions (vendor_id);
+
 CREATE TABLE models (
     model_id TEXT PRIMARY KEY,
     clean_name TEXT NOT NULL,
@@ -41,6 +43,8 @@ CREATE TABLE models_vendors (
     PRIMARY KEY (model_id, vendor_id)
 );
 
+CREATE INDEX idx_models_vendors_model_id ON models_vendors (model_id);
+
 CREATE TABLE models_vendors_regions (
     model_id TEXT NOT NULL,
     vendor_id TEXT NOT NULL,
@@ -48,5 +52,7 @@ CREATE TABLE models_vendors_regions (
     input_token_cost REAL NOT NULL,
     output_token_cost REAL NOT NULL,
     PRIMARY KEY (model_id, vendor_id, region_code)
-)
+);
+
+CREATE INDEX idx_models_vendors_regions_model_id ON models_vendors_regions (model_id);
 `;
