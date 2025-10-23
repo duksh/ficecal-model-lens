@@ -99,7 +99,7 @@ self.onmessage = async (event) => {
             sqlite3Db = new (await sqlite3({
                 print: console.log,
                 printErr: console.error,
-            })).oo1.DB();
+            })).oo1.DB(":memory:");
         }
         sqlite3Db.exec(schema);
         await loadData(data);
