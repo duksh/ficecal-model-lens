@@ -88,6 +88,94 @@ function SortingButtons({
     );
 }
 
+function BooleanFilter({
+    columnName,
+    query,
+    updateQuery,
+}: {
+    columnName: string;
+    query: ColumnQuery;
+    updateQuery: () => void;
+}) {
+    const currentFilter = query.columnFilters[columnName];
+
+    const setFilter = (value: boolean | undefined) => {
+        if (value === undefined) {
+            delete query.columnFilters[columnName];
+        } else {
+            query.columnFilters[columnName] = value;
+        }
+        updateQuery();
+    };
+
+    return (
+        <select
+            value={currentFilter === undefined ? "any" : currentFilter ? "true" : "false"}
+            onChange={(e) => {
+                const val = e.target.value;
+                if (val === "any") {
+                    setFilter(undefined);
+                } else if (val === "true") {
+                    setFilter(true);
+                } else {
+                    setFilter(false);
+                }
+            }}
+            style={{ width: "100%" }}
+        >
+            <option value="any">Any</option>
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+        </select>
+    );
+}
+
+function QueryFilter({
+    columnName,
+    query,
+    updateQuery,
+}: {
+    columnName: string;
+    query: ColumnQuery;
+    updateQuery: () => void;
+}) {
+    const specificType = query.columnExplicitlySetDataTypes[columnName];
+
+    if (specificType === "boolean") {
+        return (
+            <BooleanFilter
+                columnName={columnName}
+                query={query}
+                updateQuery={updateQuery}
+            />
+        );
+    }
+
+    // TODO: filter ui
+
+    return null;
+}
+
+function checkFilters(
+    row: { [column: string]: any },
+    filters: Record<string, any>,
+    explicitlySetDataTypes: Record<string, ColumnDataType>,
+): boolean {
+    for (const [col, val] of Object.entries(filters)) {
+        const dataType = explicitlySetDataTypes[col];
+        if (dataType === "boolean") {
+            const rowVal = Boolean(row[col]);
+            if (rowVal !== Boolean(val)) {
+                return false;
+            }
+        }
+    }
+
+    // TODO: other filter types
+
+    return true;
+}
+
 function TableHeader({
     query,
     updateQuery,
@@ -111,7 +199,16 @@ function TableHeader({
     return queryColumns.map((col) => (
         <th key={col}>
             <div style={{ display: "flex" }}>
-                {col}
+                <div style={{ display: "block" }}>
+                    {col}
+                    <div style={{ width: "100%" }}>
+                        <QueryFilter
+                            columnName={col}
+                            query={query}
+                            updateQuery={updateQuery}
+                        />
+                    </div>
+                </div>
                 <SortingButtons
                     columnName={col}
                     query={query}
@@ -120,14 +217,6 @@ function TableHeader({
             </div>
         </th>
     ));
-}
-
-function checkFilters(
-    row: { [column: string]: any },
-    filters: Record<string, any>,
-): boolean {
-    // TODO
-    return true;
 }
 
 let rowLocks = 0;
@@ -167,7 +256,7 @@ async function loadSingleRowData(
                     loadedColumns[index] = sortedColumns.map((col) => row[col]);
 
                     // Check filters
-                    if (!checkFilters(row, query.columnFilters)) {
+                    if (!checkFilters(row, query.columnFilters, query.columnExplicitlySetDataTypes)) {
                         noFiltersNegative = false;
                     }
                 } else if (queryColumns[index] === null) {
@@ -279,7 +368,7 @@ const cachedQueriesKey = new WeakMap<ColumnQuery[], string>();
 function getQueriesKey(queries: ColumnQuery[]): string {
     let key = cachedQueriesKey.get(queries);
     if (!key) {
-        key = queries.map((q) => q.query + JSON.stringify(q.columnFilters)).join("||");
+        key = queries.map((q) => q.query + JSON.stringify(q.columnFilters) + JSON.stringify(q.columnExplicitlySetDataTypes)).join("||");
         cachedQueriesKey.set(queries, key);
     }
     return key;
