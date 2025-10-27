@@ -132,7 +132,7 @@ function BooleanFilter({
     );
 }
 
-function QueryFilter({
+function StringFilter({
     columnName,
     query,
     updateQuery,
@@ -140,6 +140,93 @@ function QueryFilter({
     columnName: string;
     query: ColumnQuery;
     updateQuery: () => void;
+}) {
+    const [filterValue, setFilterValue] = React.useState<string>(
+        query.columnFilters[columnName] || ""
+    );
+
+    return (
+        <input
+            type="text"
+            value={filterValue}
+            onChange={(e) => {
+                const val = e.target.value;
+                if (val === "") {
+                    delete query.columnFilters[columnName];
+                } else {
+                    query.columnFilters[columnName] = val;
+                }
+                setFilterValue(val);
+                updateQuery();
+            }}
+            className="w-full border text-sm border-gray-300 rounded-md p-1"
+            aria-label={`Filter ${columnName}`}
+        />
+    );
+}
+
+type OperatorTypes = ">=" | "<=" | "=" | ">" | "<";
+
+function NumberFilter({
+    columnName,
+    query,
+    updateQuery,
+}: {
+    columnName: string;
+    query: ColumnQuery;
+    updateQuery: () => void;
+}) {
+    const [filterValue, setFilterValue] = React.useState<[OperatorTypes, number]>(
+        query.columnFilters[columnName] || [">=", 0]
+    );
+
+    return (
+        <div className="flex">
+            <select
+                value={filterValue[0]}
+                onChange={(e) => {
+                    const newOp = e.target.value as OperatorTypes;
+                    const newFilter: [OperatorTypes, number] = [newOp, filterValue[1]];
+                    query.columnFilters[columnName] = newFilter;
+                    setFilterValue(newFilter);
+                    updateQuery();
+                }}
+                className="border text-sm border-gray-300 rounded-md p-1 mr-1"
+                aria-label={`Operator for filtering ${columnName}`}
+            >
+                <option value=">=">&gt;=</option>
+                <option value="<=">&lt;=</option>
+                <option value="=">=</option>
+                <option value=">">&gt;</option>
+                <option value="<">&lt;</option>
+            </select>
+            <input
+                type="number"
+                value={filterValue[1]}
+                onChange={(e) => {
+                    const newNum = Number(e.target.value);
+                    const newFilter: [OperatorTypes, number] = [filterValue[0], newNum];
+                    query.columnFilters[columnName] = newFilter;
+                    setFilterValue(newFilter);
+                    updateQuery();
+                }}
+                className="border text-sm border-gray-300 rounded-md p-1"
+                aria-label={`Value for filtering ${columnName}`}
+            />
+        </div>
+    );
+}
+
+function QueryFilter({
+    columnName,
+    query,
+    updateQuery,
+    values,
+}: {
+    columnName: string;
+    query: ColumnQuery;
+    updateQuery: () => void;
+    values: any[];
 }) {
     const specificType = query.columnExplicitlySetDataTypes[columnName];
 
@@ -153,7 +240,41 @@ function QueryFilter({
         );
     }
 
-    // TODO: filter ui
+    const valueTypeSet = new Set<string>();
+    for (const val of values) {
+        valueTypeSet.add(val === null ? "null" : typeof val);
+    }
+    valueTypeSet.delete("null");
+    if (valueTypeSet.size !== 1) {
+        return null;
+    }
+
+    switch (valueTypeSet.values().next().value) {
+        case "boolean":
+            return (
+                <BooleanFilter
+                    columnName={columnName}
+                    query={query}
+                    updateQuery={updateQuery}
+                />
+            );
+        case "string":
+            return (
+                <StringFilter
+                    columnName={columnName}
+                    query={query}
+                    updateQuery={updateQuery}
+                />
+            )
+        case "number":
+            return (
+                <NumberFilter
+                    columnName={columnName}
+                    query={query}
+                    updateQuery={updateQuery}
+                />
+            )
+    }
 
     return null;
 }
@@ -166,36 +287,71 @@ function checkFilters(
     for (const [col, val] of Object.entries(filters)) {
         const dataType = explicitlySetDataTypes[col];
 
-        switch (dataType) {
-            case "boolean": {
-                const rowVal = Boolean(row[col]);
-                if (rowVal !== Boolean(val)) {
+        if (dataType === "boolean") {
+            const rowVal = Boolean(row[col]);
+            if (rowVal !== Boolean(val)) {
+                return false;
+            }
+            break;
+        }
+
+        const rowVal = row[col];
+        if (rowVal === null || rowVal === undefined) {
+            return false;
+        }
+        switch (typeof rowVal) {
+            case "string": {
+                if (!String(rowVal).toLowerCase().includes(String(val).toLowerCase())) {
                     return false;
                 }
                 break;
             }
-            case "currency": {
-                // TODO
+            case "number": {
+                if (!Array.isArray(val) || val.length !== 2) {
+                    break;
+                }
+                const [op, num] = val as [OperatorTypes, number];
+                switch (op) {
+                    case ">=":
+                        if (!(rowVal >= num)) return false;
+                        break;
+                    case "<=":
+                        if (!(rowVal <= num)) return false;
+                        break;
+                    case "=":
+                        if (!(rowVal === num)) return false;
+                        break;
+                    case ">":
+                        if (!(rowVal > num)) return false;
+                        break;
+                    case "<":
+                        if (!(rowVal < num)) return false;
+                        break;
+                }
                 break;
             }
         }
     }
 
-    // TODO: other filter types
-
     return true;
 }
 
+type LoadedValues = (any[] | null | { error: string })[] | null;
+
 function TableHeader({
     query,
+    queryIdx,
     updateQuery,
     deleteQuery,
     queryColumns,
+    loadedValuesPtr,
 }: {
     query: ColumnQuery;
+    queryIdx: number;
     updateQuery: () => void;
     deleteQuery: () => void;
     queryColumns: string[] | null;
+    loadedValuesPtr: [Map<string, LoadedValues>];
 }) {
     if (queryColumns === null) {
         return (
@@ -205,8 +361,17 @@ function TableHeader({
         );
     }
 
+    const values = React.useMemo(() => {
+        return Array.from(loadedValuesPtr[0].values()).map((lv) => {
+            if (lv === null) {
+                return undefined;
+            }
+            return lv;
+        }).filter((v) => v !== undefined);
+    }, [loadedValuesPtr]);
+
     // TODO: in the future add deletion/etc
-    return queryColumns.map((col) => (
+    return queryColumns.map((col, idx) => (
         <th key={col}>
             <div className="flex">
                 <div className="block">
@@ -216,6 +381,16 @@ function TableHeader({
                             columnName={col}
                             query={query}
                             updateQuery={updateQuery}
+                            values={values.map((lv) => {
+                                if (lv === null) {
+                                    return undefined;
+                                }
+                                const queryFromIdx = lv[queryIdx];
+                                if (!Array.isArray(queryFromIdx)) {
+                                    return undefined;
+                                }
+                                return queryFromIdx[idx];
+                            }).filter((v) => v !== undefined)}
                         />
                     </div>
                 </div>
@@ -384,8 +559,6 @@ function getQueriesKey(queries: ColumnQuery[]): string {
     return key;
 }
 
-type LoadedValues = (any[] | null | { error: string })[] | null;
-
 function TableRow({
     id,
     name,
@@ -408,7 +581,6 @@ function TableRow({
     const queriesKey = getQueriesKey(queries);
     React.useEffect(() => {
         const mounted = [true] as [boolean];
-        setLoadedValues(null);
 
         loadSingleRowData(
             id,
@@ -554,6 +726,7 @@ export default function Table({
                         queries.map((q, i) => (
                             <TableHeader
                                 key={i}
+                                queryIdx={i}
                                 query={q}
                                 updateQuery={() => {
                                     const newQueries = [...queries];
@@ -565,6 +738,7 @@ export default function Table({
                                     setQueries(newQueries);
                                 }}
                                 queryColumns={queryColumns[i]}
+                                loadedValuesPtr={loadedValuesRows}
                             />
                         ))
                     }
