@@ -41,10 +41,11 @@ function getDefaults(): ColumnQuery[] {
     }));
 }
 
-function LoadingAffect() {
-    // TODO: make this nicer
+function LoadingEffect() {
     return (
-        <div>Loading...</div>        
+        <div className="animate-pulse h-4 w-full bg-gray-200 rounded">
+            <div className="h-4 w-1/2 bg-gray-300 rounded"></div>
+        </div>
     );
 }
 
@@ -163,10 +164,18 @@ function checkFilters(
 ): boolean {
     for (const [col, val] of Object.entries(filters)) {
         const dataType = explicitlySetDataTypes[col];
-        if (dataType === "boolean") {
-            const rowVal = Boolean(row[col]);
-            if (rowVal !== Boolean(val)) {
-                return false;
+
+        switch (dataType) {
+            case "boolean": {
+                const rowVal = Boolean(row[col]);
+                if (rowVal !== Boolean(val)) {
+                    return false;
+                }
+                break;
+            }
+            case "currency": {
+                // TODO
+                break;
             }
         }
     }
@@ -190,7 +199,7 @@ function TableHeader({
     if (queryColumns === null) {
         return (
             <th>
-                <LoadingAffect />
+                <LoadingEffect />
             </th>
         );
     }
@@ -327,7 +336,7 @@ function RowLoadedValues({
         if (val === null) {
             return (
                 <td key={i} colSpan={getColSpan(i)}>
-                    <LoadingAffect />
+                    <LoadingEffect />
                 </td>
             );
         } else if (Array.isArray(val)) {
@@ -433,7 +442,7 @@ function TableRow({
                     />
                 ) : (
                     <td colSpan={queries.length}>
-                        <LoadingAffect />
+                        <LoadingEffect />
                     </td>
                 )
             }
