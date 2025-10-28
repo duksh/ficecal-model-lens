@@ -11,6 +11,7 @@ import sortValue from "./utils/sortValue";
 import SortingButtons from "./SortingButtons";
 import checkFilters from "./filters/checkFilters";
 import Column from "./Column";
+import AddButton from "./AddButton";
 
 export type ColumnDataType =
     "boolean" |
@@ -404,61 +405,69 @@ export default function Table({
     }, [queries, queryColumns.length]);
 
     return (
-        <table>
-            <thead>
-                <tr>
-                    <th className="pb-1 relative">
-                        <div className="px-2">
-                            Name
-                        </div>
-                        <div 
-                            className="absolute top-0 right-0 w-1 h-full bg-gray-200 hover:opacity-50 transition-all duration-150" 
-                        />
-                    </th>
+        <div className="overflow-scroll flex gap-4">
+            <table className="h-full">
+                <thead>
+                    <tr>
+                        <th className="pb-1 relative">
+                            <div className="px-2">
+                                Name
+                            </div>
+                            <div 
+                                className="absolute top-0 right-0 w-1 h-full bg-gray-200 hover:opacity-50 transition-all duration-150" 
+                            />
+                        </th>
+                        {
+                            queries.map((q, i) => (
+                                <TableHeader
+                                    key={i}
+                                    queryIdx={i}
+                                    query={q}
+                                    updateQuery={() => {
+                                        const newQueries = [...queries];
+                                        newQueries[i] = q;
+                                        setQueries(newQueries);
+                                    }}
+                                    deleteQuery={() => {
+                                        const newQueries = queries.filter((_, idx) => idx !== i);
+                                        setQueries(newQueries);
+                                    }}
+                                    queryColumns={queryColumns[i]}
+                                    loadedValuesPtr={loadedValuesRows}
+                                />
+                            ))
+                        }
+                    </tr>
+                </thead>
+                <tbody className="h-full overflow-y-scroll">
                     {
-                        queries.map((q, i) => (
-                            <TableHeader
-                                key={i}
-                                queryIdx={i}
-                                query={q}
-                                updateQuery={() => {
-                                    const newQueries = [...queries];
-                                    newQueries[i] = q;
-                                    setQueries(newQueries);
+                        sortedIdsAndNames.map(({ id, name }) => (
+                            <TableRow
+                                id={id}
+                                key={id}
+                                name={name}
+                                queries={queries}
+                                setQueries={setQueries}
+                                queryColumns={queryColumns}
+                                setQueryColumns={setQueryColumns}
+                                loadedValues={loadedValuesRows[0].get(id)!}
+                                setLoadedValues={(vals) => {
+                                    setLoadedValuesRows((prev) => {
+                                        prev[0].set(id, vals);
+                                        return [prev[0]];
+                                    });
                                 }}
-                                deleteQuery={() => {
-                                    const newQueries = queries.filter((_, idx) => idx !== i);
-                                    setQueries(newQueries);
-                                }}
-                                queryColumns={queryColumns[i]}
-                                loadedValuesPtr={loadedValuesRows}
                             />
                         ))
                     }
-                </tr>
-            </thead>
-            <tbody>
-                {
-                    sortedIdsAndNames.map(({ id, name }) => (
-                        <TableRow
-                            id={id}
-                            key={id}
-                            name={name}
-                            queries={queries}
-                            setQueries={setQueries}
-                            queryColumns={queryColumns}
-                            setQueryColumns={setQueryColumns}
-                            loadedValues={loadedValuesRows[0].get(id)!}
-                            setLoadedValues={(vals) => {
-                                setLoadedValuesRows((prev) => {
-                                    prev[0].set(id, vals);
-                                    return [prev[0]];
-                                });
-                            }}
-                        />
-                    ))
-                }
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+            <div>
+                <AddButton
+                    queries={queries}
+                    setQueries={setQueries}
+                />
+            </div>
+        </div>
     );
 }
