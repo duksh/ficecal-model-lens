@@ -1,11 +1,11 @@
 import React from "react";
 import { basicSetup } from "codemirror";
 import { EditorView } from "@codemirror/view"
+import { sql, SQLite } from "@codemirror/lang-sql";
 
 type CodeMirrorProps = {
     value: string;
-    height: string;
-    width: string;
+    maxHeight: string;
     onChange: (value: string) => void;
 };
 
@@ -18,8 +18,19 @@ export default function CodeMirror(props: CodeMirrorProps) {
                 doc: props.value,
                 extensions: [
                     basicSetup,
+                    sql({
+                        dialect: SQLite,
+                    }),
                 ],
                 parent: editor.current,
+                dispatchTransactions: (trs) => {
+                    view.update(trs);
+                    for (const tr of trs) {
+                        if (tr.docChanged) {
+                            props.onChange(view.state.doc.toString());
+                        }
+                    }
+                }
             });
 
             return () => {
@@ -29,6 +40,6 @@ export default function CodeMirror(props: CodeMirrorProps) {
     }, [editor]);
 
     return (
-        <div ref={editor} style={{height: props.height, width: props.width}}></div>
+        <div style={{ maxHeight: props.maxHeight }} ref={editor}></div>
     )
 }

@@ -32,10 +32,12 @@ function SelectionMode({
     queries,
     setQueries,
     exit,
+    firstId,
 }: {
     queries: ColumnQuery[];
     setQueries: (cb: (prev: ColumnQuery[]) => ColumnQuery[]) => void;
     exit: () => void;
+    firstId: string;
 }) {
     const [mode, setMode] = React.useState<null | "default" | "vendor">(null);
     const modalRef = React.useRef<HTMLDialogElement>(null);
@@ -79,9 +81,9 @@ function SelectionMode({
         <div className="flex rounded-md bg-gray-50 mt-2">
             <SQLModal
                 ref={modalRef}
-                queries={queries}
                 setQueries={setQueries}
                 exit={exit}
+                firstId={firstId}
             />
             {closer}
             <div className="ml-4 flex flex-col gap-2">
@@ -120,9 +122,11 @@ function SelectionMode({
 export default function AddButton({
     queries,
     setQueries,
+    firstId,
 }: {
     queries: ColumnQuery[];
     setQueries: (cb: (prev: ColumnQuery[]) => ColumnQuery[]) => void;
+    firstId: string;
 }) {
     const [selectionMode, setSelectionMode] = React.useState(false);
 
@@ -141,6 +145,7 @@ export default function AddButton({
                 queries={queries}
                 setQueries={setQueries}
                 exit={() => setSelectionMode(false)}
+                firstId={firstId}
             />
         );
     }

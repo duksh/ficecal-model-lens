@@ -18,32 +18,41 @@ self.onmessage = async (event) => {
     const [id, query, param] = event.data;
     if (id === 0) {
         let prep = compilationCache.get(query);
+        try {
+            if (!prep) {
+                prep = sqlite3Db.prepare(query);
+                compilationCache.set(query, prep);
+            }
+            prep.bind([param]);
+            while (prep.step()) {
+                const row = prep.getAsObject();
+                self.postMessage([row]);
+                prep.reset();
+                return;
+            }
+        } catch (e) {
+            self.postMessage([false, (e as Error).message]);
+            return;
+        }
+        prep.reset();
+        self.postMessage([null]);
+        return;
+    }
+
+    try {
+        let prep = compilationCache.get(query);
         if (!prep) {
             prep = sqlite3Db.prepare(query);
             compilationCache.set(query, prep);
         }
-        prep.bind([param]);
+        if (param) prep.bind(param);
+        const res = [];
         while (prep.step()) {
-            const row = prep.getAsObject();
-            self.postMessage(row);
-            prep.reset();
-            return;
+            res.push(prep.getAsObject());
         }
         prep.reset();
-        self.postMessage(null);
-        return;
+        self.postMessage([res]);
+    } catch (e) {
+        self.postMessage([false, (e as Error).message]);
     }
-
-    let prep = compilationCache.get(query);
-    if (!prep) {
-        prep = sqlite3Db.prepare(query);
-        compilationCache.set(query, prep);
-    }
-    prep.bind(param);
-    const res = [];
-    while (prep.step()) {
-        res.push(prep.getAsObject());
-    }
-    prep.reset();
-    self.postMessage(res);
 };

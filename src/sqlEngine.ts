@@ -96,13 +96,17 @@ export async function loadSingleRow(query: string, modelId: string): Promise<{ [
             worker.onmessage = null;
             worker.onerror = null;
             clearTimeout(timeout);
-            const result = event.data as { [column: string]: any } | null;
+            const result = event.data as [{ [column: string]: any } | null] | [false, string];
             if (!modelCache) {
                 modelCache = new Map<string, { [column: string]: any }>();
                 queryCache.set(query, modelCache);
             }
-            modelCache.set(modelId, result);
-            resolve(result);
+            if (result[0] === false) {
+                reject(new Error(result[1]));
+            } else {
+                modelCache.set(modelId, result[0]);
+                resolve(result[0]);
+            }
             workersPool.push(worker);
         };
 
@@ -122,7 +126,7 @@ export async function loadSingleRow(query: string, modelId: string): Promise<{ [
 }
 
 /** Loads multiple rows. */
-export async function loadMultipleRows(query: string): Promise<{ [column: string]: any }[]> {
+export async function loadMultipleRows(query: string, args?: any[]): Promise<{ [column: string]: any }[]> {
     const worker = await waitForFreeWorker();
     return new Promise((resolve, reject) => {
         const timeout = setTimeout(() => {
@@ -137,11 +141,15 @@ export async function loadMultipleRows(query: string): Promise<{ [column: string
             worker.onmessage = null;
             worker.onerror = null;
             clearTimeout(timeout);
-            const result = event.data as { [column: string]: any }[];
-            resolve(result);
+            const result = event.data as [{ [column: string]: any }[]] | [false, string];
+            if (result[0] === false) {
+                reject(new Error(result[1]));
+            } else {
+                resolve(result[0]);
+            }
             workersPool.push(worker);
         };
-        
+
         worker.onerror = (error) => {
             worker.onmessage = null;
             worker.onerror = null;
@@ -153,6 +161,6 @@ export async function loadMultipleRows(query: string): Promise<{ [column: string
             });
         };
 
-        worker.postMessage([1, query]);
+        worker.postMessage([1, query, args]);
     });
 }

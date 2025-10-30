@@ -432,7 +432,7 @@ export default function Table({
                                         const newQueries = queries.filter((_, idx) => idx !== i);
                                         setQueries(newQueries);
                                     }}
-                                    queryColumns={queryColumns[i]}
+                                    queryColumns={queryColumns[i] || []}
                                     loadedValuesPtr={loadedValuesRows}
                                 />
                             ))
@@ -466,6 +466,7 @@ export default function Table({
                 <AddButton
                     queries={queries}
                     setQueries={setQueries}
+                    firstId={idsAndNames[0]?.id || ""}
                 />
             </div>
         </div>
