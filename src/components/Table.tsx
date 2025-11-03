@@ -144,7 +144,7 @@ function TableHeader({
                 updateQuery();
             }}
         >
-            <div className="flex">
+            <div className="flex items-center">
                 <div className="block grow">
                     {col}
                     <div className="w-full">
@@ -170,6 +170,13 @@ function TableHeader({
                     query={query}
                     updateQuery={updateQuery}
                 />
+                <button
+                    className="ml-2 px-2 py-1 text-xs text-red-600 hover:text-white hover:bg-red-600 rounded transition"
+                    title="Delete column"
+                    onClick={deleteQuery}
+                >
+                    &#x2715;
+                </button>
             </div>
         </Column>
     ));
