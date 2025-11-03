@@ -62,10 +62,10 @@ function vendorAndRegionSelectAsWrapper(
     FROM models_vendors_regions
     WHERE vendor_id = '${vendorSlug}' AND model_id = ? AND region_code = '${region}'`;
         } else if (region.eu) {
-            query = `SELECT AVG(${key}) AS \`${niceNameReplaced}\`
-    FROM models_vendors_regions
-    WHERE vendor_id = '${vendorSlug}' AND model_id = ? AND region_code IN (
-        SELECT eu_or_uk_regions FROM vendors WHERE vendor_id = '${vendorSlug}'
+            query = `SELECT AVG(models_vendors_regions.${key}) AS \`${niceNameReplaced}\`
+    FROM models_vendors_regions JOIN vendors ON models_vendors_regions.vendor_id = vendors.vendor_id
+    WHERE models_vendors_regions.vendor_id = '${vendorSlug}' AND models_vendors_regions.model_id = ? AND EXISTS (
+        SELECT 1 FROM json_each(vendors.eu_or_uk_regions) WHERE value = models_vendors_regions.region_code
     )`;
         } else {
             throw new Error("Invalid region");
