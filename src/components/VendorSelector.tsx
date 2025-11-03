@@ -4,18 +4,78 @@ import type { VendorInfo } from "../dataFormat";
 
 type VendorQueryBuilder = {
     name: string;
-    columnExplicitlySetDataTypes?: { [key: string]: ColumnDataType };
 } & ({
     region: true;
-    queryBuilder: (vendorSlug: string, vendorName: string, region: null | string | { eu: true }) => string;
+    queryBuilder: (vendorSlug: string, vendorName: string, region: null | string | { eu: true }) => [
+        string,
+        { [key: string]: ColumnDataType },
+    ];
 } | {
     region: false;
-    queryBuilder: (vendorSlug: string, vendorName: string) => string;
+    queryBuilder: (vendorSlug: string, vendorName: string) => [
+        string,
+        { [key: string]: ColumnDataType },
+    ];
 });
 
-function vendorOnlySelectAsWrapper(niceName: string, key: string) {
-    return (vendorSlug: string, vendorName: string) =>
-        `SELECT ${key} AS \`${niceName.replace("?", vendorName)}\` FROM models_vendors WHERE vendor_id = '${vendorSlug}' AND model_id = ?`;
+function vendorOnlySelectAsWrapper(niceName: string, key: string, explicitDataType?: ColumnDataType) {
+    return (vendorSlug: string, vendorName: string) => {
+        const niceNameReplaced = niceName.replace("?", vendorName);
+        return [
+            `SELECT ${key} AS \`${niceNameReplaced}\` FROM models_vendors WHERE vendor_id = '${vendorSlug}' AND model_id = ?`,
+            explicitDataType ? { [niceNameReplaced]: explicitDataType } : {},
+        ] as [string, { [key: string]: ColumnDataType }];
+    };
+}
+
+function vendorAndRegionSelectAsWrapper(
+    niceName: string,
+    key: string,
+    explicitDataType?: ColumnDataType,
+) {
+    return (
+        vendorSlug: string,
+        vendorName: string,
+        region: null | string | { eu: true },
+    ) => {
+        let formatted: string;
+        if (region === null) {
+            formatted = "Average";
+        } else if (typeof region === "string") {
+            formatted = region;
+        } else {
+            formatted = "EU / UK Regions";
+        }
+        const niceNameReplaced = niceName.replace("?", vendorName + " " + formatted);
+
+        const explicitDataTypes = explicitDataType
+            ? { [niceNameReplaced]: explicitDataType }
+            : {};
+
+        let query: string;
+        if (region === null) {
+            query = `SELECT AVG(${key}) AS \`${niceNameReplaced}\`
+    FROM models_vendors_regions
+    WHERE vendor_id = '${vendorSlug}' AND model_id = ?`;
+        } else if (typeof region === "string") {
+            query = `SELECT ${key} AS \`${niceNameReplaced}\`
+    FROM models_vendors_regions
+    WHERE vendor_id = '${vendorSlug}' AND model_id = ? AND region_code = '${region}'`;
+        } else if (region.eu) {
+            query = `SELECT AVG(${key}) AS \`${niceNameReplaced}\`
+    FROM models_vendors_regions
+    WHERE vendor_id = '${vendorSlug}' AND model_id = ? AND region_code IN (
+        SELECT eu_or_uk_regions FROM vendors WHERE vendor_id = '${vendorSlug}'
+    )`;
+        } else {
+            throw new Error("Invalid region");
+        }
+
+        return [
+            query,
+            explicitDataTypes,
+        ] as [string, { [key: string]: ColumnDataType }];
+    };
 }
 
 const vendorQueryBuilders: VendorQueryBuilder[] = [
@@ -32,27 +92,27 @@ const vendorQueryBuilders: VendorQueryBuilder[] = [
     {
         name: "Low Capacity",
         region: false,
-        queryBuilder: vendorOnlySelectAsWrapper("? Low Capacity", "low_capacity"),
-        columnExplicitlySetDataTypes: {
-            "? Low Capacity": "boolean",
-        },
+        queryBuilder: vendorOnlySelectAsWrapper("? Low Capacity", "low_capacity", "boolean"),
+    },
+    {
+        name: "Cost per 1K Input Tokens",
+        region: true,
+        queryBuilder: vendorAndRegionSelectAsWrapper(
+            "? Cost per 1K Input Tokens",
+            "input_token_cost * 1000",
+            "currency",
+        ),
+    },
+    {
+        name: "Cost per 1K Output Tokens",
+        region: true,
+        queryBuilder: vendorAndRegionSelectAsWrapper(
+            "? Cost per 1K Output Tokens",
+            "output_token_cost * 1000",
+            "currency",
+        ),
     },
 ];
-
-function replaceWithName(
-    columnExplicitlySetDataTypes: { [key: string]: ColumnDataType } | undefined,
-    vendorName: string,
-): { [key: string]: ColumnDataType } | undefined {
-    if (!columnExplicitlySetDataTypes) {
-        return undefined;
-    }
-    const replaced: { [key: string]: ColumnDataType } = {};
-    for (const [key, value] of Object.entries(columnExplicitlySetDataTypes)) {
-        const newKey = key.replace("?", vendorName);
-        replaced[newKey] = value;
-    }
-    return replaced;
-}
 
 function VendorItems({
     vendors,
@@ -81,20 +141,20 @@ function VendorItems({
             return;
         }
         const builder = vendorQueryBuilders[queryBuilderIndex];
-        let query: string;
+        let queryAndTypes: [string, { [key: string]: ColumnDataType }];
         if (builder.region) {
-            query = builder.queryBuilder(vendorSlug, vendorInfo.cleanName, region);
+            queryAndTypes = builder.queryBuilder(vendorSlug, vendorInfo.cleanName, region);
         } else {
-            query = builder.queryBuilder(vendorSlug, vendorInfo.cleanName);
+            queryAndTypes = builder.queryBuilder(vendorSlug, vendorInfo.cleanName);
         }
 
         setQueries((prev) => [
             ...prev,
             {
-                columnExplicitlySetDataTypes: replaceWithName(builder.columnExplicitlySetDataTypes, vendorInfo.cleanName) || {},
+                columnExplicitlySetDataTypes: queryAndTypes[1] || {},
                 columnFilters: {},
                 columnOrdering: {},
-                query,
+                query: queryAndTypes[0],
             },
         ]);
         exit();
@@ -139,11 +199,23 @@ function VendorItems({
                         autoComplete="off"
                     >
                         <option value="">No Region</option>
-                        {/* {vendorInfo..map((reg) => (
-                            <option key={reg} value={reg}>
-                                {reg}
-                            </option>
-                        ))} */}
+                        {
+                            Object.entries(vendorInfo.regionCleanNames).map(([category, regions]) => {
+                                const child = Object.entries(regions).map(([regionCode, regionName]) => (
+                                    <option key={regionCode} value={regionCode}>
+                                        {regionName}
+                                    </option>
+                                ));
+                                if (category === "") {
+                                    return child;
+                                }
+                                return (
+                                    <optgroup key={category} label={category}>
+                                        {child}
+                                    </optgroup>
+                                );
+                            })
+                        }
                         {vendorInfo.euOrUKRegions.length > 0 && (
                             <option value="eu">
                                 EU / UK Regions
