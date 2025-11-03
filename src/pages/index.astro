@@ -17,6 +17,6 @@ const models = getModelIdsAndNames(data);
     <title>SQL Engine Demo</title>
   </head>
   <body>
-      <Table idsAndNames={models} client:load />
+      <Table idsAndNames={models} vendors={data.vendors} client:load />
   </body>
 </html>

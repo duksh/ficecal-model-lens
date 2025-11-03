@@ -3,18 +3,8 @@ import type { ColumnQuery, LoadedValues } from "./Table";
 import { ToolCase, Warehouse, Wrench } from "lucide-react";
 import SQLModal from "./SQLModal";
 import DefaultSelector from "./DefaultSelector";
-
-function VendorSelector({
-    queries,
-    setQueries,
-    exit,
-}: {
-    queries: ColumnQuery[];
-    setQueries: (cb: (prev: ColumnQuery[]) => ColumnQuery[]) => void;
-    exit: () => void;
-}) {
-    return null;
-}
+import VendorSelector from "./VendorSelector";
+import type { VendorInfo } from "../dataFormat";
 
 function SelectionMode({
     queries,
@@ -22,12 +12,14 @@ function SelectionMode({
     exit,
     firstId,
     loadedValuesRows,
+    vendors,
 }: {
     queries: ColumnQuery[];
     setQueries: (cb: (prev: ColumnQuery[]) => ColumnQuery[]) => void;
     exit: () => void;
     firstId: string;
     loadedValuesRows: Map<string, LoadedValues>;
+    vendors: Record<string, VendorInfo>;
 }) {
     const [mode, setMode] = React.useState<null | "default" | "vendor">(null);
     const modalRef = React.useRef<HTMLDialogElement>(null);
@@ -66,9 +58,9 @@ function SelectionMode({
                 <div className="flex">
                     {closer}
                     <VendorSelector
-                        queries={queries}
                         setQueries={setQueriesAndPurgeLoadedValues}
                         exit={exit}
+                        vendors={vendors}
                     />
                 </div>
             );
@@ -121,11 +113,13 @@ export default function AddButton({
     setQueries,
     firstId,
     loadedValuesRows,
+    vendors,
 }: {
     queries: ColumnQuery[];
     setQueries: (cb: (prev: ColumnQuery[]) => ColumnQuery[]) => void;
     firstId: string;
     loadedValuesRows: Map<string, LoadedValues>;
+    vendors: Record<string, VendorInfo>;
 }) {
     const [selectionMode, setSelectionMode] = React.useState(false);
 
@@ -146,6 +140,7 @@ export default function AddButton({
                 loadedValuesRows={loadedValuesRows}
                 exit={() => setSelectionMode(false)}
                 firstId={firstId}
+                vendors={vendors}
             />
         );
     }

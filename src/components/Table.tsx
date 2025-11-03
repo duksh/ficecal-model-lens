@@ -12,6 +12,7 @@ import SortingButtons from "./SortingButtons";
 import checkFilters from "./filters/checkFilters";
 import Column from "./Column";
 import AddButton from "./AddButton";
+import type { VendorInfo } from "../dataFormat";
 
 export type ColumnDataType =
     "boolean" |
@@ -405,8 +406,10 @@ function useDynamicState<T>(
 
 export default function Table({
     idsAndNames,
+    vendors,
 }: {
     idsAndNames: { id: string; name: string }[];
+    vendors: Record<string, VendorInfo>;
 }) {
     const [queries, setQueries] = useLocalStorage<ColumnQuery[]>("table-queries", defaults);
     const [queryColumns, setQueryColumns] = useDynamicState<(string[] | null)[]>(
@@ -496,6 +499,7 @@ export default function Table({
                     setQueries={setQueries}
                     loadedValuesRows={loadedValuesRows[0]}
                     firstId={idsAndNames[0]?.id || ""}
+                    vendors={vendors}
                 />
             </div>
         </div>
