@@ -450,9 +450,9 @@ export default function Table({
     }, [idsAndNames, queries, queryColumns, loadedValuesRows]);
 
     return (
-        <div className="flex gap-4 items-start">
-            <div className="flex-1 overflow-x-auto">
-                <table className="h-full min-w-max">
+        <div className="flex-1 overflow-x-auto">
+            <div className="flex items-start min-w-max">
+                <table className="h-full">
                     <thead>
                         <tr>
                         <th className="pb-1 relative">
@@ -516,15 +516,15 @@ export default function Table({
                         }
                     </tbody>
                 </table>
-            </div>
-            <div className="shrink-0">
-                <AddButton
-                    queries={queries}
-                    setQueries={setQueries}
-                    loadedValuesRows={loadedValuesRows[0]}
-                    firstId={idsAndNames[0]?.id || ""}
-                    vendors={vendors}
-                />
+                <div className="ml-4 shrink-0">
+                    <AddButton
+                        queries={queries}
+                        setQueries={setQueries}
+                        loadedValuesRows={loadedValuesRows[0]}
+                        firstId={idsAndNames[0]?.id || ""}
+                        vendors={vendors}
+                    />
+                </div>
             </div>
         </div>
     );
