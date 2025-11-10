@@ -5,6 +5,7 @@ import SQLModal from "./SQLModal";
 import DefaultSelector from "./DefaultSelector";
 import VendorSelector from "./VendorSelector";
 import type { VendorInfo } from "../dataFormat";
+import { useStateItem } from "../state";
 
 function SelectionMode({
     queries,
@@ -109,18 +110,15 @@ function SelectionMode({
 }
 
 export default function AddButton({
-    queries,
-    setQueries,
     firstId,
     loadedValuesRows,
     vendors,
 }: {
-    queries: ColumnQuery[];
-    setQueries: (cb: (prev: ColumnQuery[]) => ColumnQuery[]) => void;
     firstId: string;
     loadedValuesRows: Map<string, LoadedValues>;
     vendors: Record<string, VendorInfo>;
 }) {
+    const [queries, setQueries] = useStateItem("queries");
     const [selectionMode, setSelectionMode] = React.useState(false);
 
     let innerContent = (

@@ -1,6 +1,7 @@
 import type { ColumnQuery } from "./Table";
 import LoadingEffect from "./LoadingEffect";
 import Column from "./Column";
+import { useStateItem } from "../state";
 
 export const DEFAULT_COLUMN_WIDTH = 150;
 
@@ -8,6 +9,7 @@ function renderColumn(
     cellVal: any,
     columnName: string | undefined,
     query: ColumnQuery,
+    currency: string,
 ) {
     if (columnName) {
         const dataType = query.columnExplicitlySetDataTypes[columnName];
@@ -15,8 +17,10 @@ function renderColumn(
             return cellVal ? "Yes" : "No";
         }
         if (dataType === "currency") {
-            // TODO
-            return cellVal;
+            return new Intl.NumberFormat("en-US", {
+                style: "currency",
+                currency,
+            }).format(Number(cellVal));
         }
         if (dataType === "country") {
             // TODO
@@ -30,14 +34,13 @@ function renderColumn(
 export default function RowLoadedValues({
     loadedValues,
     queryColumns,
-    queries,
-    updateQueries,
 }: {
     loadedValues: (any[] | null | { error: string })[];
     queryColumns: (string[] | null)[];
-    queries: ColumnQuery[];
-    updateQueries: () => void;
 }) {
+    const [queries, setQueries] = useStateItem("queries");
+    const [currency] = useStateItem("currency");
+
     const getColSpan = (index: number) => {
         const cols = queryColumns[index];
         return cols ? cols.length : 1;
@@ -63,7 +66,7 @@ export default function RowLoadedValues({
                             }
                             query.widths[colName] = newWidth;
                         }
-                        updateQueries();
+                        setQueries((old) => [...old]);
                     }}
                     key={`${i}-${j}`}
                 >
@@ -71,6 +74,7 @@ export default function RowLoadedValues({
                         cellVal,
                         queryColumns[i]?.[j],
                         queries[i],
+                        currency,
                     )}
                 </Column>
             ));

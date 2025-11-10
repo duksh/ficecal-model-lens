@@ -1,10 +1,8 @@
 import React from "react";
-import { defaultQueries } from "../constants";
 import { loadSingleRow } from "../sqlEngine";
 import BooleanFilter from "./filters/BooleanFilter";
 import StringFilter from "./filters/StringFilter";
 import { NumberFilter } from "./filters/NumberFilter";
-import useLocalStorage from "./hooks/useLocalStorage";
 import LoadingEffect from "./LoadingEffect";
 import RowLoadedValues, { DEFAULT_COLUMN_WIDTH } from "./RowLoadedValues";
 import sortValue from "./utils/sortValue";
@@ -14,6 +12,7 @@ import Column from "./Column";
 import AddButton from "./AddButton";
 import SQLEditorButton from "./SQLEditorButton";
 import type { VendorInfo } from "../dataFormat";
+import { useStateItem } from "../state";
 
 export type ColumnDataType =
     "boolean" |
@@ -27,12 +26,6 @@ export type ColumnQuery = {
     columnFilters: Record<string, any>;
     widths?: Record<string, number>;
 };
-
-const defaults = defaultQueries.map(({ name, ...dq }) => ({
-    ...dq,
-    columnOrdering: {},
-    columnFilters: {},
-}));
 
 function QueryFilter({
     columnName,
@@ -282,8 +275,6 @@ function getQueriesKey(queries: ColumnQuery[]): string {
 function TableRow({
     id,
     name,
-    queries,
-    setQueries,
     queryColumns,
     setQueryColumns,
     loadedValues,
@@ -291,14 +282,13 @@ function TableRow({
 }: {
     id: string;
     name: string;
-    queries: ColumnQuery[];
-    setQueries: (cb: (prev: ColumnQuery[]) => ColumnQuery[]) => void;
     queryColumns: (string[] | null)[];
     setQueryColumns: (cols: (string[] | null)[]) => void;
     loadedValues: LoadedValues | null;
     setLoadedValues: (vals: LoadedValues | null) => void;
 }) {
     const [rowVisible, setRowVisible] = React.useState(true);
+    const [queries, setQueries] = useStateItem("queries");
 
     const queriesKey = getQueriesKey(queries);
     React.useEffect(() => {
@@ -344,8 +334,6 @@ function TableRow({
                     <RowLoadedValues
                         loadedValues={loadedValues}
                         queryColumns={queryColumns}
-                        queries={queries}
-                        updateQueries={updateQueries}
                     />
                 ) : (
                     <td colSpan={queries.length}>
@@ -433,7 +421,7 @@ export default function Table({
     idsAndNames: { id: string; name: string }[];
     vendors: Record<string, VendorInfo>;
 }) {
-    const [queries, setQueries] = useLocalStorage<ColumnQuery[]>("table-queries", defaults);
+    const [queries, setQueries] = useStateItem("queries");
     const [queryColumns, setQueryColumns] = useDynamicState<(string[] | null)[]>(
         Array(queries.length).fill(null),
         (cols) => {
@@ -501,8 +489,6 @@ export default function Table({
                                     id={id}
                                     key={id}
                                     name={name}
-                                    queries={queries}
-                                    setQueries={setQueries}
                                     queryColumns={queryColumns}
                                     setQueryColumns={setQueryColumns}
                                     loadedValues={loadedValuesRows[0].get(id) || null}
@@ -519,8 +505,6 @@ export default function Table({
                 </table>
                 <div className="ml-4 shrink-0">
                     <AddButton
-                        queries={queries}
-                        setQueries={setQueries}
                         loadedValuesRows={loadedValuesRows[0]}
                         firstId={idsAndNames[0]?.id || ""}
                         vendors={vendors}
