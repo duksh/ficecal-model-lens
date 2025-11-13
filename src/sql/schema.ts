@@ -51,6 +51,10 @@ CREATE TABLE models_vendors_regions (
     region_code TEXT NOT NULL,
     input_token_cost REAL NOT NULL,
     output_token_cost REAL NOT NULL,
+    cached_input_token_cost REAL,
+    cached_output_token_cost REAL,
+    FOREIGN KEY (model_id) REFERENCES models(model_id),
+    FOREIGN KEY (vendor_id) REFERENCES vendors(vendor_id),
     PRIMARY KEY (model_id, vendor_id, region_code)
 );
 

@@ -49,8 +49,8 @@ export const data: DataFormat = {
         {
           vendorRef: "openai",
           regionPricing: {
-            "us-east-1": [0.03, 0.06],
-            "eu-west-1": [0.03, 0.06]
+            "us-east-1": [0.03, 0.06, null, null],
+            "eu-west-1": [0.03, 0.06, null, null]
           },
           latencyMs: 1500,
           tokensPerSecond: 50,
@@ -75,8 +75,8 @@ export const data: DataFormat = {
         {
           vendorRef: "openai",
           regionPricing: {
-            "us-east-1": [0.0015, 0.002],
-            "eu-west-1": [0.0015, 0.002]
+            "us-east-1": [0.0015, 0.002, null, null],
+            "eu-west-1": [0.0015, 0.002, null, null]
           },
           latencyMs: 800,
           tokensPerSecond: 120,
@@ -101,8 +101,8 @@ export const data: DataFormat = {
         {
           vendorRef: "anthropic",
           regionPricing: {
-            "us-west-2": [0.015, 0.075],
-            "eu-central-1": [0.015, 0.075]
+            "us-west-2": [0.015, 0.075, null, null],
+            "eu-central-1": [0.015, 0.075, null, null]
           },
           latencyMs: 2000,
           tokensPerSecond: 40,
@@ -127,8 +127,8 @@ export const data: DataFormat = {
         {
           vendorRef: "anthropic", 
           regionPricing: {
-            "us-west-2": [0.003, 0.015],
-            "eu-central-1": [0.003, 0.015]
+            "us-west-2": [0.003, 0.015, null, null],
+            "eu-central-1": [0.003, 0.015, null, null]
           },
           latencyMs: 1200,
           tokensPerSecond: 80,
@@ -153,9 +153,9 @@ export const data: DataFormat = {
         {
           vendorRef: "aws",
           regionPricing: {
-            "us-east-1": [0.00195, 0.00256],
-            "eu-west-1": [0.00195, 0.00256],
-            "ap-southeast-1": [0.00195, 0.00256]
+            "us-east-1": [0.00195, 0.00256, null, null],
+            "eu-west-1": [0.00195, 0.00256, null, null],
+            "ap-southeast-1": [0.00195, 0.00256, null, null]
           },
           latencyMs: 1800,
           tokensPerSecond: 30,

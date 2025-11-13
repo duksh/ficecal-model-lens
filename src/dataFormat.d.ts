@@ -1,10 +1,12 @@
 type InputTokenCost = number;
 type OutputTokenCost = number;
+type CachedInputTokenCost = number;
+type CachedOutputTokenCost = number;
 
 type VendorModelInfo = {
     vendorRef: string;
     regionPricing: {
-        [regionCode: string]: [InputTokenCost, OutputTokenCost];
+        [regionCode: string]: [InputTokenCost, OutputTokenCost, CachedInputTokenCost | null, CachedOutputTokenCost | null];
     };
     latencyMs: number;
     tokensPerSecond: number;

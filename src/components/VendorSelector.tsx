@@ -133,6 +133,24 @@ const vendorQueryBuilders: VendorQueryBuilder[] = [
             "currency",
         ),
     },
+    {
+        name: "Cost per 1K Cached Input Tokens",
+        region: true,
+        queryBuilder: vendorAndRegionSelectAsWrapper(
+            "? Cost per 1K Cached Input Tokens",
+            "cached_input_token_cost * 1000",
+            "currency",
+        ),
+    },
+    {
+        name: "Cost per 1K Cached Output Tokens",
+        region: true,
+        queryBuilder: vendorAndRegionSelectAsWrapper(
+            "? Cost per 1K Cached Output Tokens",
+            "cached_output_token_cost * 1000",
+            "currency",
+        ),
+    },
 ];
 
 function VendorItems({

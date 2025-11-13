@@ -46,7 +46,7 @@ export const GET: APIRoute = () => {
         const modelsPrep = db.prepare("INSERT INTO models (model_id, clean_name, brand, company_country_code, selfhostable, reasoning, humanitys_last_exam_percentage, swe_bench_resolved_percentage, skatebench_score) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
         const modelsTokenisersPrep = db.prepare("INSERT INTO models_tokenisers (model_id, tokeniser, url) VALUES (?, ?, ?)");
         const modelsVendorsPrep = db.prepare("INSERT INTO models_vendors (model_id, vendor_id, latency_ms, tokens_per_second, low_capacity) VALUES (?, ?, ?, ?, ?)");
-        const modelsVendorsRegionsPrep = db.prepare("INSERT INTO models_vendors_regions (model_id, vendor_id, region_code, input_token_cost, output_token_cost) VALUES (?, ?, ?, ?, ?)");
+        const modelsVendorsRegionsPrep = db.prepare("INSERT INTO models_vendors_regions (model_id, vendor_id, region_code, input_token_cost, output_token_cost, cached_input_token_cost, cached_output_token_cost) VALUES (?, ?, ?, ?, ?, ?, ?)");
         for (const [modelId, modelData] of Object.entries(data.models)) {
             modelsPrep.run([
                 modelId,
@@ -80,13 +80,15 @@ export const GET: APIRoute = () => {
                     vendor.tokensPerSecond,
                     vendor.lowCapacity ? 1 : 0,
                 ]);
-                for (const [regionCode, [inputTokenCost, outputTokenCost]] of Object.entries(vendor.regionPricing)) {
+                for (const [regionCode, [inputTokenCost, outputTokenCost, cachedInputTokenCost, cachedOutputTokenCost]] of Object.entries(vendor.regionPricing)) {
                     modelsVendorsRegionsPrep.run([
                         modelId,
                         vendor.vendorRef,
                         regionCode,
                         inputTokenCost,
                         outputTokenCost,
+                        cachedInputTokenCost,
+                        cachedOutputTokenCost,
                     ]);
                 }
             }
