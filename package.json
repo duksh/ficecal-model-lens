@@ -6,7 +6,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "init": "tsx scraper/runner.ts"
   },
   "dependencies": {
     "@astrojs/react": "^4.4.0",
@@ -27,6 +28,8 @@
     "@types/better-sqlite3": "^7.6.13",
     "@types/react": "^19.2.2",
     "@types/sql.js": "^1.4.9",
-    "js-tiktoken": "^1.0.21"
+    "js-tiktoken": "^1.0.21",
+    "tsx": "^4.20.6",
+    "valibot": "^1.2.0"
   }
 }

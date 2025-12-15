@@ -37,7 +37,7 @@ type Model = {
     vendors: VendorModelInfo[];
     selfhostable: boolean;
     reasoning: boolean;
-    tokeniser: Tokenisers;
+    tokeniser?: Tokenisers;
     humanitysLastExamPercentage?: number;
     sweBenchResolvedPercentage?: number;
     skatebenchScore?: number;

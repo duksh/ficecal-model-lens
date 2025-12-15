@@ -16,6 +16,7 @@
     },
     "lib": [
       "ES2017",
+      "ES2021",
       "WebWorker",
       "DOM"
     ],

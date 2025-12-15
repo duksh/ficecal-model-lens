@@ -1,5 +1,5 @@
 import SQLite3 from "better-sqlite3";
-import { data } from "./data.json.ts";
+import * as data from "../../public/data.json";
 import type { APIRoute } from "astro";
 import schema from "../sql/schema";
 import { tmpdir } from "node:os";

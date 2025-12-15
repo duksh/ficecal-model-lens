@@ -1,18 +1,28 @@
 import type { DataFormat } from "@/src/dataFormat";
-import { isReasoningModel, isSelfHostableModel } from "../constants";
+import {
+    getTokeniserForModel,
+    isReasoningModel,
+    isSelfHostableModel,
+    addBenchmarkDataForModel,
+} from "../constants";
 
 type PriceDimension = {
     pricePerUnit?: {
         USD?: string;
     };
+    description?: string;
     unit?: string;
 };
 
-function slugify(name: string): string {
-    return name
+function slugify(name: string, provider: string): string {
+    const n = name
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, '-')
         .replace(/^-+|-+$/g, '');
+    if (provider === "DeepSeek" && !n.startsWith("deepseek-")) {
+        return `deepseek-${n}`;
+    }
+    return n;
 }
 
 const PROVIDERS = {
@@ -30,7 +40,9 @@ function providerToCountryCode(provider: string): string {
     return res;
 }
 
-function processPriceDimension(
+const ONE_THOUSAND_MIDDLE_BIT_FOR = /1K (.+?) for/g;
+
+async function processPriceDimension(
     fmt: DataFormat,
     priceDimension: PriceDimension,
     attributes: Record<string, string>
@@ -38,7 +50,7 @@ function processPriceDimension(
     // No provider or model is things not overly useful to us
     if (!attributes.provider || !attributes.model) return;
 
-    const slugifiedModel = slugify(attributes.model);
+    const slugifiedModel = slugify(attributes.model, attributes.provider);
     let modelEntry = fmt.models[slugifiedModel];
     if (!modelEntry) {
         modelEntry = {
@@ -48,9 +60,65 @@ function processPriceDimension(
             vendors: [],
             reasoning: isReasoningModel(slugifiedModel),
             selfhostable: isSelfHostableModel(slugifiedModel, attributes.provider),
-            // TODO
+            tokeniser: getTokeniserForModel(slugifiedModel, attributes.provider),
+            ...await addBenchmarkDataForModel(slugifiedModel),
         };
         fmt.models[slugifiedModel] = modelEntry;
+    }
+
+    let vendor = modelEntry.vendors.find(v => v.vendorRef === "aws");
+    if (!vendor) {
+        vendor = {
+            vendorRef: "aws",
+            regionPricing: {},
+            latencyMs: 0, // TODO
+            tokensPerSecond: 0, // TODO
+            lowCapacity: false,
+        };
+        modelEntry.vendors.push(vendor);
+    }
+
+    if (priceDimension.unit === "1K tokens") {
+        const result = ONE_THOUSAND_MIDDLE_BIT_FOR.exec(priceDimension.description || "");
+        ONE_THOUSAND_MIDDLE_BIT_FOR.lastIndex = 0; // Reset regex state
+        if (!result || result.length < 2) {
+            throw new Error(`Could not parse data from description: ${attributes.description}`);
+        }
+        const middleBit = result[1];
+
+        let usdPrice = priceDimension.pricePerUnit?.USD;
+        if (!usdPrice) {
+            throw new Error(`No USD price found for model: ${attributes.model}`);
+        }
+        let price = parseFloat(usdPrice);
+        price = price / 1000; // Convert from per 1K tokens to per token
+
+        let inputTokens: number | null = null;
+        let outputTokens: number | null = null;
+        switch (middleBit) {
+            case "input tokens":
+                inputTokens = price;
+                break;
+            case "output tokens":
+                outputTokens = price;
+                break;
+        }
+        if (inputTokens === null && outputTokens === null) {
+            return;
+        }
+
+        let region = vendor.regionPricing[attributes.regionCode];
+        if (!region) {
+            region = [0, 0, null, null];
+            vendor.regionPricing[attributes.regionCode] = region;
+        }
+
+        if (inputTokens !== null) {
+            region[0] = inputTokens;
+        }
+        if (outputTokens !== null) {
+            region[1] = outputTokens;
+        }
     }
 }
 
@@ -107,7 +175,7 @@ export default async function scrapeAwsData(fmt: DataFormat) {
         // Process each pricing term
         if (term.priceDimensions) {
             for (const priceDimension of Object.values<PriceDimension>(term.priceDimensions)) {
-                processPriceDimension(fmt, priceDimension, product.attributes);
+                await processPriceDimension(fmt, priceDimension, product.attributes);
             }
         }
     }
@@ -120,4 +188,5 @@ export default async function scrapeAwsData(fmt: DataFormat) {
             "": regions
         }
     };
+    console.log("Finished scraping AWS Bedrock data");
 }
