@@ -71,8 +71,68 @@ export function isSelfHostableModel(modelId: string, provider: string): boolean 
     throw new Error(`Unknown self-hostable status for model ID: ${modelId} with provider: ${provider}. Please update isSelfHostableModel in scraper/constants.ts.`);
 }
 
+// Tiktoken BPE file URLs (OpenAI's public CDN)
+const TIKTOKEN_CL100K = "https://openaipublic.blob.core.windows.net/encodings/cl100k_base.tiktoken";
+const TIKTOKEN_O200K = "https://openaipublic.blob.core.windows.net/encodings/o200k_base.tiktoken";
+
+// Map of model prefixes to their HuggingFace tokenizer paths
+const TRANSFORMERS_TOKENISER_PATHS: Record<string, string> = {
+    // Meta/Llama
+    "llama-4": "meta-llama/Llama-4-Scout-17B-16E-Instruct",
+    "llama-3-3": "meta-llama/Llama-3.3-70B-Instruct",
+    "llama-3-2": "meta-llama/Llama-3.2-3B-Instruct",
+    "llama-3-1": "meta-llama/Llama-3.1-8B-Instruct",
+    "llama-3": "meta-llama/Llama-3.1-8B-Instruct",
+    // Mistral
+    "mistral-large": "mistralai/Mistral-Large-Instruct-2411",
+    "mistral-small": "mistralai/Mistral-Small-24B-Instruct-2501",
+    "pixtral": "mistralai/Pixtral-Large-Instruct-2411",
+    "mixtral": "mistralai/Mixtral-8x22B-Instruct-v0.1",
+    "mistral-7b": "mistralai/Mistral-7B-Instruct-v0.3",
+    // DeepSeek
+    "deepseek-r1": "deepseek-ai/DeepSeek-R1",
+    "deepseek-v3": "deepseek-ai/DeepSeek-V3",
+    // Qwen
+    "qwen3-235b": "Qwen/Qwen3-235B-A22B",
+    "qwen3-coder": "Qwen/Qwen3-Coder-480B-A35B-Instruct",
+    "qwen3-32": "Qwen/Qwen3-32B",
+    "qwen3": "Qwen/Qwen3-32B",
+};
+
 export function getTokeniserForModel(modelId: string, provider: string): Tokenisers | undefined {
-    // TODO
+    // OpenAI models use tiktoken
+    if (provider === "OpenAI") {
+        // GPT-4o and newer use o200k_base
+        if (modelId.startsWith("gpt-4o") || modelId.startsWith("gpt-oss")) {
+            return { type: "tiktoken", bpePath: TIKTOKEN_O200K };
+        }
+        // Older GPT-4, GPT-3.5 use cl100k_base
+        if (modelId.startsWith("gpt-4") || modelId.startsWith("gpt-3")) {
+            return { type: "tiktoken", bpePath: TIKTOKEN_CL100K };
+        }
+        return undefined;
+    }
+
+    // Anthropic Claude - no public tokenizer available
+    if (provider === "Anthropic") {
+        return undefined;
+    }
+
+    // For other providers, look up in the transformers tokenizer map
+    // Sort by prefix length (longest first) for more specific matches
+    const sortedPrefixes = Object.keys(TRANSFORMERS_TOKENISER_PATHS).sort(
+        (a, b) => b.length - a.length
+    );
+
+    for (const prefix of sortedPrefixes) {
+        if (modelId.startsWith(prefix)) {
+            return {
+                type: "transformers",
+                pretrainedPath: TRANSFORMERS_TOKENISER_PATHS[prefix],
+            };
+        }
+    }
+
     return undefined;
 }
 
