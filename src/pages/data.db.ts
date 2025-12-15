@@ -1,5 +1,5 @@
 import SQLite3 from "better-sqlite3";
-import * as data from "../../public/data.json";
+import data from "../data";
 import type { APIRoute } from "astro";
 import schema from "../sql/schema";
 import { tmpdir } from "node:os";
@@ -59,7 +59,9 @@ export const GET: APIRoute = () => {
                 modelData.sweBenchResolvedPercentage ?? null,
                 modelData.skatebenchScore ?? null,
             ]);
-            switch (modelData.tokeniser.type) {
+            switch (modelData.tokeniser?.type) {
+                case undefined:
+                    break;
                 case "site-api":
                     modelsTokenisersPrep.run([modelId, "site-api", modelData.tokeniser.apiUrl]);
                     break;
