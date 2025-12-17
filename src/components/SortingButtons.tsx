@@ -8,7 +8,7 @@ export default function SortingButtons({
 }: {
     columnName: string;
     query: ColumnQuery;
-    updateQuery: () => void;
+    updateQuery: (rerunQuery: boolean) => void;
 }) {
     const ascending = query.columnOrdering[columnName];
 
@@ -18,7 +18,7 @@ export default function SortingButtons({
         } else {
             query.columnOrdering[columnName] = asc;
         }
-        updateQuery();
+        updateQuery(false);
     };
 
     return (

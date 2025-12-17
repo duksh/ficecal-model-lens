@@ -8,7 +8,7 @@ import Button from "./Button";
 type SQLEditorButtonProps = {
     query: ColumnQuery;
     firstId: string;
-    updateQuery: () => void;
+    updateQuery: (rerunQuery: boolean) => void;
 };
 
 export default function SQLEditorButton({ query, firstId, updateQuery }: SQLEditorButtonProps) {
@@ -40,7 +40,7 @@ export default function SQLEditorButton({ query, firstId, updateQuery }: SQLEdit
             query.columnExplicitlySetDataTypes = {
                 ...columnCustomTypes.current,
             };
-            updateQuery();
+            updateQuery(true);
             exit();
         });
     }, [columnCustomTypes]);

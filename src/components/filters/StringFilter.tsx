@@ -8,7 +8,7 @@ export default function StringFilter({
 }: {
     columnName: string;
     query: ColumnQuery;
-    updateQuery: () => void;
+    updateQuery: (rerunQuery: boolean) => void;
 }) {
     const [filterValue, setFilterValue] = React.useState<string>(
         query.columnFilters[columnName] || ""
@@ -26,7 +26,7 @@ export default function StringFilter({
                     query.columnFilters[columnName] = val;
                 }
                 setFilterValue(val);
-                updateQuery();
+                updateQuery(false);
             }}
             className="w-full border text-sm border-gray-300 rounded-md p-1"
             aria-label={`Filter ${columnName}`}

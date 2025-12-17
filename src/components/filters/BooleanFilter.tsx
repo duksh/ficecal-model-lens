@@ -7,7 +7,7 @@ export default function BooleanFilter({
 }: {
     columnName: string;
     query: ColumnQuery;
-    updateQuery: () => void;
+    updateQuery: (rerunQuery: boolean) => void;
 }) {
     const currentFilter = query.columnFilters[columnName];
 
@@ -17,7 +17,7 @@ export default function BooleanFilter({
         } else {
             query.columnFilters[columnName] = value;
         }
-        updateQuery();
+        updateQuery(false);
     };
 
     return (

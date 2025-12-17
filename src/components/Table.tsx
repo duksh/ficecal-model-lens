@@ -35,7 +35,7 @@ function QueryFilter({
 }: {
     columnName: string;
     query: ColumnQuery;
-    updateQuery: () => void;
+    updateQuery: (rerunQuery: boolean) => void;
     values: any[];
 }) {
     const specificType = query.columnExplicitlySetDataTypes[columnName];
@@ -102,7 +102,7 @@ function TableHeader({
 }: {
     query: ColumnQuery;
     queryIdx: number;
-    updateQuery: () => void;
+    updateQuery: (rerunQuery: boolean) => void;
     deleteQuery: () => void;
     queryColumns: string[] | null;
     loadedValuesPtr: [Map<string, LoadedValues>];
@@ -134,11 +134,11 @@ function TableHeader({
                     query.widths = {
                         [col]: width,
                     };
-                    updateQuery();
+                    updateQuery(false);
                     return;
                 }
                 query.widths[col] = width;
-                updateQuery();
+                updateQuery(false);
             }}
         >
             <div className="flex items-center">
@@ -422,15 +422,17 @@ export default function Table({
                                         key={i}
                                         queryIdx={i}
                                         query={q}
-                                        updateQuery={() => {
+                                        updateQuery={(rerunQuery: boolean) => {
                                             const newQueries = [...queries];
                                             newQueries[i] = q;
                                             setQueries(newQueries);
-                                            setQueryColumns((x) => {
-                                                const newQueryColumns = [...x];
-                                                newQueryColumns[i] = null;
-                                                return newQueryColumns;
-                                            })
+                                            if (rerunQuery) {
+                                                setQueryColumns((x) => {
+                                                    const newQueryColumns = [...x];
+                                                    newQueryColumns[i] = null;
+                                                    return newQueryColumns;
+                                                })
+                                            }
                                         }}
                                         deleteQuery={() => {
                                             // Handle the map

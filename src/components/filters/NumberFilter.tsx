@@ -10,7 +10,7 @@ export function NumberFilter({
 }: {
     columnName: string;
     query: ColumnQuery;
-    updateQuery: () => void;
+    updateQuery: (rerunQuery: boolean) => void;
 }) {
     const [filterValue, setFilterValue] = React.useState<[OperatorTypes, number]>(
         query.columnFilters[columnName] || [">=", 0]
@@ -25,7 +25,7 @@ export function NumberFilter({
                     const newFilter: [OperatorTypes, number] = [newOp, filterValue[1]];
                     query.columnFilters[columnName] = newFilter;
                     setFilterValue(newFilter);
-                    updateQuery();
+                    updateQuery(false);
                 }}
                 className="border text-sm border-gray-300 rounded-md p-1 mr-1"
                 aria-label={`Operator for filtering ${columnName}`}
