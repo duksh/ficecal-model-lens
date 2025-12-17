@@ -30,6 +30,16 @@ const queryCache = new Map<string, Map<string, {
     [column: string]: any;
 } | null>>();
 const workersPool: Worker[] = [];
+const waitingForWorker: Array<(w: Worker) => void> = [];
+
+function pushWorker(worker: Worker) {
+    const hn = waitingForWorker.shift();
+    if (hn) {
+        hn(worker);
+    } else {
+        workersPool.push(worker);
+    }
+}
 
 async function loadWorker(): Promise<Worker> {
     const dataDb = await loadDataDb();
@@ -54,7 +64,7 @@ async function loadWorker(): Promise<Worker> {
 async function initPool() {
     const numWorkers = navigator.hardwareConcurrency || 4;
     for (let i = 0; i < numWorkers; i++) {
-        loadWorker().then((worker) => workersPool.push(worker));
+        loadWorker().then((worker) => pushWorker(worker));
     }
 }
 
@@ -62,16 +72,14 @@ if (typeof window !== "undefined") {
     initPool();
 }
 
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 async function waitForFreeWorker() {
-    while (true) {
-        const worker = workersPool.pop();
-        if (worker) {
-            return worker;
-        }
-        await sleep(2);
+    const worker = workersPool.pop();
+    if (worker) {
+        return worker;
     }
+    return new Promise<Worker>((resolve) => {
+        waitingForWorker.push(resolve);
+    });
 }
 
 /** Loads a single row. */
@@ -87,9 +95,7 @@ export async function loadSingleRow(query: string, modelId: string): Promise<{ [
         const timeout = setTimeout(() => {
             reject(new Error("SQL query timed out"));
             worker.terminate();
-            loadWorker().then((newWorker) => {
-                workersPool.push(newWorker);
-            });
+            loadWorker().then((newWorker) => pushWorker(newWorker));
         }, 1000);
 
         worker.onmessage = (event) => {
@@ -107,7 +113,7 @@ export async function loadSingleRow(query: string, modelId: string): Promise<{ [
                 modelCache.set(modelId, result[0]);
                 resolve(result[0]);
             }
-            workersPool.push(worker);
+            pushWorker(worker);
         };
 
         worker.onerror = (error) => {
@@ -116,9 +122,7 @@ export async function loadSingleRow(query: string, modelId: string): Promise<{ [
             clearTimeout(timeout);
             reject(error);
             worker.terminate();
-            loadWorker().then((newWorker) => {
-                workersPool.push(newWorker);
-            });
+            loadWorker().then((newWorker) => pushWorker(newWorker));
         };
 
         worker.postMessage([0, query, modelId]);
@@ -132,9 +136,7 @@ export async function loadMultipleRows(query: string, args?: any[]): Promise<{ [
         const timeout = setTimeout(() => {
             reject(new Error("SQL query timed out"));
             worker.terminate();
-            loadWorker().then((newWorker) => {
-                workersPool.push(newWorker);
-            });
+            loadWorker().then((newWorker) => pushWorker(newWorker));
         }, 1000);
 
         worker.onmessage = (event) => {
@@ -147,7 +149,7 @@ export async function loadMultipleRows(query: string, args?: any[]): Promise<{ [
             } else {
                 resolve(result[0]);
             }
-            workersPool.push(worker);
+            pushWorker(worker);
         };
 
         worker.onerror = (error) => {
@@ -156,9 +158,7 @@ export async function loadMultipleRows(query: string, args?: any[]): Promise<{ [
             clearTimeout(timeout);
             reject(error);
             worker.terminate();
-            loadWorker().then((newWorker) => {
-                workersPool.push(newWorker);
-            });
+            loadWorker().then((newWorker) => pushWorker(newWorker));
         };
 
         worker.postMessage([1, query, args]);

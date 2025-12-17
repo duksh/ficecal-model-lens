@@ -28,6 +28,10 @@ function renderColumn(
         }
     }
 
+    if (cellVal === null) {
+        return "-";
+    }
+
     return String(cellVal);
 }
 

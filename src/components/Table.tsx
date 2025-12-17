@@ -190,8 +190,6 @@ function TableHeader({
     ));
 }
 
-let rowLocks = 0;
-
 async function loadSingleRowData(
     id: string,
     queries: ColumnQuery[],
@@ -201,12 +199,6 @@ async function loadSingleRowData(
     setRowVisible: (visible: boolean) => void,
     mountedRef: [boolean],
 ) {
-    // Only one row at a time to allow for a cleaner load
-    while (rowLocks++ !== 0) {
-        rowLocks--;
-        await new Promise((resolve) => setTimeout(resolve, 1));
-    }
-
     const loadedColumns: (any[] | null | { error: string })[] = [];
     const write = () => {
         if (!mountedRef[0]) return false;
@@ -222,8 +214,11 @@ async function loadSingleRowData(
             await loadSingleRow(query.query, id).then((row) => {
                 if (row) {
                     const sortedColumns = Object.keys(row).sort();
-                    queryColumns[index] = sortedColumns;
-                    setQueryColumns([...queryColumns]);
+                    const old = queryColumns[index];
+                    if (JSON.stringify(old) !== JSON.stringify(sortedColumns)) {
+                        queryColumns[index] = sortedColumns;
+                        setQueryColumns([...queryColumns]);
+                    }
                     loadedColumns[index] = sortedColumns.map((col) => row[col]);
 
                     // Check filters
@@ -231,8 +226,10 @@ async function loadSingleRowData(
                         noFiltersNegative = false;
                     }
                 } else if (queryColumns[index] === null) {
-                    queryColumns[index] = [];
-                    setQueryColumns([...queryColumns]);
+                    if (!queryColumns[index]) {
+                        queryColumns[index] = [];
+                        setQueryColumns([...queryColumns]);
+                    }
                     loadedColumns[index] = [];
                 } else {
                     loadedColumns[index] = [];
@@ -302,9 +299,7 @@ function TableRow({
             setLoadedValues,
             setRowVisible,
             mounted,
-        ).finally(() => {
-            rowLocks--;
-        });
+        );
 
         return () => {
             mounted[0] = false;
@@ -428,7 +423,7 @@ export default function Table({
             if (cols.length !== queries.length) {
                 return Array(queries.length).fill(null);
             }
-            return null;
+            return cols;
         },
     );
     const [loadedValuesRows, setLoadedValuesRows] = React.useState<[Map<string, LoadedValues>]>(

@@ -8,6 +8,15 @@ export default function sortValue(
 ): number {
     let comparison = 0;
 
+    if (aVal === null) {
+        // Null is less than anything else
+        return ascending ? -1 : 1;
+    }
+    if (bVal === null) {
+        // Null is less than anything else
+        return ascending ? 1 : -1;
+    }
+
     if (dataType === "boolean") {
         const aBool = Boolean(aVal);
         const bBool = Boolean(bVal);
