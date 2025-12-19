@@ -5,12 +5,14 @@ import { defaultQueries } from "./constants";
 type State = {
     currency: string;
     nameFilter: string;
+    currentSorting: [number, string, boolean] | null;
     queries: ColumnQuery[];
 };
 
 const initialState: State = {
     currency: "USD",
     nameFilter: "",
+    currentSorting: null,
     queries:  defaultQueries.map(({ name, ...dq }) => ({
         ...dq,
         columnOrdering: {},
@@ -26,6 +28,8 @@ try {
         const parsedState = JSON.parse(savedState);
         currentState.currency = parsedState.currency || currentState.currency;
         currentState.queries = parsedState.queries || currentState.queries;
+        currentState.currentSorting = parsedState.currentSorting || currentState.currentSorting;
+        currentState.nameFilter = parsedState.nameFilter || currentState.nameFilter;
     }
 } catch {
     // Ignore errors
@@ -77,6 +81,8 @@ let listenerMap: Map<string, (() => void)[]> = new Map();
 export function clearState() {
     currentState.currency = initialState.currency;
     currentState.queries = initialState.queries;
+    currentState.currentSorting = null;
+    currentState.nameFilter = "";
     window?.localStorage?.removeItem("appState");
     const oldListeners = listenerMap;
     clearTimeout(nextTimeout);

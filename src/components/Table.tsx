@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { loadSingleRow } from "../sqlEngine";
 import BooleanFilter from "./filters/BooleanFilter";
 import StringFilter from "./filters/StringFilter";
@@ -23,7 +23,6 @@ export type ColumnDataType =
 export type ColumnQuery = {
     query: string;
     columnExplicitlySetDataTypes: Record<string, ColumnDataType>;
-    columnOrdering: Record<string, boolean>;
     columnFilters: Record<string, any>;
     widths?: Record<string, number>;
 };
@@ -109,6 +108,21 @@ function TableHeader({
     loadedValuesPtr: [Map<string, LoadedValues>];
     firstId: string;
 }) {
+    const [currentSorting, setCurrentSorting] = useStateItem("currentSorting");
+
+    const setSorting = React.useCallback((columnName: string, cb: (value: boolean | null) => boolean | null) => {
+        setCurrentSorting((old) => {
+            if (old?.[0] === queryIdx) {
+                const newSorting = cb(old[2]);
+                if (newSorting === null) {
+                    return null;
+                }
+                return [old[0], old[1], newSorting] as [number, string, boolean];
+            }
+            return [queryIdx, columnName, cb(null)] as [number, string, boolean];
+        });
+    }, [queryColumns, queryIdx]);
+
     if (queryColumns === null) {
         return (
             <th className="pb-1">
@@ -126,7 +140,6 @@ function TableHeader({
         }).filter((v) => v !== undefined);
     }, [loadedValuesPtr]);
 
-    // TODO: in the future add deletion/etc
     return queryColumns.map((col, idx) => (
         <Column
             columnType="th" initialWidth={query.widths?.[col] || DEFAULT_COLUMN_WIDTH}
@@ -164,9 +177,9 @@ function TableHeader({
                     </div>
                 </div>
                 <SortingButtons
+                    ascending={currentSorting?.[0] === queryIdx ? currentSorting[2] : null}
+                    setSorting={setSorting}
                     columnName={col}
-                    query={query}
-                    updateQuery={updateQuery}
                 />
                 {
                     idx === queryColumns.length - 1 && (
@@ -342,46 +355,43 @@ function sortIdsAndNames(
     queries: ColumnQuery[],
     queryColumns: (string[] | null)[],
     loadedValuesMap: Map<string, LoadedValues>,
+    currentSorting: [number, string, boolean] | null,
 ) {
+    // Get the query we are sorting by
+    const queryIdx = currentSorting?.[0];
+    if (queryIdx === undefined) {
+        // Just return as is - no sorting
+        return idsAndNames;
+    }
+
+    // Get the query column index of the column we are sorting by (we can use ! because we know it is defined due to the if above)
+    const queryColumnIdx = queryColumns[queryIdx]?.indexOf(currentSorting![1]);
+    if (queryColumnIdx === undefined) {
+        // Just return as is - not loaded yet
+        return idsAndNames;
+    }
+
+    // Get if its ascending or descending
+    const ascending = currentSorting![2];
+
     return idsAndNames.slice().sort((a, b) => {
         const aValues = loadedValuesMap.get(a.id);
         const bValues = loadedValuesMap.get(b.id);
-
-        for (let i = 0; i < queries.length; i++) {
-            const queryOrdering = queries[i].columnOrdering;
-
-            for (const [colName, ascending] of Object.entries(queryOrdering)) {
-                const queryIdx = queryColumns[i]?.indexOf(colName);
-                if (queryIdx === undefined || queryIdx === -1) {
-                    continue;
-                }
-
-                const aQuery = aValues?.[i];
-                const bQuery = bValues?.[i];
-                if (!Array.isArray(aQuery)) {
-                    // Rank bQuery higher if it is valid, otherwise equal
-                    if (Array.isArray(bQuery)) {
-                        return ascending ? 1 : -1;
-                    }
-                    continue;
-                }
-
-                if (!Array.isArray(bQuery)) {
-                    // Rank aQuery higher
-                    return ascending ? -1 : 1;
-                }
-
-                const aVal = aQuery[queryIdx];
-                const bVal = bQuery[queryIdx];
-
-                const ranking = sortValue(aVal, bVal, ascending, queries[i].columnExplicitlySetDataTypes[colName]);
-                if (ranking !== 0) {
-                    return ranking;
-                }
-            }
+        const aQueryValues = aValues?.[queryIdx];
+        const bQueryValues = bValues?.[queryIdx];
+        if (!Array.isArray(aQueryValues)) {
+            // Not loaded yet - put to bottom
+            return ascending ? 1 : -1;
+        }
+        if (!Array.isArray(bQueryValues)) {
+            // Not loaded yet - put to bottom
+            return ascending ? -1 : 1;
         }
 
-        return 0;
+        // Get the values to sort by
+        const aVal = aQueryValues[queryColumnIdx];
+        const bVal = bQueryValues[queryColumnIdx];
+        return sortValue(aVal, bVal, ascending, queries[queryIdx].columnExplicitlySetDataTypes[currentSorting![1]]);
     });
 }
 
@@ -412,19 +422,20 @@ export default function Table({
 }) {
     const [queries, setQueries] = useStateItem("queries");
     const [nameFilter, setNameFilter] = useStateItem("nameFilter");
-    const [queryColumns, setQueryColumns] = useState<(string[] | null)[]>(
+    const [queryColumns, setQueryColumns] = React.useState<(string[] | null)[]>(
         Array(queries.length).fill(null),
     );
     const [loadedValuesRows, setLoadedValuesRows] = React.useState<[Map<string, LoadedValues>]>(
         () => [new Map(idsAndNames.map(({ id }) => [id, null]))]
     );
+    const [currentSorting, setCurrentSorting] = useStateItem("currentSorting");
     const sortedIdsAndNames = React.useMemo(() => {
-        const v = sortIdsAndNames(idsAndNames, queries, queryColumns, loadedValuesRows[0]);
+        const v = sortIdsAndNames(idsAndNames, queries, queryColumns, loadedValuesRows[0], currentSorting);
         if (nameFilter === "") {
             return v;
         }
         return v.filter(({ name }) => name.toLowerCase().includes(nameFilter.toLowerCase()));
-    }, [idsAndNames, nameFilter, queries, queryColumns, loadedValuesRows]);
+    }, [idsAndNames, nameFilter, queries, queryColumns, loadedValuesRows, currentSorting]);
 
     return (
         <div className="flex-1 overflow-x-auto h-full">
@@ -452,6 +463,12 @@ export default function Table({
                                             newQueries[i] = q;
                                             setQueries(newQueries);
                                             if (rerunQuery) {
+                                                setCurrentSorting((old) => {
+                                                    if (old?.[0] === i) {
+                                                        return null;
+                                                    }
+                                                    return [i, q.query, true];
+                                                });
                                                 setQueryColumns((x) => {
                                                     const newQueryColumns = [...x];
                                                     newQueryColumns[i] = null;
