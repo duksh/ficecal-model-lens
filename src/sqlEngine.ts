@@ -1,4 +1,14 @@
+import type { Init, Payload, PayloadResult } from "./sql/worker";
+import { createWorkerPool } from "./components/utils/WorkerManager";
 import type { DataFormat } from "./dataFormat";
+
+/** Gets the name/ID for a model. */
+export function getModelIdsAndNames(data: DataFormat): {id: string; name: string }[] {
+    return Object.entries(data.models).map(([modelId, modelData]) => ({
+        id: modelId,
+        name: modelData.cleanName,
+    })).sort((a, b) => a.name.localeCompare(b.name));
+}
 
 let loadedDataPromise: Promise<Uint8Array<ArrayBuffer>> | null = null;
 
@@ -18,149 +28,59 @@ async function loadDataDb(): Promise<Uint8Array<ArrayBuffer>> {
     return loadedDataPromise;
 }
 
-/** Gets the name/ID for a model. */
-export function getModelIdsAndNames(data: DataFormat): {id: string; name: string }[] {
-    return Object.entries(data.models).map(([modelId, modelData]) => ({
-        id: modelId,
-        name: modelData.cleanName,
-    })).sort((a, b) => a.name.localeCompare(b.name));
-}
-
-const queryCache = new Map<string, Map<string, {
-    [column: string]: any;
-} | null>>();
-const workersPool: Worker[] = [];
-const waitingForWorker: Array<(w: Worker) => void> = [];
-
-function pushWorker(worker: Worker) {
-    const hn = waitingForWorker.shift();
-    if (hn) {
-        hn(worker);
-    } else {
-        workersPool.push(worker);
+function asyncIfWindow<T>(fn: () => Promise<T>): Promise<T> {
+    if (typeof window !== "undefined") {
+        return fn();
     }
+    return Promise.resolve(null as T);
 }
 
-async function loadWorker(): Promise<Worker> {
-    const dataDb = await loadDataDb();
-    const worker = new Worker(new URL("./sql/worker.ts", import.meta.url), { type: "module" });
-    return new Promise((resolve, reject) => {
-        worker.onmessage = () => {
-            worker.onmessage = null;
-            worker.onerror = null;
-            resolve(worker);
-        };
+const poolPromise = asyncIfWindow(async () => createWorkerPool<Init, Payload, PayloadResult>(
+    () => new Worker(new URL("./sql/worker.ts", import.meta.url), { type: "module" }),
+    await loadDataDb(),
+));
 
-        worker.onerror = (error) => {
-            worker.onmessage = null;
-            worker.onerror = null;
-            reject(error);
-        };
-
-        worker.postMessage(dataDb);
-    });
-}
-
-async function initPool() {
-    const numWorkers = navigator.hardwareConcurrency || 4;
-    for (let i = 0; i < numWorkers; i++) {
-        loadWorker().then((worker) => pushWorker(worker));
-    }
-}
-
-if (typeof window !== "undefined") {
-    initPool();
-}
-
-async function waitForFreeWorker() {
-    const worker = workersPool.pop();
-    if (worker) {
-        return worker;
-    }
-    return new Promise<Worker>((resolve) => {
-        waitingForWorker.push(resolve);
-    });
-}
+const queryCache = new Map<string, Map<string, { [column: string]: any }>>();
 
 /** Loads a single row. */
 export async function loadSingleRow(query: string, modelId: string): Promise<{ [column: string]: any } | null> {
     let modelCache = queryCache.get(query);
-    let modelCacheRes = modelCache?.get(modelId);
+    let modelCacheRes = modelCache?.get(modelId) as { [column: string]: any } | undefined | null;
     if (modelCacheRes) {
         return modelCacheRes;
     }
 
-    const worker = await waitForFreeWorker();
-    return new Promise((resolve, reject) => {
-        const timeout = setTimeout(() => {
-            reject(new Error("SQL query timed out"));
-            worker.terminate();
-            loadWorker().then((newWorker) => pushWorker(newWorker));
-        }, 1000);
+    const pool = await poolPromise;
+    const [resId, res] = await pool([0, query, modelId]);
+    if (resId === 0) {
+        throw new Error(res);
+    }
+    if (resId !== 1) {
+        throw new Error(`Unexpected response ID for single row query: ${resId}`);
+    }
 
-        worker.onmessage = (event) => {
-            worker.onmessage = null;
-            worker.onerror = null;
-            clearTimeout(timeout);
-            const result = event.data as [{ [column: string]: any } | null] | [false, string];
-            if (!modelCache) {
-                modelCache = new Map<string, { [column: string]: any }>();
-                queryCache.set(query, modelCache);
-            }
-            if (result[0] === false) {
-                reject(new Error(result[1]));
-            } else {
-                modelCache.set(modelId, result[0]);
-                resolve(result[0]);
-            }
-            pushWorker(worker);
-        };
+    if (res !== null) {
+        if (!modelCache) {
+            modelCache = new Map<string, { [column: string]: any }>();
+            queryCache.set(query, modelCache);
+        }
+        modelCache.set(modelId, res);
+    }
 
-        worker.onerror = (error) => {
-            worker.onmessage = null;
-            worker.onerror = null;
-            clearTimeout(timeout);
-            reject(error);
-            worker.terminate();
-            loadWorker().then((newWorker) => pushWorker(newWorker));
-        };
-
-        worker.postMessage([0, query, modelId]);
-    });
+    return res;
 }
 
 /** Loads multiple rows. */
 export async function loadMultipleRows(query: string, args?: any[]): Promise<{ [column: string]: any }[]> {
-    const worker = await waitForFreeWorker();
-    return new Promise((resolve, reject) => {
-        const timeout = setTimeout(() => {
-            reject(new Error("SQL query timed out"));
-            worker.terminate();
-            loadWorker().then((newWorker) => pushWorker(newWorker));
-        }, 1000);
+    const pool = await poolPromise;
 
-        worker.onmessage = (event) => {
-            worker.onmessage = null;
-            worker.onerror = null;
-            clearTimeout(timeout);
-            const result = event.data as [{ [column: string]: any }[]] | [false, string];
-            if (result[0] === false) {
-                reject(new Error(result[1]));
-            } else {
-                resolve(result[0]);
-            }
-            pushWorker(worker);
-        };
+    const [resId, res] = await pool([1, query, args ?? []]);
+    if (resId === 0) {
+        throw new Error(res);
+    }
+    if (resId !== 2) {
+        throw new Error(`Unexpected response ID for multiple rows query: ${resId}`);
+    }
 
-        worker.onerror = (error) => {
-            worker.onmessage = null;
-            worker.onerror = null;
-            clearTimeout(timeout);
-            reject(error);
-            worker.terminate();
-            loadWorker().then((newWorker) => pushWorker(newWorker));
-        };
-
-        worker.postMessage([1, query, args]);
-    });
+    return res;
 }

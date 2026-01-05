@@ -1,58 +1,53 @@
-import sqlWasm from "sql.js/dist/sql-wasm.wasm?url";
+import { workerMessageHandler } from "../components/utils/WorkerManager";
 import initSqlJs, { type Database, type Statement } from "sql.js";
+import sqlWasm from "sql.js/dist/sql-wasm.wasm?url";
 
-let sqlite3Db: Database | null = null;
+export type Init = Uint8Array;
+export type Payload = [0, string, string] | [1, string, any[]];
+export type PayloadResult = [0, string] | [1, { [column: string]: any } | null] | [2, { [column: string]: any }[]];
 
 const compilationCache = new Map<string, Statement>();
 
-self.onmessage = async (event) => {
-    if (!sqlite3Db) {
+self.onmessage = workerMessageHandler(
+    async (payload: Uint8Array) => {
         const SQL = await initSqlJs({
             locateFile: () => sqlWasm,
         });
-        sqlite3Db = new SQL.Database(event.data);
-        self.postMessage(null);
-        return;
-    }
+        return new SQL.Database(payload);
+    },
+    async (db: Database, payload: Payload): Promise<PayloadResult> => {
+        let query = compilationCache.get(payload[1]);
+        if (!query) {
+            try {
+                query = db.prepare(payload[1]);
+            } catch (e) {
+                return [0, (e as Error).message];
+            }
+            compilationCache.set(payload[1], query);
+        }
+        compilationCache.delete(payload[1]);
 
-    const [id, query, param] = event.data;
-    if (id === 0) {
-        let prep = compilationCache.get(query);
         try {
-            if (!prep) {
-                prep = sqlite3Db.prepare(query);
-                compilationCache.set(query, prep);
+            if (payload[0] === 0) {
+                query.bind([payload[2]]);
+                while (query.step()) {
+                    return [1, query.getAsObject()];
+                }
+                return [1, null];
             }
-            prep.bind([param]);
-            while (prep.step()) {
-                const row = prep.getAsObject();
-                self.postMessage([row]);
-                prep.reset();
-                return;
+    
+            query.bind(payload[2]);
+            const res = [];
+            while (query.step()) {
+                res.push(query.getAsObject());
+                query.reset();
             }
+            return [2, res];
         } catch (e) {
-            self.postMessage([false, (e as Error).message]);
-            return;
+            return [0, (e as Error).message];
+        } finally {
+            query.reset();
+            compilationCache.set(payload[1], query);
         }
-        prep.reset();
-        self.postMessage([null]);
-        return;
     }
-
-    try {
-        let prep = compilationCache.get(query);
-        if (!prep) {
-            prep = sqlite3Db.prepare(query);
-            compilationCache.set(query, prep);
-        }
-        if (param) prep.bind(param);
-        const res = [];
-        while (prep.step()) {
-            res.push(prep.getAsObject());
-        }
-        prep.reset();
-        self.postMessage([res]);
-    } catch (e) {
-        self.postMessage([false, (e as Error).message]);
-    }
-};
+);
