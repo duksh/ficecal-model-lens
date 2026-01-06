@@ -7,6 +7,7 @@ import scrapeAnthropicData from "./scrapers/anthropic";
 import scrapeIbmData from "./scrapers/ibm";
 import scrapeOpenaiData from "./scrapers/openai";
 import scrapeDeepseekData from "./scrapers/deepseek";
+import scrapeForexData from "./scrapers/forex";
 import { writeFileSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
@@ -26,6 +27,7 @@ async function main() {
         scrapeIbmData(fmt),
         scrapeOpenaiData(fmt),
         scrapeDeepseekData(fmt),
+        scrapeForexData(),
     ]);
 
     // Output the data as JSON
