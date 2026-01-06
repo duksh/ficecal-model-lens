@@ -14,6 +14,8 @@ import SQLEditorButton from "./SQLEditorButton";
 import type { VendorInfo } from "../dataFormat";
 import { useStateItem } from "../state";
 import Link from "./Link";
+import CurrencyPicker from "./CurrencyPicker";
+import ReactDOM from "react-dom";
 
 export type ColumnDataType =
     "boolean" |
@@ -444,8 +446,11 @@ export default function Table({
         return v.filter(({ name }) => name.toLowerCase().includes(nameFilter.toLowerCase()));
     }, [idsAndNames, nameFilter, queries, queryColumns, loadedValuesRows, currentSorting]);
 
+    const portalRoot = ReactDOM.createPortal(<CurrencyPicker />, document.getElementById("portal-root")!);
+
     return (
         <StrictIfDev>
+            {portalRoot}
             <div className="flex-1 overflow-x-auto h-full">
                 <div className="flex items-start min-w-max">
                     <table className="h-full">

@@ -2,6 +2,7 @@ import type { ColumnQuery } from "./Table";
 import LoadingEffect from "./LoadingEffect";
 import Column from "./Column";
 import { useStateItem } from "../state";
+import forexData from "../../public/forex.json";
 
 export const DEFAULT_COLUMN_WIDTH = 150;
 
@@ -20,10 +21,11 @@ function renderColumn(
             return cellVal ? "Yes" : "No";
         }
         if (dataType === "currency") {
+            const rate = forexData[currency as keyof typeof forexData]?.rate ?? forexData.USD.rate;
             return new Intl.NumberFormat("en-US", {
                 style: "currency",
                 currency,
-            }).format(Number(cellVal));
+            }).format(Number(cellVal) * rate);
         }
         if (dataType === "country") {
             // TODO
