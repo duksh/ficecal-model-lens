@@ -6,20 +6,38 @@ type TokenizerPreviewProps = {
     modelName: string;
 };
 
+// Color palette for token visualization - alternating pastel colors
+const TOKEN_COLORS = [
+    "bg-blue-200",
+    "bg-green-200",
+    "bg-yellow-200",
+    "bg-pink-200",
+    "bg-purple-200",
+    "bg-orange-200",
+    "bg-teal-200",
+    "bg-red-200",
+];
+
+type TokenInfo = {
+    text: string;
+    id: number;
+};
+
 export default function TokenizerPreview({
     tokeniser,
     modelName,
 }: TokenizerPreviewProps) {
     const [text, setText] = React.useState("");
-    const [tokenCount, setTokenCount] = React.useState<number | null>(null);
+    const [tokens, setTokens] = React.useState<TokenInfo[]>([]);
     const [loading, setLoading] = React.useState(false);
     const [error, setError] = React.useState<string | null>(null);
+    const [showVisualization, setShowVisualization] = React.useState(true);
 
     const tokenizerRef = React.useRef<any>(null);
 
-    const countTokens = React.useCallback(async () => {
+    const tokenize = React.useCallback(async () => {
         if (!text.trim()) {
-            setTokenCount(0);
+            setTokens([]);
             return;
         }
 
@@ -29,26 +47,26 @@ export default function TokenizerPreview({
         try {
             switch (tokeniser.type) {
                 case "tiktoken":
-                    await countTiktokenTokens(
+                    await tokenizeTiktoken(
                         tokeniser.bpePath,
                         text,
                         tokenizerRef,
-                        setTokenCount
+                        setTokens
                     );
                     break;
                 case "transformers":
-                    await countTransformersTokens(
+                    await tokenizeTransformers(
                         tokeniser.pretrainedPath,
                         text,
                         tokenizerRef,
-                        setTokenCount
+                        setTokens
                     );
                     break;
                 case "site-api":
-                    await countSiteApiTokens(
+                    await tokenizeSiteApi(
                         tokeniser.apiUrl,
                         text,
-                        setTokenCount
+                        setTokens
                     );
                     break;
             }
@@ -60,9 +78,9 @@ export default function TokenizerPreview({
     }, [text, tokeniser]);
 
     React.useEffect(() => {
-        const timeout = setTimeout(countTokens, 300);
+        const timeout = setTimeout(tokenize, 300);
         return () => clearTimeout(timeout);
-    }, [text, countTokens]);
+    }, [text, tokenize]);
 
     return (
         <div className="mb-8 p-4 border rounded-lg">
@@ -85,19 +103,59 @@ export default function TokenizerPreview({
                     <span className="text-red-500 text-sm">{error}</span>
                 ) : (
                     <span className="font-medium">
-                        Token count: {tokenCount ?? 0}
+                        Token count: {tokens.length}
                     </span>
                 )}
+                <label className="flex items-center gap-2 text-sm text-gray-600 ml-auto">
+                    <input
+                        type="checkbox"
+                        checked={showVisualization}
+                        onChange={(e) => setShowVisualization(e.target.checked)}
+                        className="rounded"
+                    />
+                    Show token colors
+                </label>
             </div>
+
+            {/* Token visualization */}
+            {showVisualization && tokens.length > 0 && (
+                <div className="mt-4 p-3 bg-gray-50 rounded-md border">
+                    <div className="text-xs text-gray-500 mb-2">
+                        Token visualization (each color = one token):
+                    </div>
+                    <div className="font-mono text-sm leading-relaxed whitespace-pre-wrap break-all">
+                        {tokens.map((token, idx) => (
+                            <span
+                                key={idx}
+                                className={`${TOKEN_COLORS[idx % TOKEN_COLORS.length]} rounded px-0.5 border border-gray-300/50`}
+                                title={`Token ${idx + 1}: "${token.text}" (ID: ${token.id})`}
+                            >
+                                {formatTokenText(token.text)}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
 
-async function countTiktokenTokens(
+/**
+ * Format token text for display, making whitespace visible
+ */
+function formatTokenText(text: string): string {
+    // Replace newlines with visible symbol but keep them as newlines for layout
+    return text
+        .replace(/\n/g, "↵\n")
+        .replace(/\t/g, "→")
+        .replace(/ /g, "·");
+}
+
+async function tokenizeTiktoken(
     bpePath: string,
     text: string,
     tokenizerRef: React.MutableRefObject<any>,
-    setTokenCount: (count: number) => void
+    setTokens: (tokens: TokenInfo[]) => void
 ) {
     if (!tokenizerRef.current) {
         const { Tiktoken } = await import("js-tiktoken");
@@ -116,15 +174,25 @@ async function countTiktokenTokens(
 
         tokenizerRef.current = new Tiktoken(ranks);
     }
-    const tokens = tokenizerRef.current.encode(text);
-    setTokenCount(tokens.length);
+
+    const tokenizer = tokenizerRef.current;
+    const tokenIds = tokenizer.encode(text);
+
+    // Decode each token individually to get the text
+    const tokens: TokenInfo[] = [];
+    for (const id of tokenIds) {
+        const decoded = tokenizer.decode([id]);
+        tokens.push({ text: decoded, id });
+    }
+
+    setTokens(tokens);
 }
 
-async function countTransformersTokens(
+async function tokenizeTransformers(
     pretrainedPath: string,
     text: string,
     tokenizerRef: React.MutableRefObject<any>,
-    setTokenCount: (count: number) => void
+    setTokens: (tokens: TokenInfo[]) => void
 ) {
     if (!tokenizerRef.current) {
         const { AutoTokenizer } = await import("@huggingface/transformers");
@@ -132,14 +200,24 @@ async function countTransformersTokens(
             pretrainedPath
         );
     }
-    const encoded = await tokenizerRef.current.encode(text);
-    setTokenCount(encoded.length);
+
+    const tokenizer = tokenizerRef.current;
+    const encoded = await tokenizer.encode(text);
+
+    // Decode each token individually
+    const tokens: TokenInfo[] = [];
+    for (const id of encoded) {
+        const decoded = await tokenizer.decode([id], { skip_special_tokens: false });
+        tokens.push({ text: decoded, id });
+    }
+
+    setTokens(tokens);
 }
 
-async function countSiteApiTokens(
+async function tokenizeSiteApi(
     apiUrl: string,
     text: string,
-    setTokenCount: (count: number) => void
+    setTokens: (tokens: TokenInfo[]) => void
 ) {
     const response = await fetch(apiUrl, {
         method: "POST",
@@ -147,5 +225,19 @@ async function countSiteApiTokens(
         body: JSON.stringify({ text }),
     });
     const data = await response.json();
-    setTokenCount(data.tokenCount);
+
+    // If the API returns token details, use them; otherwise fall back to count
+    if (data.tokens && Array.isArray(data.tokens)) {
+        setTokens(data.tokens.map((t: any, idx: number) => ({
+            text: t.text || t,
+            id: t.id ?? idx,
+        })));
+    } else {
+        // API only returns count, can't visualize individual tokens
+        const placeholderTokens: TokenInfo[] = [];
+        for (let i = 0; i < (data.tokenCount || 0); i++) {
+            placeholderTokens.push({ text: "?", id: i });
+        }
+        setTokens(placeholderTokens);
+    }
 }
