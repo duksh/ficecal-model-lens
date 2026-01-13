@@ -1,17 +1,17 @@
 import React from "react";
 import { defaultQueries, defaultImageQueries } from "../constants";
 import type { ColumnQuery } from "./Table";
-import { useStateItem } from "../state";
 
 export default function DefaultSelector({
     queries,
     setQueries,
+    modelType,
 }: {
     queries: ColumnQuery[];
     setQueries: (cb: (prev: ColumnQuery[]) => ColumnQuery[]) => void;
+    modelType: "llm" | "image";
 }) {
-    const [modelView] = useStateItem("modelView");
-    const availableDefaults = modelView === "llm" ? defaultQueries : defaultImageQueries;
+    const availableDefaults = modelType === "llm" ? defaultQueries : defaultImageQueries;
 
     const checkedQueries = React.useMemo(() => {
         return availableDefaults.filter((dq) =>

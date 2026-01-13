@@ -554,6 +554,7 @@ export default function Table({
                             loadedValuesRows={loadedValuesRows[0]}
                             firstId={idsAndNames[0]?.id || ""}
                             vendors={vendors}
+                            modelType={modelType}
                         />
                     </div>
                 </div>

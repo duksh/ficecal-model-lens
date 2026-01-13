@@ -1,7 +1,6 @@
 import React from "react";
 import type { ColumnDataType, ColumnQuery } from "./Table";
 import type { VendorInfo } from "../dataFormat";
-import { useStateItem } from "../state";
 
 type VendorQueryBuilder = {
     name: string;
@@ -376,12 +375,13 @@ export default function VendorSelector({
     setQueries,
     exit,
     vendors,
+    modelType,
 }: {
     setQueries: (cb: (prev: ColumnQuery[]) => ColumnQuery[]) => void;
     exit: () => void;
     vendors: Record<string, VendorInfo>;
+    modelType: "llm" | "image";
 }) {
-    const [modelView] = useStateItem("modelView");
     const [selectedVendorSlug, setSelectedVendorSlug] = React.useState<string>("");
 
     const handleVendorChange = React.useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -410,7 +410,7 @@ export default function VendorSelector({
                 vendorSlug={selectedVendorSlug}
                 setQueries={setQueries}
                 exit={exit}
-                modelView={modelView}
+                modelView={modelType}
             />
         </div>
     )

@@ -15,6 +15,7 @@ function SelectionMode({
     loadedValuesRows,
     vendors,
     externalClickHandler,
+    modelType,
 }: {
     queries: ColumnQuery[];
     setQueries: (cb: (prev: ColumnQuery[]) => ColumnQuery[]) => void;
@@ -23,6 +24,7 @@ function SelectionMode({
     loadedValuesRows: Map<string, LoadedValues>;
     vendors: Record<string, VendorInfo>;
     externalClickHandler: React.RefObject<(() => void) | null>;
+    modelType: "llm" | "image";
 }) {
     const [mode, setMode] = React.useState<null | "default" | "vendor">(null);
     const modalRef = React.useRef<HTMLDialogElement>(null);
@@ -69,6 +71,7 @@ function SelectionMode({
                     <DefaultSelector
                         queries={queries}
                         setQueries={setQueriesAndPurgeLoadedValues}
+                        modelType={modelType}
                     />
                 </div>
             );
@@ -80,6 +83,7 @@ function SelectionMode({
                         setQueries={setQueriesAndPurgeLoadedValues}
                         exit={exit}
                         vendors={vendors}
+                        modelType={modelType}
                     />
                 </div>
             );
@@ -134,18 +138,19 @@ export default function AddButton({
     firstId,
     loadedValuesRows,
     vendors,
+    modelType,
 }: {
     firstId: string;
     loadedValuesRows: Map<string, LoadedValues>;
     vendors: Record<string, VendorInfo>;
+    modelType: "llm" | "image";
 }) {
-    const [modelView] = useStateItem("modelView");
     const [llmQueries, setLlmQueries] = useStateItem("queries");
     const [imageQueries, setImageQueries] = useStateItem("imageQueries");
 
-    // Select appropriate queries based on view
-    const queries = modelView === "llm" ? llmQueries : imageQueries;
-    const setQueries = modelView === "llm" ? setLlmQueries : setImageQueries;
+    // Select appropriate queries based on modelType prop
+    const queries = modelType === "llm" ? llmQueries : imageQueries;
+    const setQueries = modelType === "llm" ? setLlmQueries : setImageQueries;
     const [selectionMode, setSelectionMode] = React.useState(false);
     const externalClickHandler = React.useRef<() => void>(null);
 
@@ -182,6 +187,7 @@ export default function AddButton({
                     firstId={firstId}
                     vendors={vendors}
                     externalClickHandler={externalClickHandler}
+                    modelType={modelType}
                 />
             </>
         );
