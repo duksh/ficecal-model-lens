@@ -25,6 +25,7 @@ jobs:
         run: npm ci
 
       - run: npm run init
+      - run: npm run astro sync
 
       - name: Check formatting with Prettier
         run: npx prettier --check "src/**/*.{ts,tsx}" "scraper/**/*.ts"
