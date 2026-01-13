@@ -1,9 +1,15 @@
 import type { Model } from "../../dataFormat";
 
-function MetadataItem({ label, value }: { label: string; value: string }) {
+function MetadataItem({ label, value, href }: { label: string; value: string; href?: string }) {
     return (
         <div className="flex flex-col">
-            <span className="text-sm text-gray-500">{label}</span>
+            {href ? (
+                <a href={href} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
+                    {label}
+                </a>
+            ) : (
+                <span className="text-sm text-gray-500">{label}</span>
+            )}
             <span className="font-medium">{value}</span>
         </div>
     );
@@ -24,18 +30,21 @@ export default function ModelMetadata({ model }: { model: Model }) {
                 <MetadataItem
                     label="Humanity's Last Exam"
                     value={`${model.humanitysLastExamPercentage.toFixed(1)}%`}
+                    href="https://lastexam.ai/"
                 />
             )}
             {model.sweBenchResolvedPercentage !== undefined && (
                 <MetadataItem
                     label="SWE-Bench Resolved"
                     value={`${model.sweBenchResolvedPercentage.toFixed(1)}%`}
+                    href="https://www.swebench.com/"
                 />
             )}
             {model.skatebenchScore !== undefined && (
                 <MetadataItem
                     label="SkateBench Score"
-                    value={model.skatebenchScore.toFixed(2)}
+                    value={`${model.skatebenchScore.toFixed(2)}%`}
+                    href="https://skatebench.t3.gg/"
                 />
             )}
         </div>

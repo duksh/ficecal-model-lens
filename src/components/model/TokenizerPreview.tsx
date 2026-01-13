@@ -151,6 +151,23 @@ function formatTokenText(text: string): string {
         .replace(/ /g, "·");
 }
 
+// Valid tiktoken encodings
+const TIKTOKEN_ENCODINGS = ["cl100k_base", "o200k_base"] as const;
+type TiktokenEncodingName = typeof TIKTOKEN_ENCODINGS[number];
+
+function getEncodingFromPath(bpePath: string): TiktokenEncodingName {
+    // Extract encoding name from path like "/tiktoken/cl100k_base.tiktoken"
+    const match = bpePath.match(/\/tiktoken\/([^/]+)\.tiktoken$/);
+    if (!match) {
+        throw new Error(`Invalid tiktoken bpePath format: ${bpePath}`);
+    }
+    const encoding = match[1];
+    if (!TIKTOKEN_ENCODINGS.includes(encoding as TiktokenEncodingName)) {
+        throw new Error(`Unknown tiktoken encoding: ${encoding}`);
+    }
+    return encoding as TiktokenEncodingName;
+}
+
 async function tokenizeTiktoken(
     bpePath: string,
     text: string,
@@ -158,21 +175,9 @@ async function tokenizeTiktoken(
     setTokens: (tokens: TokenInfo[]) => void
 ) {
     if (!tokenizerRef.current) {
-        const { Tiktoken } = await import("js-tiktoken");
-        const response = await fetch(bpePath);
-        const bpeData = await response.text();
-
-        const ranks: Record<string, number> = {};
-        for (const line of bpeData.split("\n")) {
-            if (!line.trim()) continue;
-            const spaceIdx = line.lastIndexOf(" ");
-            if (spaceIdx === -1) continue;
-            const token = line.slice(0, spaceIdx);
-            const rank = parseInt(line.slice(spaceIdx + 1), 10);
-            ranks[atob(token)] = rank;
-        }
-
-        tokenizerRef.current = new Tiktoken(ranks);
+        const { getEncoding } = await import("js-tiktoken");
+        const encoding = getEncodingFromPath(bpePath);
+        tokenizerRef.current = getEncoding(encoding);
     }
 
     const tokenizer = tokenizerRef.current;

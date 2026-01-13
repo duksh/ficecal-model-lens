@@ -35,6 +35,7 @@ async function main() {
     const dataJsonPath = join(selfPath, "..", "public", "data.json");
     writeFileSync(dataJsonPath, JSON.stringify(fmt, null, 4), "utf-8");
     console.log(`Wrote data to ${dataJsonPath}`);
+    // Note: tiktoken BPE files are fetched at build time via src/pages/tiktoken/[encoding].tiktoken.ts
 }
 
 main().catch((error) => {

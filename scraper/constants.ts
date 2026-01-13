@@ -149,9 +149,9 @@ export function isSelfHostableModel(modelId: string, provider: string): boolean 
     throw new Error(`Unknown self-hostable status for model ID: ${modelId} with provider: ${provider}. Please update isSelfHostableModel in scraper/constants.ts.`);
 }
 
-// Tiktoken BPE file URLs (OpenAI's public CDN)
-const TIKTOKEN_CL100K = "https://openaipublic.blob.core.windows.net/encodings/cl100k_base.tiktoken";
-const TIKTOKEN_O200K = "https://openaipublic.blob.core.windows.net/encodings/o200k_base.tiktoken";
+// Tiktoken BPE file URLs (proxied through our server to avoid CORS issues)
+const TIKTOKEN_CL100K = "/tiktoken/cl100k_base.tiktoken";
+const TIKTOKEN_O200K = "/tiktoken/o200k_base.tiktoken";
 
 // Map of model prefixes to their HuggingFace tokenizer paths
 const TRANSFORMERS_TOKENISER_PATHS: Record<string, string> = {
