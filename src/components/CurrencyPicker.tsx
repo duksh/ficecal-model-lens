@@ -34,7 +34,7 @@ const otherCurrencies = allCurrencies
     .filter(([code]) => !PRIORITY_CURRENCIES.includes(code.toUpperCase()))
     .sort(([codeA], [codeB]) => codeA.toUpperCase().localeCompare(codeB.toUpperCase()));
 
-export default function CurrencyPicker() {
+export default function CurrencyPicker({ className }: { className?: string }) {
     const [currency, setCurrency] = useStateItem("currency");
     const [open, setOpen] = React.useState(false);
 
@@ -49,7 +49,10 @@ export default function CurrencyPicker() {
                 <button
                     role="combobox"
                     aria-expanded={open}
-                    className="flex h-9 w-[200px] items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs hover:font-semibold"
+                    className={cn(
+                        "flex h-9 items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs hover:font-semibold",
+                        className ?? "w-[200px]"
+                    )}
                 >
                     <span className="truncate">{displayValue}</span>
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

@@ -1,0 +1,197 @@
+import React from "react";
+import { DollarSign } from "lucide-react";
+import type { Model, VendorInfo } from "../../dataFormat";
+import { useStateItem } from "../../state";
+import CurrencyPicker from "../CurrencyPicker";
+import forexData from "../../forex.json";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "../ui/select";
+
+type PricingCalculatorProps = {
+    modelId: string;
+    model: Model;
+    vendors: Record<string, VendorInfo>;
+};
+
+export default function PricingCalculator({
+    modelId,
+    model,
+    vendors,
+}: PricingCalculatorProps) {
+    const availableVendors = model.vendors.map((v) => ({
+        slug: v.vendorRef,
+        info: vendors[v.vendorRef],
+        vendorModel: v,
+    }));
+
+    const [selectedVendorSlug, setSelectedVendorSlug] = React.useState(
+        availableVendors[0]?.slug ?? ""
+    );
+    const [selectedRegion, setSelectedRegion] = React.useState<string>("");
+    const [inputTokens, setInputTokens] = React.useState<number>(1000);
+    const [outputTokens, setOutputTokens] = React.useState<number>(1000);
+    const [cachedInputTokens, setCachedInputTokens] = React.useState<number>(0);
+    const [currency] = useStateItem("currency");
+
+    const selectedVendorModel = model.vendors.find(
+        (v) => v.vendorRef === selectedVendorSlug
+    );
+    const selectedVendorInfo = vendors[selectedVendorSlug];
+
+    const availableRegions = selectedVendorModel
+        ? Object.keys(selectedVendorModel.regionPricing)
+        : [];
+
+    React.useEffect(() => {
+        if (
+            availableRegions.length > 0 &&
+            !availableRegions.includes(selectedRegion)
+        ) {
+            setSelectedRegion(availableRegions[0]);
+        }
+    }, [selectedVendorSlug, availableRegions, selectedRegion]);
+
+    const pricing = selectedVendorModel?.regionPricing[selectedRegion];
+    const rate =
+        forexData[currency as keyof typeof forexData]?.rate ?? 1;
+
+    let totalCost = 0;
+    let hasCachedPricing = false;
+
+    if (pricing) {
+        const [inputCost, outputCost, cachedInputCost] = pricing;
+        totalCost = (inputTokens * inputCost + outputTokens * outputCost) * rate;
+        if (cachedInputCost !== null) {
+            hasCachedPricing = true;
+            totalCost += cachedInputTokens * cachedInputCost * rate;
+        }
+    }
+
+    const formattedCost = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: currency || "USD",
+        maximumFractionDigits: 6,
+    }).format(totalCost);
+
+    const getRegionName = (regionCode: string): string => {
+        if (!selectedVendorInfo) return regionCode;
+        for (const regions of Object.values(
+            selectedVendorInfo.regionCleanNames
+        )) {
+            if (regions[regionCode]) {
+                return regions[regionCode];
+            }
+        }
+        return regionCode;
+    };
+
+    return (
+        <div className="p-6 border rounded-lg bg-white shadow-sm">
+            <div className="flex items-center gap-4 mb-6">
+                <div className="flex flex-col items-center">
+                    <DollarSign className="w-8 h-8" />
+                    <span className="text-sm font-medium">Pricing</span>
+                </div>
+                <div className="text-3xl font-bold">{formattedCost}</div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label className="block text-sm font-medium mb-1">
+                        Vendor
+                    </label>
+                    <Select
+                        value={selectedVendorSlug}
+                        onValueChange={setSelectedVendorSlug}
+                    >
+                        <SelectTrigger className="w-full">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {availableVendors.map(({ slug, info }) => (
+                                <SelectItem key={slug} value={slug}>
+                                    {info?.cleanName ?? slug}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+                <div>
+                    <label className="block text-sm font-medium mb-1">
+                        Region
+                    </label>
+                    <Select
+                        value={selectedRegion}
+                        onValueChange={setSelectedRegion}
+                    >
+                        <SelectTrigger className="w-full">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {availableRegions.map((code) => (
+                                <SelectItem key={code} value={code}>
+                                    {getRegionName(code)}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+            </div>
+
+            <div className="mb-6">
+                <label className="block text-sm font-medium mb-1">
+                    Currency
+                </label>
+                <CurrencyPicker className="w-full" />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+                <div>
+                    <label className="block text-sm font-medium mb-1">
+                        Input Tokens
+                    </label>
+                    <input
+                        type="number"
+                        value={inputTokens}
+                        onChange={(e) => setInputTokens(Number(e.target.value))}
+                        className="w-full p-2 border rounded-md"
+                        min={0}
+                    />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium mb-1">
+                        Output Tokens
+                    </label>
+                    <input
+                        type="number"
+                        value={outputTokens}
+                        onChange={(e) => setOutputTokens(Number(e.target.value))}
+                        className="w-full p-2 border rounded-md"
+                        min={0}
+                    />
+                </div>
+                {hasCachedPricing && (
+                    <div className="col-span-2">
+                        <label className="block text-sm font-medium mb-1">
+                            Cached Input Tokens
+                        </label>
+                        <input
+                            type="number"
+                            value={cachedInputTokens}
+                            onChange={(e) =>
+                                setCachedInputTokens(Number(e.target.value))
+                            }
+                            className="w-full p-2 border rounded-md"
+                            min={0}
+                        />
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
