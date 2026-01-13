@@ -1,6 +1,6 @@
 import React from "react";
 import { basicSetup } from "codemirror";
-import { EditorView } from "@codemirror/view"
+import { EditorView } from "@codemirror/view";
 import { sql, SQLite } from "@codemirror/lang-sql";
 
 type CodeMirrorProps = {
@@ -30,7 +30,7 @@ export default function CodeMirror(props: CodeMirrorProps) {
                             props.onChange(view.state.doc.toString());
                         }
                     }
-                }
+                },
             });
 
             return () => {
@@ -39,7 +39,5 @@ export default function CodeMirror(props: CodeMirrorProps) {
         }
     }, [editor]);
 
-    return (
-        <div style={{ maxHeight: props.maxHeight }} ref={editor}></div>
-    )
+    return <div style={{ maxHeight: props.maxHeight }} ref={editor}></div>;
 }

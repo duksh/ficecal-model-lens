@@ -4,21 +4,29 @@ import type { VendorInfo } from "../dataFormat";
 
 type VendorQueryBuilder = {
     name: string;
-} & ({
-    region: true;
-    queryBuilder: (vendorSlug: string | null, vendorName: string | null, region: null | string | { eu: true }) => [
-        string,
-        { [key: string]: ColumnDataType },
-    ];
-} | {
-    region: false;
-    queryBuilder: (vendorSlug: string | null, vendorName: string | null) => [
-        string,
-        { [key: string]: ColumnDataType },
-    ];
-});
+} & (
+    | {
+          region: true;
+          queryBuilder: (
+              vendorSlug: string | null,
+              vendorName: string | null,
+              region: null | string | { eu: true }
+          ) => [string, { [key: string]: ColumnDataType }];
+      }
+    | {
+          region: false;
+          queryBuilder: (
+              vendorSlug: string | null,
+              vendorName: string | null
+          ) => [string, { [key: string]: ColumnDataType }];
+      }
+);
 
-function vendorOnlySelectAsWrapper(niceName: string, key: string, explicitDataType?: ColumnDataType) {
+function vendorOnlySelectAsWrapper(
+    niceName: string,
+    key: string,
+    explicitDataType?: ColumnDataType
+) {
     return (vendorSlug: string | null, vendorName: string | null) => {
         let niceNameReplaced: string;
         if (vendorName === null) {
@@ -43,12 +51,12 @@ function vendorOnlySelectAsWrapper(niceName: string, key: string, explicitDataTy
 function vendorAndRegionSelectAsWrapper(
     niceName: string,
     key: string,
-    explicitDataType?: ColumnDataType,
+    explicitDataType?: ColumnDataType
 ) {
     return (
         vendorSlug: string | null,
         vendorName: string | null,
-        region: null | string | { eu: true },
+        region: null | string | { eu: true }
     ) => {
         let formatted: string;
         if (region === null) {
@@ -65,9 +73,7 @@ function vendorAndRegionSelectAsWrapper(
             niceNameReplaced = niceName.replace("?", vendorName + " " + formatted);
         }
 
-        const explicitDataTypes = explicitDataType
-            ? { [niceNameReplaced]: explicitDataType }
-            : {};
+        const explicitDataTypes = explicitDataType ? { [niceNameReplaced]: explicitDataType } : {};
 
         let query: string;
         let vendorIdQueryPart = "";
@@ -92,10 +98,7 @@ function vendorAndRegionSelectAsWrapper(
             throw new Error("Invalid region");
         }
 
-        return [
-            query,
-            explicitDataTypes,
-        ] as [string, { [key: string]: ColumnDataType }];
+        return [query, explicitDataTypes] as [string, { [key: string]: ColumnDataType }];
     };
 }
 
@@ -121,7 +124,7 @@ const vendorQueryBuilders: VendorQueryBuilder[] = [
         queryBuilder: vendorAndRegionSelectAsWrapper(
             "? Cost per 1K Input Tokens",
             "input_token_cost * 1000",
-            "currency",
+            "currency"
         ),
     },
     {
@@ -130,7 +133,7 @@ const vendorQueryBuilders: VendorQueryBuilder[] = [
         queryBuilder: vendorAndRegionSelectAsWrapper(
             "? Cost per 1K Output Tokens",
             "output_token_cost * 1000",
-            "currency",
+            "currency"
         ),
     },
     {
@@ -139,7 +142,7 @@ const vendorQueryBuilders: VendorQueryBuilder[] = [
         queryBuilder: vendorAndRegionSelectAsWrapper(
             "? Cost per 1K Cached Input Tokens",
             "cached_input_token_cost * 1000",
-            "currency",
+            "currency"
         ),
     },
     {
@@ -148,13 +151,17 @@ const vendorQueryBuilders: VendorQueryBuilder[] = [
         queryBuilder: vendorAndRegionSelectAsWrapper(
             "? Cost per 1K Cached Output Tokens",
             "cached_output_token_cost * 1000",
-            "currency",
+            "currency"
         ),
     },
 ];
 
 // Image model vendor query builders
-function imageVendorOnlySelectAsWrapper(niceName: string, key: string, explicitDataType?: ColumnDataType) {
+function imageVendorOnlySelectAsWrapper(
+    niceName: string,
+    key: string,
+    explicitDataType?: ColumnDataType
+) {
     return (vendorSlug: string | null, vendorName: string | null) => {
         let niceNameReplaced: string;
         if (vendorName === null) {
@@ -179,7 +186,7 @@ function imageVendorOnlySelectAsWrapper(niceName: string, key: string, explicitD
 function imageVendorPricingSelectAsWrapper(
     niceName: string,
     resolution: string,
-    explicitDataType?: ColumnDataType,
+    explicitDataType?: ColumnDataType
 ) {
     return (vendorSlug: string | null, vendorName: string | null) => {
         let niceNameReplaced: string;
@@ -189,9 +196,7 @@ function imageVendorPricingSelectAsWrapper(
             niceNameReplaced = niceName.replace("?", vendorName);
         }
 
-        const explicitDataTypes = explicitDataType
-            ? { [niceNameReplaced]: explicitDataType }
-            : {};
+        const explicitDataTypes = explicitDataType ? { [niceNameReplaced]: explicitDataType } : {};
 
         let vendorIdQueryPart = "";
         if (vendorSlug !== null) {
@@ -202,10 +207,7 @@ function imageVendorPricingSelectAsWrapper(
     FROM image_models_vendors_pricing
     WHERE ${vendorIdQueryPart}model_id = ? AND resolution = '${resolution}'`;
 
-        return [
-            query,
-            explicitDataTypes,
-        ] as [string, { [key: string]: ColumnDataType }];
+        return [query, explicitDataTypes] as [string, { [key: string]: ColumnDataType }];
     };
 }
 
@@ -228,17 +230,29 @@ const imageVendorQueryBuilders: VendorQueryBuilder[] = [
     {
         name: "Price per Image (1024x1024)",
         region: false,
-        queryBuilder: imageVendorPricingSelectAsWrapper("? Price (1024x1024)", "1024x1024", "currency"),
+        queryBuilder: imageVendorPricingSelectAsWrapper(
+            "? Price (1024x1024)",
+            "1024x1024",
+            "currency"
+        ),
     },
     {
         name: "Price per Image (1024x1792)",
         region: false,
-        queryBuilder: imageVendorPricingSelectAsWrapper("? Price (1024x1792)", "1024x1792", "currency"),
+        queryBuilder: imageVendorPricingSelectAsWrapper(
+            "? Price (1024x1792)",
+            "1024x1792",
+            "currency"
+        ),
     },
     {
         name: "Price per Image (1792x1024)",
         region: false,
-        queryBuilder: imageVendorPricingSelectAsWrapper("? Price (1792x1024)", "1792x1024", "currency"),
+        queryBuilder: imageVendorPricingSelectAsWrapper(
+            "? Price (1792x1024)",
+            "1792x1024",
+            "currency"
+        ),
     },
 ];
 
@@ -264,13 +278,17 @@ function VendorItems({
     const [disabled, setDisabled] = React.useState(true);
 
     // Use appropriate query builders based on view
-    const activeQueryBuilders = modelView === "llm" ? vendorQueryBuilders : imageVendorQueryBuilders;
+    const activeQueryBuilders =
+        modelView === "llm" ? vendorQueryBuilders : imageVendorQueryBuilders;
 
-    const handleQueryBuilderChange = React.useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-        setQueryBuilderIndex(parseInt(e.target.value, 10));
-        setRegion(null);
-        setDisabled(false);
-    }, []);
+    const handleQueryBuilderChange = React.useCallback(
+        (e: React.ChangeEvent<HTMLSelectElement>) => {
+            setQueryBuilderIndex(parseInt(e.target.value, 10));
+            setRegion(null);
+            setDisabled(false);
+        },
+        []
+    );
 
     const submit = React.useCallback(() => {
         if (queryBuilderIndex === -1) {
@@ -279,7 +297,11 @@ function VendorItems({
         const builder = activeQueryBuilders[queryBuilderIndex];
         let queryAndTypes: [string, { [key: string]: ColumnDataType }];
         if (builder.region) {
-            queryAndTypes = builder.queryBuilder(vendorSlug || null, vendorInfo?.cleanName ?? null, region);
+            queryAndTypes = builder.queryBuilder(
+                vendorSlug || null,
+                vendorInfo?.cleanName ?? null,
+                region
+            );
         } else {
             queryAndTypes = builder.queryBuilder(vendorSlug || null, vendorInfo?.cleanName ?? null);
         }
@@ -320,7 +342,7 @@ function VendorItems({
                 <div className="mb-4">
                     <label className="block mb-2 font-medium">Select Region:</label>
                     <select
-                        value={typeof region === "string" ? region : (region ? "eu" : "")}
+                        value={typeof region === "string" ? region : region ? "eu" : ""}
                         onChange={(e) => {
                             const val = e.target.value;
                             if (val === "eu") {
@@ -335,13 +357,15 @@ function VendorItems({
                         autoComplete="off"
                     >
                         <option value="">All Regions (Average)</option>
-                        {
-                            Object.entries(vendorInfo?.regionCleanNames || {}).map(([category, regions]) => {
-                                const child = Object.entries(regions).map(([regionCode, regionName]) => (
-                                    <option key={regionCode} value={regionCode}>
-                                        {regionName}
-                                    </option>
-                                ));
+                        {Object.entries(vendorInfo?.regionCleanNames || {}).map(
+                            ([category, regions]) => {
+                                const child = Object.entries(regions).map(
+                                    ([regionCode, regionName]) => (
+                                        <option key={regionCode} value={regionCode}>
+                                            {regionName}
+                                        </option>
+                                    )
+                                );
                                 if (category === "") {
                                     return child;
                                 }
@@ -350,13 +374,12 @@ function VendorItems({
                                         {child}
                                     </optgroup>
                                 );
-                            })
-                        }
-                        {!vendorInfo || vendorInfo.euOrUKRegions.length > 0 && (
-                            <option value="eu">
-                                EU / UK Regions (Average)
-                            </option>
+                            }
                         )}
+                        {!vendorInfo ||
+                            (vendorInfo.euOrUKRegions.length > 0 && (
+                                <option value="eu">EU / UK Regions (Average)</option>
+                            ))}
                     </select>
                 </div>
             )}
@@ -396,9 +419,7 @@ export default function VendorSelector({
                 className="w-full p-2 border rounded-md mb-4"
                 autoComplete="off"
             >
-                <option value="">
-                    All Vendors
-                </option>
+                <option value="">All Vendors</option>
                 {Object.entries(vendors).map(([slug, info]) => (
                     <option key={slug} value={slug}>
                         {info.cleanName}
@@ -413,5 +434,5 @@ export default function VendorSelector({
                 modelView={modelType}
             />
         </div>
-    )
+    );
 }

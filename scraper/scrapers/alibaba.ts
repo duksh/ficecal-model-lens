@@ -32,7 +32,7 @@ function shouldIncludeModel(modelId: string): boolean {
     if (lowerModelId.includes("embed")) return false;
     if (lowerModelId.includes("latest")) return false;
 
-    return INCLUDED_MODEL_PATTERNS.some(pattern => lowerModelId.includes(pattern));
+    return INCLUDED_MODEL_PATTERNS.some((pattern) => lowerModelId.includes(pattern));
 }
 
 function getModelName(modelId: string): string {
@@ -49,7 +49,7 @@ function getModelName(modelId: string): string {
 
     return name
         .split("-")
-        .map(part => {
+        .map((part) => {
             if (part === "qwen") return "Qwen";
             if (/^\d/.test(part)) return part;
             return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();

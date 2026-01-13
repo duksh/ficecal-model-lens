@@ -23,10 +23,7 @@ type TokenInfo = {
     id: number;
 };
 
-export default function TokenizerPreview({
-    tokeniser,
-    modelName,
-}: TokenizerPreviewProps) {
+export default function TokenizerPreview({ tokeniser, modelName }: TokenizerPreviewProps) {
     const [text, setText] = React.useState("");
     const [tokens, setTokens] = React.useState<TokenInfo[]>([]);
     const [loading, setLoading] = React.useState(false);
@@ -47,12 +44,7 @@ export default function TokenizerPreview({
         try {
             switch (tokeniser.type) {
                 case "tiktoken":
-                    await tokenizeTiktoken(
-                        tokeniser.bpePath,
-                        text,
-                        tokenizerRef,
-                        setTokens
-                    );
+                    await tokenizeTiktoken(tokeniser.bpePath, text, tokenizerRef, setTokens);
                     break;
                 case "transformers":
                     await tokenizeTransformers(
@@ -63,11 +55,7 @@ export default function TokenizerPreview({
                     );
                     break;
                 case "site-api":
-                    await tokenizeSiteApi(
-                        tokeniser.apiUrl,
-                        text,
-                        setTokens
-                    );
+                    await tokenizeSiteApi(tokeniser.apiUrl, text, setTokens);
                     break;
             }
         } catch (e) {
@@ -102,9 +90,7 @@ export default function TokenizerPreview({
                 ) : error ? (
                     <span className="text-red-500 text-sm">{error}</span>
                 ) : (
-                    <span className="font-medium">
-                        Token count: {tokens.length}
-                    </span>
+                    <span className="font-medium">Token count: {tokens.length}</span>
                 )}
                 <label className="flex items-center gap-2 text-sm text-gray-600 ml-auto">
                     <input
@@ -145,15 +131,12 @@ export default function TokenizerPreview({
  */
 function formatTokenText(text: string): string {
     // Replace newlines with visible symbol but keep them as newlines for layout
-    return text
-        .replace(/\n/g, "↵\n")
-        .replace(/\t/g, "→")
-        .replace(/ /g, "·");
+    return text.replace(/\n/g, "↵\n").replace(/\t/g, "→").replace(/ /g, "·");
 }
 
 // Valid tiktoken encodings
 const TIKTOKEN_ENCODINGS = ["cl100k_base", "o200k_base"] as const;
-type TiktokenEncodingName = typeof TIKTOKEN_ENCODINGS[number];
+type TiktokenEncodingName = (typeof TIKTOKEN_ENCODINGS)[number];
 
 function getEncodingFromPath(bpePath: string): TiktokenEncodingName {
     // Extract encoding name from path like "/tiktoken/cl100k_base.tiktoken"
@@ -201,9 +184,7 @@ async function tokenizeTransformers(
 ) {
     if (!tokenizerRef.current) {
         const { AutoTokenizer } = await import("@huggingface/transformers");
-        tokenizerRef.current = await AutoTokenizer.from_pretrained(
-            pretrainedPath
-        );
+        tokenizerRef.current = await AutoTokenizer.from_pretrained(pretrainedPath);
     }
 
     const tokenizer = tokenizerRef.current;
@@ -233,10 +214,12 @@ async function tokenizeSiteApi(
 
     // If the API returns token details, use them; otherwise fall back to count
     if (data.tokens && Array.isArray(data.tokens)) {
-        setTokens(data.tokens.map((t: any, idx: number) => ({
-            text: t.text || t,
-            id: t.id ?? idx,
-        })));
+        setTokens(
+            data.tokens.map((t: any, idx: number) => ({
+                text: t.text || t,
+                id: t.id ?? idx,
+            }))
+        );
     } else {
         // API only returns count, can't visualize individual tokens
         const placeholderTokens: TokenInfo[] = [];

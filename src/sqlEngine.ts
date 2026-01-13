@@ -3,19 +3,23 @@ import { createSQLWorker } from "./components/utils/WorkerManager";
 import type { DataFormat } from "./dataFormat";
 
 /** Gets the name/ID for LLM models. */
-export function getModelIdsAndNames(data: DataFormat): {id: string; name: string }[] {
-    return Object.entries(data.models).map(([modelId, modelData]) => ({
-        id: modelId,
-        name: modelData.cleanName,
-    })).sort((a, b) => a.name.localeCompare(b.name));
+export function getModelIdsAndNames(data: DataFormat): { id: string; name: string }[] {
+    return Object.entries(data.models)
+        .map(([modelId, modelData]) => ({
+            id: modelId,
+            name: modelData.cleanName,
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 /** Gets the name/ID for image generation models. */
-export function getImageModelIdsAndNames(data: DataFormat): {id: string; name: string }[] {
-    return Object.entries(data.imageModels || {}).map(([modelId, modelData]) => ({
-        id: modelId,
-        name: modelData.cleanName,
-    })).sort((a, b) => a.name.localeCompare(b.name));
+export function getImageModelIdsAndNames(data: DataFormat): { id: string; name: string }[] {
+    return Object.entries(data.imageModels || {})
+        .map(([modelId, modelData]) => ({
+            id: modelId,
+            name: modelData.cleanName,
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 let loadedDataPromise: Promise<Uint8Array<ArrayBuffer>> | null = null;
@@ -43,15 +47,20 @@ function asyncIfWindow<T>(fn: () => Promise<T>): Promise<T> {
     return Promise.resolve(null as T);
 }
 
-const poolPromise = asyncIfWindow(async () => createSQLWorker<Init, Payload, PayloadResult>(
-    () => new Worker(new URL("./sql/worker.ts", import.meta.url), { type: "module" }),
-    await loadDataDb(),
-));
+const poolPromise = asyncIfWindow(async () =>
+    createSQLWorker<Init, Payload, PayloadResult>(
+        () => new Worker(new URL("./sql/worker.ts", import.meta.url), { type: "module" }),
+        await loadDataDb()
+    )
+);
 
 const queryCache = new Map<string, Map<string, { [column: string]: any }>>();
 
 /** Loads a single row. */
-export async function loadSingleRow(query: string, modelId: string): Promise<{ [column: string]: any } | null> {
+export async function loadSingleRow(
+    query: string,
+    modelId: string
+): Promise<{ [column: string]: any } | null> {
     let modelCache = queryCache.get(query);
     let modelCacheRes = modelCache?.get(modelId) as { [column: string]: any } | undefined | null;
     if (modelCacheRes) {
@@ -79,7 +88,10 @@ export async function loadSingleRow(query: string, modelId: string): Promise<{ [
 }
 
 /** Loads multiple rows. */
-export async function loadMultipleRows(query: string, args?: any[]): Promise<{ [column: string]: any }[]> {
+export async function loadMultipleRows(
+    query: string,
+    args?: any[]
+): Promise<{ [column: string]: any }[]> {
     const pool = await poolPromise;
 
     const [resId, res] = await pool([1, query, args ?? []]);

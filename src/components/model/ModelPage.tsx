@@ -11,11 +11,7 @@ type ModelPageProps = {
     vendors: Record<string, VendorInfo>;
 };
 
-export default function ModelPage({
-    modelId,
-    model,
-    vendors,
-}: ModelPageProps) {
+export default function ModelPage({ modelId, model, vendors }: ModelPageProps) {
     return (
         <div className="max-w-4xl mx-auto p-6">
             <div className="mb-4">
@@ -24,16 +20,9 @@ export default function ModelPage({
             <ModelHeader model={model} />
             <ModelMetadata model={model} />
             {model.tokeniser && (
-                <TokenizerPreview
-                    tokeniser={model.tokeniser}
-                    modelName={model.cleanName}
-                />
+                <TokenizerPreview tokeniser={model.tokeniser} modelName={model.cleanName} />
             )}
-            <PricingCalculator
-                modelId={modelId}
-                model={model}
-                vendors={vendors}
-            />
+            <PricingCalculator modelId={modelId} model={model} vendors={vendors} />
         </div>
     );
 }

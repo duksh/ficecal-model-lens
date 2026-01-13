@@ -14,9 +14,9 @@ export default function DefaultSelector({
     const availableDefaults = modelType === "llm" ? defaultQueries : defaultImageQueries;
 
     const checkedQueries = React.useMemo(() => {
-        return availableDefaults.filter((dq) =>
-            queries.find((q) => q.query === dq.query),
-        ).map((dq) => dq.name);
+        return availableDefaults
+            .filter((dq) => queries.find((q) => q.query === dq.query))
+            .map((dq) => dq.name);
     }, [queries, availableDefaults]);
 
     const handleChange = React.useCallback(
@@ -25,22 +25,23 @@ export default function DefaultSelector({
             if (!dq) return;
             if (checkedQueries.includes(name)) {
                 // Unchecked
-                setQueries((prev) =>
-                    prev.filter((q) => q.query !== dq.query),
-                );
+                setQueries((prev) => prev.filter((q) => q.query !== dq.query));
             } else {
                 // Checked
                 setQueries((prev) => {
                     const filter = prev.filter((q) => q.query !== dq.query);
-                    return [...filter, {
-                        ...dq,
-                        columnFilters: {},
-                        columnOrdering: {},
-                    }];
+                    return [
+                        ...filter,
+                        {
+                            ...dq,
+                            columnFilters: {},
+                            columnOrdering: {},
+                        },
+                    ];
                 });
             }
         },
-        [checkedQueries, availableDefaults],
+        [checkedQueries, availableDefaults]
     );
 
     return (
@@ -62,5 +63,5 @@ export default function DefaultSelector({
                 ))}
             </form>
         </div>
-    )
+    );
 }

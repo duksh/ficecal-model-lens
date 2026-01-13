@@ -10,9 +10,7 @@ type ColumnCustomTypeSelectorProps = {
 export default function ColumnCustomTypeSelector({
     columnCustomTypes,
 }: ColumnCustomTypeSelectorProps) {
-    const [columnKeys, setColumnKeys] = React.useState(
-        () => Object.keys(columnCustomTypes),
-    );
+    const [columnKeys, setColumnKeys] = React.useState(() => Object.keys(columnCustomTypes));
 
     React.useEffect(() => {
         setColumnKeys(Object.keys(columnCustomTypes));
@@ -28,7 +26,7 @@ export default function ColumnCustomTypeSelector({
                 columnCustomTypes[name!] = newType;
             }
         },
-        [columnCustomTypes],
+        [columnCustomTypes]
     );
 
     return (

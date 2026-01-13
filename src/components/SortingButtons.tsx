@@ -12,24 +12,28 @@ export default function SortingButtons({
     return (
         <div className="flex flex-col ml-1">
             <button
-                onClick={() => setSorting(columnName, (oldValue) => {
-                    if (oldValue === true) {
-                        return null;
-                    }
-                    return true;
-                })}
+                onClick={() =>
+                    setSorting(columnName, (oldValue) => {
+                        if (oldValue === true) {
+                            return null;
+                        }
+                        return true;
+                    })
+                }
                 className="leading-2 p-0 border-none bg-none cursor-pointer"
                 aria-label="Sort ascending"
             >
                 <ArrowUp size={14} color={ascending === true ? "black" : "gray"} />
             </button>
             <button
-                onClick={() => setSorting(columnName, (oldValue) => {
-                    if (oldValue === false) {
-                        return null;
-                    }
-                    return false;
-                })}
+                onClick={() =>
+                    setSorting(columnName, (oldValue) => {
+                        if (oldValue === false) {
+                            return null;
+                        }
+                        return false;
+                    })
+                }
                 className="leading-2 p-0 border-none bg-none cursor-pointer"
                 aria-label="Sort descending"
             >

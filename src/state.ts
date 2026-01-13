@@ -69,10 +69,8 @@ function setUrlId(id: string | null) {
     window.history.replaceState({}, "", url.toString());
 }
 
-
 async function writeToRemoteStorage(state: State) {
     // TODO: Implement remote storage saving
-    
 }
 
 async function readFromRemoteStorage(): Promise<State | null> {
@@ -108,23 +106,28 @@ export function clearState() {
     });
 }
 
-export function useStateItem<Key extends keyof State>(key: Key): [State[Key], (newValue: State[Key]| ((prevValue: State[Key]) => State[Key])) => void] {
-    const setter = React.useCallback((newValue: State[Key] | ((prevValue: State[Key]) => State[Key])) => {
-        if (typeof newValue === "function") {
-            newValue = newValue(currentState[key]);
-            currentState[key] = newValue;
-        }  else {
-            currentState[key] = newValue;
-        }
-        window?.localStorage?.setItem("appState", JSON.stringify(currentState));
-        doDebounce(() => {
-            writeToRemoteStorage(currentState);
-        }, 500);
-        const listeners = listenerMap.get(key);
-        if (listeners) {
-            listeners.forEach((listener) => listener());
-        }
-    }, [key]);
+export function useStateItem<Key extends keyof State>(
+    key: Key
+): [State[Key], (newValue: State[Key] | ((prevValue: State[Key]) => State[Key])) => void] {
+    const setter = React.useCallback(
+        (newValue: State[Key] | ((prevValue: State[Key]) => State[Key])) => {
+            if (typeof newValue === "function") {
+                newValue = newValue(currentState[key]);
+                currentState[key] = newValue;
+            } else {
+                currentState[key] = newValue;
+            }
+            window?.localStorage?.setItem("appState", JSON.stringify(currentState));
+            doDebounce(() => {
+                writeToRemoteStorage(currentState);
+            }, 500);
+            const listeners = listenerMap.get(key);
+            if (listeners) {
+                listeners.forEach((listener) => listener());
+            }
+        },
+        [key]
+    );
 
     const getter = React.useSyncExternalStore(
         (onStoreChange) => {
@@ -144,7 +147,7 @@ export function useStateItem<Key extends keyof State>(key: Key): [State[Key], (n
                 }
             };
         },
-        () => currentState[key],
+        () => currentState[key]
     );
 
     return [getter, setter];

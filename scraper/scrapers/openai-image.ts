@@ -11,9 +11,9 @@ const OPENAI_IMAGE_MODELS: Record<string, ImageModelDefinition> = {
         supportedResolutions: ["1024x1024", "1024x1792", "1792x1024"],
         supportsNegativePrompts: false,
         pricing: [
-            { resolution: "1024x1024", pricePerImage: 0.040, generationSpeedMs: 15000 },
-            { resolution: "1024x1792", pricePerImage: 0.080, generationSpeedMs: 20000 },
-            { resolution: "1792x1024", pricePerImage: 0.080, generationSpeedMs: 20000 },
+            { resolution: "1024x1024", pricePerImage: 0.04, generationSpeedMs: 15000 },
+            { resolution: "1024x1792", pricePerImage: 0.08, generationSpeedMs: 20000 },
+            { resolution: "1792x1024", pricePerImage: 0.08, generationSpeedMs: 20000 },
         ],
     },
     "dall-e-3-hd": {
@@ -22,9 +22,9 @@ const OPENAI_IMAGE_MODELS: Record<string, ImageModelDefinition> = {
         supportedResolutions: ["1024x1024", "1024x1792", "1792x1024"],
         supportsNegativePrompts: false,
         pricing: [
-            { resolution: "1024x1024", pricePerImage: 0.080, generationSpeedMs: 25000 },
-            { resolution: "1024x1792", pricePerImage: 0.120, generationSpeedMs: 30000 },
-            { resolution: "1792x1024", pricePerImage: 0.120, generationSpeedMs: 30000 },
+            { resolution: "1024x1024", pricePerImage: 0.08, generationSpeedMs: 25000 },
+            { resolution: "1024x1792", pricePerImage: 0.12, generationSpeedMs: 30000 },
+            { resolution: "1792x1024", pricePerImage: 0.12, generationSpeedMs: 30000 },
         ],
     },
     "dall-e-2": {
@@ -35,7 +35,7 @@ const OPENAI_IMAGE_MODELS: Record<string, ImageModelDefinition> = {
         pricing: [
             { resolution: "256x256", pricePerImage: 0.016 },
             { resolution: "512x512", pricePerImage: 0.018 },
-            { resolution: "1024x1024", pricePerImage: 0.020 },
+            { resolution: "1024x1024", pricePerImage: 0.02 },
         ],
     },
     "gpt-image-1": {
@@ -61,5 +61,7 @@ export default async function scrapeOpenaiImageData(fmt: DataFormat) {
         await addImageModelToFormat(fmt, "openai", "global", model);
     }
 
-    console.log(`Finished scraping OpenAI image generation data (${Object.keys(OPENAI_IMAGE_MODELS).length} models)`);
+    console.log(
+        `Finished scraping OpenAI image generation data (${Object.keys(OPENAI_IMAGE_MODELS).length} models)`
+    );
 }

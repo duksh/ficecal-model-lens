@@ -1,17 +1,26 @@
 import type { Tokenisers } from "@/src/dataFormat";
-import { nullable, array, number, object, parse, string, type BaseSchema, type InferOutput } from "valibot";
+import {
+    nullable,
+    array,
+    number,
+    object,
+    parse,
+    string,
+    type BaseSchema,
+    type InferOutput,
+} from "valibot";
 
 const MODEL_REASONING_PREFIXES = {
     // OpenAI
     "gpt-oss": true,
     "gpt-5": true,
-    "gpt-4-1": true,  // GPT-4.1
+    "gpt-4-1": true, // GPT-4.1
     "gpt-4o": true,
     "gpt-4-turbo": true,
     "gpt-4": true,
     "gpt-3": true,
-    "o3": true,
-    "o1": true,
+    o3: true,
+    o1: true,
     // Anthropic
     "claude-opus-4": true,
     "claude-sonnet-4": true,
@@ -28,16 +37,16 @@ const MODEL_REASONING_PREFIXES = {
     "llama-3-3": true,
     "llama-3": true,
     // Mistral
-    "magistral": true,
+    magistral: true,
     "mistral-large": true,
     "mistral-medium": true,
     "mistral-small": true,
     "mistral-7b": true,
-    "ministral": true,
-    "codestral": true,
-    "mixtral": true,
-    "pixtral": true,
-    "voxtral": false,
+    ministral: true,
+    codestral: true,
+    mixtral: true,
+    pixtral: true,
+    voxtral: false,
     // DeepSeek
     "deepseek-r1": true,
     "deepseek-reasoner": true,
@@ -60,7 +69,7 @@ const MODEL_REASONING_PREFIXES = {
     "gemma-3": true,
     // IBM
     "granite-3": true,
-    "granite": true,
+    granite: true,
     // Kimi AI
     "kimi-k2-thinking": true,
     qwen3: true,
@@ -71,18 +80,18 @@ const MODEL_REASONING_PREFIXES = {
 } as const;
 
 export function isReasoningModel(modelId: string): boolean {
-    for (
-        const [prefix, isReasoning] of Object.entries(MODEL_REASONING_PREFIXES).sort(
-            // Longer prefixes first
-            (a, b) => b[0].length - a[0].length
-        )
-    ) {
+    for (const [prefix, isReasoning] of Object.entries(MODEL_REASONING_PREFIXES).sort(
+        // Longer prefixes first
+        (a, b) => b[0].length - a[0].length
+    )) {
         if (modelId.startsWith(prefix)) {
             return isReasoning;
         }
     }
 
-    throw new Error(`Unknown model ID: ${modelId}. Please add it to MODEL_REASONING_PREFIXES in scraper/constants.ts.`);
+    throw new Error(
+        `Unknown model ID: ${modelId}. Please add it to MODEL_REASONING_PREFIXES in scraper/constants.ts.`
+    );
 }
 
 export function isSelfHostableModel(modelId: string, provider: string): boolean {
@@ -146,7 +155,9 @@ export function isSelfHostableModel(modelId: string, provider: string): boolean 
         return true;
     }
 
-    throw new Error(`Unknown self-hostable status for model ID: ${modelId} with provider: ${provider}. Please update isSelfHostableModel in scraper/constants.ts.`);
+    throw new Error(
+        `Unknown self-hostable status for model ID: ${modelId} with provider: ${provider}. Please update isSelfHostableModel in scraper/constants.ts.`
+    );
 }
 
 // Tiktoken BPE file URLs (proxied through our server to avoid CORS issues)
@@ -162,14 +173,14 @@ const TRANSFORMERS_TOKENISER_PATHS: Record<string, string> = {
     "llama-3-1": "meta-llama/Llama-3.1-8B-Instruct",
     "llama-3": "meta-llama/Llama-3.1-8B-Instruct",
     // Mistral
-    "magistral": "mistralai/Mistral-Large-Instruct-2411",
+    magistral: "mistralai/Mistral-Large-Instruct-2411",
     "mistral-large": "mistralai/Mistral-Large-Instruct-2411",
     "mistral-medium": "mistralai/Mistral-Large-Instruct-2411",
     "mistral-small": "mistralai/Mistral-Small-24B-Instruct-2501",
-    "ministral": "mistralai/Mistral-Small-24B-Instruct-2501",
-    "codestral": "mistralai/Codestral-22B-v0.1",
-    "pixtral": "mistralai/Pixtral-Large-Instruct-2411",
-    "mixtral": "mistralai/Mixtral-8x22B-Instruct-v0.1",
+    ministral: "mistralai/Mistral-Small-24B-Instruct-2501",
+    codestral: "mistralai/Codestral-22B-v0.1",
+    pixtral: "mistralai/Pixtral-Large-Instruct-2411",
+    mixtral: "mistralai/Mixtral-8x22B-Instruct-v0.1",
     "mistral-7b": "mistralai/Mistral-7B-Instruct-v0.3",
     // DeepSeek
     "deepseek-reasoner": "deepseek-ai/DeepSeek-R1",
@@ -184,12 +195,12 @@ const TRANSFORMERS_TOKENISER_PATHS: Record<string, string> = {
     "qwen3-235b": "Qwen/Qwen3-235B-A22B",
     "qwen3-coder": "Qwen/Qwen3-Coder-480B-A35B-Instruct",
     "qwen3-32": "Qwen/Qwen3-32B",
-    "qwen3": "Qwen/Qwen3-32B",
+    qwen3: "Qwen/Qwen3-32B",
     "qwen-coder": "Qwen/Qwen2.5-Coder-32B-Instruct",
     // Google Gemini (uses SentencePiece, available via transformers)
-    "gemini": "google/gemma-2-9b-it",
+    gemini: "google/gemma-2-9b-it",
     // IBM Granite
-    "granite": "ibm-granite/granite-3.0-8b-instruct",
+    granite: "ibm-granite/granite-3.0-8b-instruct",
 };
 
 export function getTokeniserForModel(modelId: string, provider: string): Tokenisers | undefined {
@@ -241,7 +252,11 @@ export function getTokeniserForModel(modelId: string, provider: string): Tokenis
     return undefined;
 }
 
-async function fetchAndParse<S extends BaseSchema<any, any, any>>(url: string, schema: S, headers?: Record<string, string>): Promise<InferOutput<S>> {
+async function fetchAndParse<S extends BaseSchema<any, any, any>>(
+    url: string,
+    schema: S,
+    headers?: Record<string, string>
+): Promise<InferOutput<S>> {
     const res = await fetch(url, headers ? { headers } : undefined);
     if (!res.ok) {
         throw new Error(`Failed to fetch ${url}: ${res.status} ${res.statusText}`);
@@ -303,9 +318,7 @@ async function getSweBenchScores() {
     const res = fetchAndParse(
         "https://raw.githubusercontent.com/SWE-bench/swe-bench.github.io/refs/heads/master/data/leaderboards.json",
         sweBenchRankingsObj
-    ).then((x) => Object.fromEntries(
-        x.leaderboards.map((item) => [item.name, item.results]),
-    ));
+    ).then((x) => Object.fromEntries(x.leaderboards.map((item) => [item.name, item.results])));
     sweBenchResult = res;
     return res;
 }
@@ -325,7 +338,7 @@ async function getHumanitysLastExamScores() {
         "https://api.zeroeval.com/leaderboard/benchmarks/humanity's-last-exam",
         object({
             models: array(hleLeaderboardItem),
-        }),
+        })
     ).then((x) => x.models);
     hleResult = res;
     return res;
@@ -386,7 +399,9 @@ export async function addBenchmarkDataForModel(modelId: string): Promise<{
     }
 
     // Humanity's Last Exam
-    const hleEntry = hleScores.find((entry) => entry.model_id.toLowerCase().startsWith(modelId.toLowerCase()));
+    const hleEntry = hleScores.find((entry) =>
+        entry.model_id.toLowerCase().startsWith(modelId.toLowerCase())
+    );
     if (hleEntry) {
         result.humanitysLastExamPercentage = hleEntry.score * 100;
     }

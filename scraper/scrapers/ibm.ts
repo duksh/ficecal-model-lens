@@ -17,12 +17,7 @@ const MODEL_NAME_OVERRIDES: Record<string, string> = {
 };
 
 // Models to include (Granite and popular third-party models)
-const INCLUDED_MODEL_PATTERNS = [
-    "granite-3",
-    "llama-3-1",
-    "llama-3-3",
-    "mistral-large",
-];
+const INCLUDED_MODEL_PATTERNS = ["granite-3", "llama-3-1", "llama-3-3", "mistral-large"];
 
 function shouldIncludeModel(modelId: string): boolean {
     const lowerModelId = modelId.toLowerCase();
@@ -30,7 +25,7 @@ function shouldIncludeModel(modelId: string): boolean {
     // Skip embedding models
     if (lowerModelId.includes("embed")) return false;
 
-    return INCLUDED_MODEL_PATTERNS.some(pattern => lowerModelId.includes(pattern));
+    return INCLUDED_MODEL_PATTERNS.some((pattern) => lowerModelId.includes(pattern));
 }
 
 function getProviderFromModelId(modelId: string): string {
@@ -55,7 +50,7 @@ function getModelName(modelId: string): string {
 
     return name
         .split("-")
-        .map(part => {
+        .map((part) => {
             if (/^\d/.test(part)) return part;
             return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
         })

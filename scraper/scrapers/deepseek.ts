@@ -25,7 +25,7 @@ const INCLUDED_MODEL_PATTERNS = [
 
 function shouldIncludeModel(modelId: string): boolean {
     const lowerModelId = modelId.toLowerCase();
-    return INCLUDED_MODEL_PATTERNS.some(pattern => lowerModelId.includes(pattern));
+    return INCLUDED_MODEL_PATTERNS.some((pattern) => lowerModelId.includes(pattern));
 }
 
 function getModelName(modelId: string): string {
@@ -39,7 +39,7 @@ function getModelName(modelId: string): string {
 
     return name
         .split("-")
-        .map(part => {
+        .map((part) => {
             if (part === "deepseek") return "DeepSeek";
             if (/^\d/.test(part) || /^v\d/.test(part)) return part.toUpperCase();
             return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
@@ -87,7 +87,7 @@ export default async function scrapeDeepseekData(fmt: DataFormat) {
         euOrUKRegions: [],
         regionCleanNames: {
             "": {
-                "global": "Global",
+                global: "Global",
             },
         },
     };

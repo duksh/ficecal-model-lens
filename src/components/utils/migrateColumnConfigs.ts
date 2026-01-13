@@ -16,10 +16,10 @@ export function detectColumnRename(
     const newColumns = new Set(Object.keys(newRow));
 
     // Find removed columns (in old but not in new)
-    const removedColumns = [...oldColumns].filter(col => !newColumns.has(col));
+    const removedColumns = [...oldColumns].filter((col) => !newColumns.has(col));
 
     // Find added columns (in new but not in old)
-    const addedColumns = [...newColumns].filter(col => !oldColumns.has(col));
+    const addedColumns = [...newColumns].filter((col) => !oldColumns.has(col));
 
     // Must have exactly 1 removed and 1 added for a rename
     if (removedColumns.length !== 1 || addedColumns.length !== 1) {
@@ -51,11 +51,7 @@ export function detectColumnRename(
  * Migrates column configs from old column name to new column name.
  * Modifies the query object in place.
  */
-export function migrateColumnConfigs(
-    query: ColumnQuery,
-    oldName: string,
-    newName: string
-): void {
+export function migrateColumnConfigs(query: ColumnQuery, oldName: string, newName: string): void {
     // Migrate columnFilters
     if (oldName in query.columnFilters) {
         query.columnFilters[newName] = query.columnFilters[oldName];
@@ -70,8 +66,7 @@ export function migrateColumnConfigs(
 
     // Migrate columnExplicitlySetDataTypes
     if (oldName in query.columnExplicitlySetDataTypes) {
-        query.columnExplicitlySetDataTypes[newName] =
-            query.columnExplicitlySetDataTypes[oldName];
+        query.columnExplicitlySetDataTypes[newName] = query.columnExplicitlySetDataTypes[oldName];
         delete query.columnExplicitlySetDataTypes[oldName];
     }
 }

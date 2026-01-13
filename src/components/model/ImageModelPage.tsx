@@ -7,11 +7,7 @@ type ImageModelPageProps = {
     vendors: Record<string, VendorInfo>;
 };
 
-export default function ImageModelPage({
-    modelId,
-    model,
-    vendors,
-}: ImageModelPageProps) {
+export default function ImageModelPage({ modelId, model, vendors }: ImageModelPageProps) {
     return (
         <div className="max-w-4xl mx-auto p-6">
             <div className="mb-4">
@@ -34,7 +30,9 @@ export default function ImageModelPage({
                     </div>
                     <div>
                         <dt className="text-sm text-gray-500">Negative Prompts</dt>
-                        <dd className="font-medium">{model.supportsNegativePrompts ? "Supported" : "Not Supported"}</dd>
+                        <dd className="font-medium">
+                            {model.supportsNegativePrompts ? "Supported" : "Not Supported"}
+                        </dd>
                     </div>
                 </dl>
             </div>
@@ -42,10 +40,7 @@ export default function ImageModelPage({
                 <h2 className="text-xl font-semibold mb-4">Supported Resolutions</h2>
                 <div className="flex flex-wrap gap-2">
                     {model.supportedResolutions.map((res) => (
-                        <span
-                            key={res}
-                            className="px-3 py-1 bg-gray-100 rounded-full text-sm"
-                        >
+                        <span key={res} className="px-3 py-1 bg-gray-100 rounded-full text-sm">
                             {res}
                         </span>
                     ))}
@@ -57,7 +52,9 @@ export default function ImageModelPage({
                     const vendor = vendors[vendorModel.vendorRef.split(":")[0]];
                     return (
                         <div key={vendorModel.vendorRef} className="mb-6 last:mb-0">
-                            <h3 className="font-medium mb-2">{vendor?.cleanName ?? vendorModel.vendorRef}</h3>
+                            <h3 className="font-medium mb-2">
+                                {vendor?.cleanName ?? vendorModel.vendorRef}
+                            </h3>
                             <div className="overflow-x-auto">
                                 <table className="min-w-full text-sm">
                                     <thead>
@@ -68,18 +65,29 @@ export default function ImageModelPage({
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {Object.entries(vendorModel.regionPricing).flatMap(([region, tiers]) =>
-                                            tiers.map((tier, idx) => (
-                                                <tr key={`${region}-${tier.resolution}`} className="border-b border-gray-100">
-                                                    {idx === 0 && (
-                                                        <td className="py-2 pr-4" rowSpan={tiers.length}>
-                                                            {region}
+                                        {Object.entries(vendorModel.regionPricing).flatMap(
+                                            ([region, tiers]) =>
+                                                tiers.map((tier, idx) => (
+                                                    <tr
+                                                        key={`${region}-${tier.resolution}`}
+                                                        className="border-b border-gray-100"
+                                                    >
+                                                        {idx === 0 && (
+                                                            <td
+                                                                className="py-2 pr-4"
+                                                                rowSpan={tiers.length}
+                                                            >
+                                                                {region}
+                                                            </td>
+                                                        )}
+                                                        <td className="py-2 pr-4">
+                                                            {tier.resolution}
                                                         </td>
-                                                    )}
-                                                    <td className="py-2 pr-4">{tier.resolution}</td>
-                                                    <td className="py-2">${tier.pricePerImage.toFixed(4)}</td>
-                                                </tr>
-                                            ))
+                                                        <td className="py-2">
+                                                            ${tier.pricePerImage.toFixed(4)}
+                                                        </td>
+                                                    </tr>
+                                                ))
                                         )}
                                     </tbody>
                                 </table>

@@ -4,7 +4,10 @@ import sqlWasm from "sql.js/dist/sql-wasm.wasm?url";
 
 export type Init = Uint8Array;
 export type Payload = [0, string, string] | [1, string, any[]];
-export type PayloadResult = [0, string] | [1, { [column: string]: any } | null] | [2, { [column: string]: any }[]];
+export type PayloadResult =
+    | [0, string]
+    | [1, { [column: string]: any } | null]
+    | [2, { [column: string]: any }[]];
 
 const compilationCache = new Map<string, Statement>();
 
@@ -35,7 +38,7 @@ self.onmessage = workerMessageHandler(
                 }
                 return [1, null];
             }
-    
+
             query.bind(payload[2]);
             const res = [];
             while (query.step()) {

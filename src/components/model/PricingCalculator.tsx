@@ -4,13 +4,7 @@ import type { Model, VendorInfo } from "../../dataFormat";
 import { useStateItem } from "../../state";
 import CurrencyPicker from "../CurrencyPicker";
 import forexData from "../../forex.json";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "../ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 type PricingCalculatorProps = {
     modelId: string;
@@ -18,11 +12,7 @@ type PricingCalculatorProps = {
     vendors: Record<string, VendorInfo>;
 };
 
-export default function PricingCalculator({
-    modelId,
-    model,
-    vendors,
-}: PricingCalculatorProps) {
+export default function PricingCalculator({ modelId, model, vendors }: PricingCalculatorProps) {
     const availableVendors = model.vendors.map((v) => ({
         slug: v.vendorRef,
         info: vendors[v.vendorRef],
@@ -38,9 +28,7 @@ export default function PricingCalculator({
     const [cachedInputTokens, setCachedInputTokens] = React.useState<number>(0);
     const [currency] = useStateItem("currency");
 
-    const selectedVendorModel = model.vendors.find(
-        (v) => v.vendorRef === selectedVendorSlug
-    );
+    const selectedVendorModel = model.vendors.find((v) => v.vendorRef === selectedVendorSlug);
     const selectedVendorInfo = vendors[selectedVendorSlug];
 
     const availableRegions = selectedVendorModel
@@ -48,17 +36,13 @@ export default function PricingCalculator({
         : [];
 
     React.useEffect(() => {
-        if (
-            availableRegions.length > 0 &&
-            !availableRegions.includes(selectedRegion)
-        ) {
+        if (availableRegions.length > 0 && !availableRegions.includes(selectedRegion)) {
             setSelectedRegion(availableRegions[0]);
         }
     }, [selectedVendorSlug, availableRegions, selectedRegion]);
 
     const pricing = selectedVendorModel?.regionPricing[selectedRegion];
-    const rate =
-        forexData[currency as keyof typeof forexData]?.rate ?? 1;
+    const rate = forexData[currency as keyof typeof forexData]?.rate ?? 1;
 
     let totalCost = 0;
     let hasCachedPricing = false;
@@ -80,9 +64,7 @@ export default function PricingCalculator({
 
     const getRegionName = (regionCode: string): string => {
         if (!selectedVendorInfo) return regionCode;
-        for (const regions of Object.values(
-            selectedVendorInfo.regionCleanNames
-        )) {
+        for (const regions of Object.values(selectedVendorInfo.regionCleanNames)) {
             if (regions[regionCode]) {
                 return regions[regionCode];
             }
@@ -102,13 +84,8 @@ export default function PricingCalculator({
 
             <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
-                    <label className="block text-sm font-medium mb-1">
-                        Vendor
-                    </label>
-                    <Select
-                        value={selectedVendorSlug}
-                        onValueChange={setSelectedVendorSlug}
-                    >
+                    <label className="block text-sm font-medium mb-1">Vendor</label>
+                    <Select value={selectedVendorSlug} onValueChange={setSelectedVendorSlug}>
                         <SelectTrigger className="w-full">
                             <SelectValue />
                         </SelectTrigger>
@@ -122,13 +99,8 @@ export default function PricingCalculator({
                     </Select>
                 </div>
                 <div>
-                    <label className="block text-sm font-medium mb-1">
-                        Region
-                    </label>
-                    <Select
-                        value={selectedRegion}
-                        onValueChange={setSelectedRegion}
-                    >
+                    <label className="block text-sm font-medium mb-1">Region</label>
+                    <Select value={selectedRegion} onValueChange={setSelectedRegion}>
                         <SelectTrigger className="w-full">
                             <SelectValue />
                         </SelectTrigger>
@@ -144,17 +116,13 @@ export default function PricingCalculator({
             </div>
 
             <div className="mb-6">
-                <label className="block text-sm font-medium mb-1">
-                    Currency
-                </label>
+                <label className="block text-sm font-medium mb-1">Currency</label>
                 <CurrencyPicker className="w-full" />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
                 <div>
-                    <label className="block text-sm font-medium mb-1">
-                        Input Tokens
-                    </label>
+                    <label className="block text-sm font-medium mb-1">Input Tokens</label>
                     <input
                         type="number"
                         value={inputTokens}
@@ -164,9 +132,7 @@ export default function PricingCalculator({
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium mb-1">
-                        Output Tokens
-                    </label>
+                    <label className="block text-sm font-medium mb-1">Output Tokens</label>
                     <input
                         type="number"
                         value={outputTokens}
@@ -183,9 +149,7 @@ export default function PricingCalculator({
                         <input
                             type="number"
                             value={cachedInputTokens}
-                            onChange={(e) =>
-                                setCachedInputTokens(Number(e.target.value))
-                            }
+                            onChange={(e) => setCachedInputTokens(Number(e.target.value))}
                             className="w-full p-2 border rounded-md"
                             min={0}
                         />

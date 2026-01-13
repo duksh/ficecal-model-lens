@@ -4,7 +4,8 @@
  * https://github.com/BerriAI/litellm/blob/main/model_prices_and_context_window.json
  */
 
-const LITELLM_PRICING_URL = "https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json";
+const LITELLM_PRICING_URL =
+    "https://raw.githubusercontent.com/BerriAI/litellm/main/model_prices_and_context_window.json";
 
 export type LiteLLMModel = {
     input_cost_per_token?: number;
@@ -36,13 +37,12 @@ export async function fetchLiteLLMPricing(): Promise<LiteLLMPricingData> {
         return cachedData;
     }
 
-    cachedData = fetch(LITELLM_PRICING_URL)
-        .then(res => {
-            if (!res.ok) {
-                throw new Error(`Failed to fetch LiteLLM pricing: ${res.status} ${res.statusText}`);
-            }
-            return res.json();
-        });
+    cachedData = fetch(LITELLM_PRICING_URL).then((res) => {
+        if (!res.ok) {
+            throw new Error(`Failed to fetch LiteLLM pricing: ${res.status} ${res.statusText}`);
+        }
+        return res.json();
+    });
 
     return cachedData;
 }
@@ -118,7 +118,7 @@ export function cleanModelName(modelId: string, provider: string): string | null
     // Convert to title case and clean up
     const res = name
         .split(/[-_]/)
-        .map(part => {
+        .map((part) => {
             // Keep version numbers as-is
             if (/^\d/.test(part)) return part;
             // Keep common abbreviations uppercase
@@ -143,6 +143,5 @@ export function cleanModelName(modelId: string, provider: string): string | null
  * LiteLLM uses different field names for cached input costs.
  */
 export function getCachedInputCost(model: LiteLLMModel): number | undefined {
-    return model.cache_read_input_token_cost ??
-           model.input_cost_per_token_cache_hit;
+    return model.cache_read_input_token_cost ?? model.input_cost_per_token_cache_hit;
 }

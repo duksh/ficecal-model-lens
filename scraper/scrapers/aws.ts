@@ -18,8 +18,8 @@ type PriceDimension = {
 function slugify(name: string, provider: string): string {
     const n = name
         .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '');
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
     if (provider === "DeepSeek" && !n.startsWith("deepseek-")) {
         return `deepseek-${n}`;
     }
@@ -44,7 +44,10 @@ const PROVIDERS = {
 
 function providerToCountryCode(provider: string): string {
     const res = PROVIDERS[provider as keyof typeof PROVIDERS];
-    if (!res) throw new Error(`Unknown provider: ${provider}. You probably need to add it to the PROVIDERS map in scraper/scrapers/aws.ts.`);
+    if (!res)
+        throw new Error(
+            `Unknown provider: ${provider}. You probably need to add it to the PROVIDERS map in scraper/scrapers/aws.ts.`
+        );
     return res;
 }
 
@@ -69,12 +72,12 @@ async function processPriceDimension(
             reasoning: isReasoningModel(slugifiedModel),
             selfhostable: isSelfHostableModel(slugifiedModel, attributes.provider),
             tokeniser: getTokeniserForModel(slugifiedModel, attributes.provider),
-            ...await addBenchmarkDataForModel(slugifiedModel),
+            ...(await addBenchmarkDataForModel(slugifiedModel)),
         };
         fmt.models[slugifiedModel] = modelEntry;
     }
 
-    let vendor = modelEntry.vendors.find(v => v.vendorRef === "aws");
+    let vendor = modelEntry.vendors.find((v) => v.vendorRef === "aws");
     if (!vendor) {
         // Look up performance metrics from Artificial Analysis data
         const perfMetrics = getPerformanceMetrics(slugifiedModel, "aws");
@@ -138,15 +141,18 @@ type Term = {
 };
 
 type PricingFile = {
-    products: Record<string, {
-        attributes: Record<string, string>;
-    }>;
+    products: Record<
+        string,
+        {
+            attributes: Record<string, string>;
+        }
+    >;
     terms: Record<string, Record<string, Record<string, Term>>>;
 };
 
 async function getBedrockPricingFile(): Promise<PricingFile> {
     const response = await fetch(
-        'https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonBedrock/current/index.json'
+        "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonBedrock/current/index.json"
     );
     if (!response.ok) {
         throw new Error(`Failed to fetch pricing file: ${response.statusText}`);
@@ -194,10 +200,10 @@ export default async function scrapeAwsData(fmt: DataFormat) {
     fmt.vendors["aws"] = {
         cleanName: "AWS Bedrock",
         learnMoreUrl: "https://aws.amazon.com/bedrock",
-        euOrUKRegions: Object.keys(regions).filter(code => code.startsWith('eu-')),
+        euOrUKRegions: Object.keys(regions).filter((code) => code.startsWith("eu-")),
         regionCleanNames: {
-            "": regions
-        }
+            "": regions,
+        },
     };
     console.log("Finished scraping AWS Bedrock data");
 }

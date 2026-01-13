@@ -3,8 +3,8 @@ import type { APIRoute, GetStaticPaths } from "astro";
 // Valid tiktoken encodings and their source URLs
 // This is the canonical list - only these paths are valid
 const TIKTOKEN_SOURCES: Record<string, string> = {
-    "cl100k_base": "https://openaipublic.blob.core.windows.net/encodings/cl100k_base.tiktoken",
-    "o200k_base": "https://openaipublic.blob.core.windows.net/encodings/o200k_base.tiktoken",
+    cl100k_base: "https://openaipublic.blob.core.windows.net/encodings/cl100k_base.tiktoken",
+    o200k_base: "https://openaipublic.blob.core.windows.net/encodings/o200k_base.tiktoken",
 };
 
 export const prerender = true;
@@ -43,7 +43,9 @@ export const GET: APIRoute = async ({ params }) => {
     const response = await fetch(sourceUrl);
 
     if (!response.ok) {
-        throw new Error(`Failed to fetch tiktoken encoding ${encoding}: ${response.status} ${response.statusText}`);
+        throw new Error(
+            `Failed to fetch tiktoken encoding ${encoding}: ${response.status} ${response.statusText}`
+        );
     }
 
     const data = await response.text();

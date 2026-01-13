@@ -11,11 +11,7 @@ function flatPromise<T>(): [(value: T) => void, (reason?: any) => void, Promise<
 class IndividualWorker<InitArg, Payload, ExpectedResult> {
     private worker: Worker | null = null;
     private initDone = false;
-    private runners: [
-        Payload,
-        (value: ExpectedResult) => void,
-        (reason?: any) => void,
-    ][] = [];
+    private runners: [Payload, (value: ExpectedResult) => void, (reason?: any) => void][] = [];
 
     constructor(private workerGenerator: () => Worker) {}
 
@@ -26,7 +22,7 @@ class IndividualWorker<InitArg, Payload, ExpectedResult> {
         await new Promise<void>((baseResolve, baseReject) => {
             const payloads = oldRunners.map(([payload]) => payload);
             worker.onerror = (error) => {
-                for (const [,, reject] of oldRunners) {
+                for (const [, , reject] of oldRunners) {
                     reject(error);
                 }
                 baseReject(error);
@@ -102,7 +98,7 @@ class IndividualWorker<InitArg, Payload, ExpectedResult> {
 
 export async function createSQLWorker<InitArg, Payload, ExpectedResult>(
     workerGenerator: () => Worker,
-    initArg: InitArg,
+    initArg: InitArg
 ) {
     const worker = new IndividualWorker<InitArg, Payload, ExpectedResult>(workerGenerator);
     await worker.initialise(initArg);
@@ -113,7 +109,7 @@ const _unset = Symbol("unset");
 
 export function workerMessageHandler<InitArg, InitResult, Payload, ExpectedResult>(
     init: (arg: InitArg) => Promise<InitResult>,
-    handlePayload: (initResult: InitResult, payload: Payload) => Promise<ExpectedResult>,
+    handlePayload: (initResult: InitResult, payload: Payload) => Promise<ExpectedResult>
 ) {
     let initResult: any = _unset;
 
@@ -124,9 +120,11 @@ export function workerMessageHandler<InitArg, InitResult, Payload, ExpectedResul
             return;
         }
 
-        const results = await Promise.all((event.data as Payload[]).map(async (payload) => {
-            return handlePayload(initResult, payload);
-        }));
+        const results = await Promise.all(
+            (event.data as Payload[]).map(async (payload) => {
+                return handlePayload(initResult, payload);
+            })
+        );
         postMessage(results);
     };
 }

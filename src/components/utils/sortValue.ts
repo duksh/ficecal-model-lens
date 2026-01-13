@@ -4,7 +4,7 @@ export default function sortValue(
     aVal: any,
     bVal: any,
     ascending: boolean,
-    dataType: ColumnDataType | undefined,
+    dataType: ColumnDataType | undefined
 ): number {
     let comparison = 0;
 
@@ -19,7 +19,7 @@ export default function sortValue(
     if (dataType === "boolean") {
         const aBool = Boolean(aVal);
         const bBool = Boolean(bVal);
-        comparison = (aBool === bBool) ? 0 : (aBool ? 1 : -1);
+        comparison = aBool === bBool ? 0 : aBool ? 1 : -1;
     } else if (typeof aVal === "number" && typeof bVal === "number") {
         comparison = aVal - bVal;
     } else {

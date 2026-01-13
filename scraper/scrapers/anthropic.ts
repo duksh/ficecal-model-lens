@@ -41,7 +41,7 @@ const INCLUDED_MODEL_PREFIXES = [
 
 function shouldIncludeModel(modelId: string): boolean {
     // Check if it matches any included prefix
-    return INCLUDED_MODEL_PREFIXES.some(prefix => modelId.startsWith(prefix));
+    return INCLUDED_MODEL_PREFIXES.some((prefix) => modelId.startsWith(prefix));
 }
 
 function getModelName(modelId: string): string {
@@ -117,7 +117,7 @@ export default async function scrapeAnthropicData(fmt: DataFormat) {
         euOrUKRegions: [],
         regionCleanNames: {
             "": {
-                "global": "Global",
+                global: "Global",
             },
         },
     };

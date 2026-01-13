@@ -4,7 +4,7 @@ import type { OperatorTypes } from "./NumberFilter";
 export default function checkFilters(
     row: { [column: string]: any },
     filters: Record<string, any>,
-    explicitlySetDataTypes: Record<string, ColumnDataType>,
+    explicitlySetDataTypes: Record<string, ColumnDataType>
 ): boolean {
     for (const [col, val] of Object.entries(filters)) {
         const dataType = explicitlySetDataTypes[col];

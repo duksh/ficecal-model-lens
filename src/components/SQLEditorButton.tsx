@@ -31,45 +31,49 @@ export default function SQLEditorButton({ query, firstId, updateQuery }: SQLEdit
         setOutput(null);
     }, []);
 
-    const submit = React.useCallback(async (e: React.FormEvent) => {
-        e.preventDefault();
+    const submit = React.useCallback(
+        async (e: React.FormEvent) => {
+            e.preventDefault();
 
-        // Get old row data before changing the query (for migration detection)
-        let oldRow: { [column: string]: any } | null = null;
-        try {
-            oldRow = await loadSingleRow(query.query, firstId);
-        } catch {
-            // If old query fails, we can't migrate - proceed anyway
-            oldRow = null;
-        }
+            // Get old row data before changing the query (for migration detection)
+            let oldRow: { [column: string]: any } | null = null;
+            try {
+                oldRow = await loadSingleRow(query.query, firstId);
+            } catch {
+                // If old query fails, we can't migrate - proceed anyway
+                oldRow = null;
+            }
 
-        // Test the new query
-        const res = await testQuery(valueRef.current, firstId);
-        if (!res.ok) {
-            setOutput(<span className="text-red-600 mb-4">Error: {res.error}</span>);
-            return;
-        }
+            // Test the new query
+            const res = await testQuery(valueRef.current, firstId);
+            if (!res.ok) {
+                setOutput(<span className="text-red-600 mb-4">Error: {res.error}</span>);
+                return;
+            }
 
-        // Detect column rename and migrate configs if applicable
-        if (oldRow && res.row) {
-            const rename = detectColumnRename(oldRow, res.row);
-            if (rename) {
-                migrateColumnConfigs(query, rename.oldName, rename.newName);
-                // Also migrate the local columnCustomTypes ref so it doesn't overwrite the migration
-                if (rename.oldName in columnCustomTypes.current) {
-                    columnCustomTypes.current[rename.newName] = columnCustomTypes.current[rename.oldName];
-                    delete columnCustomTypes.current[rename.oldName];
+            // Detect column rename and migrate configs if applicable
+            if (oldRow && res.row) {
+                const rename = detectColumnRename(oldRow, res.row);
+                if (rename) {
+                    migrateColumnConfigs(query, rename.oldName, rename.newName);
+                    // Also migrate the local columnCustomTypes ref so it doesn't overwrite the migration
+                    if (rename.oldName in columnCustomTypes.current) {
+                        columnCustomTypes.current[rename.newName] =
+                            columnCustomTypes.current[rename.oldName];
+                        delete columnCustomTypes.current[rename.oldName];
+                    }
                 }
             }
-        }
 
-        query.query = valueRef.current;
-        query.columnExplicitlySetDataTypes = {
-            ...columnCustomTypes.current,
-        };
-        updateQuery(true);
-        exit();
-    }, [columnCustomTypes, firstId, query]);
+            query.query = valueRef.current;
+            query.columnExplicitlySetDataTypes = {
+                ...columnCustomTypes.current,
+            };
+            updateQuery(true);
+            exit();
+        },
+        [columnCustomTypes, firstId, query]
+    );
 
     return (
         <>
@@ -79,7 +83,7 @@ export default function SQLEditorButton({ query, firstId, updateQuery }: SQLEdit
                 onClick={exit}
                 onClose={exit}
             >
-                <div onClick={e => e.stopPropagation()}>
+                <div onClick={(e) => e.stopPropagation()}>
                     <div className="bg-white p-4 block w-full h-full">
                         <header>
                             <div className="flex gap-2 items-center">
@@ -107,9 +111,7 @@ export default function SQLEditorButton({ query, firstId, updateQuery }: SQLEdit
                                 columnCustomTypes={columnCustomTypes.current}
                             />
                             <QueryHelp />
-                            <Button className="mt-4">
-                                Save Changes
-                            </Button>
+                            <Button className="mt-4">Save Changes</Button>
                         </form>
                     </div>
                 </div>

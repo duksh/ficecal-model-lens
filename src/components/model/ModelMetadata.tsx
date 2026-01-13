@@ -4,7 +4,12 @@ function MetadataItem({ label, value, href }: { label: string; value: string; hr
     return (
         <div className="flex flex-col">
             {href ? (
-                <a href={href} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline">
+                <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-blue-600 hover:underline"
+                >
                     {label}
                 </a>
             ) : (
@@ -18,14 +23,8 @@ function MetadataItem({ label, value, href }: { label: string; value: string; hr
 export default function ModelMetadata({ model }: { model: Model }) {
     return (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8 p-4 bg-gray-50 rounded-lg">
-            <MetadataItem
-                label="Self-hostable"
-                value={model.selfhostable ? "Yes" : "No"}
-            />
-            <MetadataItem
-                label="Reasoning Capable"
-                value={model.reasoning ? "Yes" : "No"}
-            />
+            <MetadataItem label="Self-hostable" value={model.selfhostable ? "Yes" : "No"} />
+            <MetadataItem label="Reasoning Capable" value={model.reasoning ? "Yes" : "No"} />
             {model.humanitysLastExamPercentage !== undefined && (
                 <MetadataItem
                     label="Humanity's Last Exam"

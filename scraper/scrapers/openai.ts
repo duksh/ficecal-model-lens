@@ -1,6 +1,11 @@
 import type { DataFormat } from "@/src/dataFormat";
 import { addModelToFormat, type ModelDefinition } from "../shared";
-import { getModelsForProvider, getCachedInputCost, cleanModelName, type LiteLLMModel } from "../litellm";
+import {
+    getModelsForProvider,
+    getCachedInputCost,
+    cleanModelName,
+    type LiteLLMModel,
+} from "../litellm";
 
 // Model name overrides for cleaner display names
 const MODEL_NAME_OVERRIDES: Record<string, string> = {
@@ -9,10 +14,10 @@ const MODEL_NAME_OVERRIDES: Record<string, string> = {
     "gpt-4-turbo": "GPT-4 Turbo",
     "gpt-4": "GPT-4",
     "gpt-3.5-turbo": "GPT-3.5 Turbo",
-    "o1": "GPT-o1",
+    o1: "GPT-o1",
     "o1-mini": "GPT-o1 Mini",
     "o1-preview": "GPT-o1 Preview",
-    "o3": "GPT-o3",
+    o3: "GPT-o3",
     "o3-mini": "GPT-o3 Mini",
     "o4-mini": "GPT-o4 Mini",
     "gpt-4.1": "GPT-4.1",
@@ -46,7 +51,7 @@ function shouldIncludeModel(modelId: string): boolean {
     if (modelId.includes("embedding")) return false;
 
     // Check if it matches any included prefix
-    return INCLUDED_MODEL_PREFIXES.some(prefix => modelId.startsWith(prefix));
+    return INCLUDED_MODEL_PREFIXES.some((prefix) => modelId.startsWith(prefix));
 }
 
 function getModelName(modelId: string): string | null {
@@ -108,7 +113,7 @@ export default async function scrapeOpenaiData(fmt: DataFormat) {
         euOrUKRegions: [],
         regionCleanNames: {
             "": {
-                "global": "Global",
+                global: "Global",
             },
         },
     };

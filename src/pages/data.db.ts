@@ -30,10 +30,19 @@ export const GET: APIRoute = () => {
         db.exec(schema);
 
         // Add the vendors
-        const vendorsPrep = db.prepare("INSERT INTO vendors (vendor_id, clean_name, learn_more_url, eu_or_uk_regions) VALUES (?, ?, ?, ?)");
-        const vendorRegionsPrep = db.prepare("INSERT INTO vendor_regions (vendor_id, region_code, category, region_name) VALUES (?, ?, ?, ?)");
+        const vendorsPrep = db.prepare(
+            "INSERT INTO vendors (vendor_id, clean_name, learn_more_url, eu_or_uk_regions) VALUES (?, ?, ?, ?)"
+        );
+        const vendorRegionsPrep = db.prepare(
+            "INSERT INTO vendor_regions (vendor_id, region_code, category, region_name) VALUES (?, ?, ?, ?)"
+        );
         for (const [vendorId, vendorData] of Object.entries(data.vendors)) {
-            vendorsPrep.run([vendorId, vendorData.cleanName, vendorData.learnMoreUrl, JSON.stringify(vendorData.euOrUKRegions)]);
+            vendorsPrep.run([
+                vendorId,
+                vendorData.cleanName,
+                vendorData.learnMoreUrl,
+                JSON.stringify(vendorData.euOrUKRegions),
+            ]);
             for (const [categoryOrEmpty, regions] of Object.entries(vendorData.regionCleanNames)) {
                 const category = categoryOrEmpty === "" ? null : categoryOrEmpty;
                 for (const [regionCode, regionName] of Object.entries(regions)) {
@@ -43,10 +52,18 @@ export const GET: APIRoute = () => {
         }
 
         // Add the models
-        const modelsPrep = db.prepare("INSERT INTO models (model_id, clean_name, brand, company_country_code, selfhostable, reasoning, humanitys_last_exam_percentage, swe_bench_resolved_percentage, skatebench_score) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        const modelsTokenisersPrep = db.prepare("INSERT INTO models_tokenisers (model_id, tokeniser, url) VALUES (?, ?, ?)");
-        const modelsVendorsPrep = db.prepare("INSERT INTO models_vendors (model_id, vendor_id, latency_ms, tokens_per_second, low_capacity) VALUES (?, ?, ?, ?, ?)");
-        const modelsVendorsRegionsPrep = db.prepare("INSERT INTO models_vendors_regions (model_id, vendor_id, region_code, input_token_cost, output_token_cost, cached_input_token_cost, cached_output_token_cost) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        const modelsPrep = db.prepare(
+            "INSERT INTO models (model_id, clean_name, brand, company_country_code, selfhostable, reasoning, humanitys_last_exam_percentage, swe_bench_resolved_percentage, skatebench_score) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        );
+        const modelsTokenisersPrep = db.prepare(
+            "INSERT INTO models_tokenisers (model_id, tokeniser, url) VALUES (?, ?, ?)"
+        );
+        const modelsVendorsPrep = db.prepare(
+            "INSERT INTO models_vendors (model_id, vendor_id, latency_ms, tokens_per_second, low_capacity) VALUES (?, ?, ?, ?, ?)"
+        );
+        const modelsVendorsRegionsPrep = db.prepare(
+            "INSERT INTO models_vendors_regions (model_id, vendor_id, region_code, input_token_cost, output_token_cost, cached_input_token_cost, cached_output_token_cost) VALUES (?, ?, ?, ?, ?, ?, ?)"
+        );
         for (const [modelId, modelData] of Object.entries(data.models)) {
             modelsPrep.run([
                 modelId,
@@ -69,7 +86,11 @@ export const GET: APIRoute = () => {
                     modelsTokenisersPrep.run([modelId, "tiktoken", modelData.tokeniser.bpePath]);
                     break;
                 case "transformers":
-                    modelsTokenisersPrep.run([modelId, "transformers", modelData.tokeniser.pretrainedPath]);
+                    modelsTokenisersPrep.run([
+                        modelId,
+                        "transformers",
+                        modelData.tokeniser.pretrainedPath,
+                    ]);
                     break;
                 default:
                     throw new Error(`Unknown tokeniser type: ${modelData.tokeniser}`);
@@ -82,7 +103,10 @@ export const GET: APIRoute = () => {
                     vendor.tokensPerSecond || null,
                     vendor.lowCapacity ? 1 : 0,
                 ]);
-                for (const [regionCode, [inputTokenCost, outputTokenCost, cachedInputTokenCost, cachedOutputTokenCost]] of Object.entries(vendor.regionPricing)) {
+                for (const [
+                    regionCode,
+                    [inputTokenCost, outputTokenCost, cachedInputTokenCost, cachedOutputTokenCost],
+                ] of Object.entries(vendor.regionPricing)) {
                     modelsVendorsRegionsPrep.run([
                         modelId,
                         vendor.vendorRef,
@@ -97,10 +121,18 @@ export const GET: APIRoute = () => {
         }
 
         // Add the image models
-        const imageModelsPrep = db.prepare("INSERT INTO image_models (model_id, clean_name, brand, company_country_code, selfhostable, supports_negative_prompts) VALUES (?, ?, ?, ?, ?, ?)");
-        const imageModelsResolutionsPrep = db.prepare("INSERT INTO image_models_resolutions (model_id, resolution) VALUES (?, ?)");
-        const imageModelsVendorsPrep = db.prepare("INSERT INTO image_models_vendors (model_id, vendor_id, latency_ms, low_capacity) VALUES (?, ?, ?, ?)");
-        const imageModelsVendorsPricingPrep = db.prepare("INSERT INTO image_models_vendors_pricing (model_id, vendor_id, region_code, resolution, price_per_image, generation_speed_ms) VALUES (?, ?, ?, ?, ?, ?)");
+        const imageModelsPrep = db.prepare(
+            "INSERT INTO image_models (model_id, clean_name, brand, company_country_code, selfhostable, supports_negative_prompts) VALUES (?, ?, ?, ?, ?, ?)"
+        );
+        const imageModelsResolutionsPrep = db.prepare(
+            "INSERT INTO image_models_resolutions (model_id, resolution) VALUES (?, ?)"
+        );
+        const imageModelsVendorsPrep = db.prepare(
+            "INSERT INTO image_models_vendors (model_id, vendor_id, latency_ms, low_capacity) VALUES (?, ?, ?, ?)"
+        );
+        const imageModelsVendorsPricingPrep = db.prepare(
+            "INSERT INTO image_models_vendors_pricing (model_id, vendor_id, region_code, resolution, price_per_image, generation_speed_ms) VALUES (?, ?, ?, ?, ?, ?)"
+        );
         for (const [modelId, modelData] of Object.entries(data.imageModels || {})) {
             imageModelsPrep.run([
                 modelId,

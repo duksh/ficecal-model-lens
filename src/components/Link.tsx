@@ -1,13 +1,7 @@
 import { prefetch } from "astro:prefetch";
 import { navigate } from "astro:transitions/client";
 
-export default function Link({
-    href,
-    children,
-}: {
-    href: string;
-    children: React.ReactNode;
-}) {
+export default function Link({ href, children }: { href: string; children: React.ReactNode }) {
     return (
         <a
             href={href}

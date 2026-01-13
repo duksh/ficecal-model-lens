@@ -20,27 +20,21 @@ const AWS_IMAGE_MODELS: Record<string, ImageModelDefinition> = {
         provider: "Stability AI",
         supportedResolutions: ["1024x1024"],
         supportsNegativePrompts: true,
-        pricing: [
-            { resolution: "1024x1024", pricePerImage: 0.08 },
-        ],
+        pricing: [{ resolution: "1024x1024", pricePerImage: 0.08 }],
     },
     "stability.stable-image-ultra-v1:0": {
         name: "Stable Image Ultra",
         provider: "Stability AI",
         supportedResolutions: ["1024x1024"],
         supportsNegativePrompts: true,
-        pricing: [
-            { resolution: "1024x1024", pricePerImage: 0.14 },
-        ],
+        pricing: [{ resolution: "1024x1024", pricePerImage: 0.14 }],
     },
     "stability.stable-image-core-v1:0": {
         name: "Stable Image Core",
         provider: "Stability AI",
         supportedResolutions: ["1024x1024"],
         supportsNegativePrompts: true,
-        pricing: [
-            { resolution: "1024x1024", pricePerImage: 0.04 },
-        ],
+        pricing: [{ resolution: "1024x1024", pricePerImage: 0.04 }],
     },
     "amazon.titan-image-generator-v1": {
         name: "Amazon Titan Image Generator",
@@ -74,5 +68,7 @@ export default async function scrapeAwsImageData(fmt: DataFormat) {
         await addImageModelToFormat(fmt, "aws", "us-east-1", model);
     }
 
-    console.log(`Finished scraping AWS image generation data (${Object.keys(AWS_IMAGE_MODELS).length} models)`);
+    console.log(
+        `Finished scraping AWS image generation data (${Object.keys(AWS_IMAGE_MODELS).length} models)`
+    );
 }

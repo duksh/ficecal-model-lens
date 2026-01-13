@@ -1,4 +1,4 @@
-import type { DataFormat, Model, VendorModelInfo, ImageModel, ImagePricingTier, ImageResolution } from "@/src/dataFormat";
+import type { DataFormat, ImageResolution } from "@/src/dataFormat";
 import {
     getTokeniserForModel,
     isReasoningModel,
@@ -22,8 +22,8 @@ export const PROVIDERS: Record<string, string> = {
 export function slugify(name: string, provider: string): string {
     const n = name
         .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '');
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
     if (provider === "DeepSeek" && !n.startsWith("deepseek-")) {
         return `deepseek-${n}`;
     }
@@ -32,14 +32,15 @@ export function slugify(name: string, provider: string): string {
 
 export function providerToCountryCode(provider: string): string {
     const res = PROVIDERS[provider];
-    if (!res) throw new Error(`Unknown provider: ${provider}. Add it to PROVIDERS in scraper/shared.ts.`);
+    if (!res)
+        throw new Error(`Unknown provider: ${provider}. Add it to PROVIDERS in scraper/shared.ts.`);
     return res;
 }
 
 type ModelPricing = {
-    input: number;         // per token (not per million)
-    output: number;        // per token
-    cachedInput?: number;  // per token
+    input: number; // per token (not per million)
+    output: number; // per token
+    cachedInput?: number; // per token
     cachedOutput?: number; // per token
 };
 
@@ -82,12 +83,12 @@ export async function addModelToFormat(
             reasoning,
             selfhostable,
             tokeniser: getTokeniserForModel(slugifiedModel, model.provider),
-            ...await addBenchmarkDataForModel(slugifiedModel),
+            ...(await addBenchmarkDataForModel(slugifiedModel)),
         };
         fmt.models[slugifiedModel] = modelEntry;
     }
 
-    let vendor = modelEntry.vendors.find(v => v.vendorRef === vendorRef);
+    let vendor = modelEntry.vendors.find((v) => v.vendorRef === vendorRef);
     if (!vendor) {
         // Look up performance metrics from Artificial Analysis data
         const perfMetrics = getPerformanceMetrics(slugifiedModel, vendorRef);
@@ -118,8 +119,8 @@ export function perMillion(price: number): number {
 // Image model providers
 export const IMAGE_PROVIDERS: Record<string, string> = {
     "Stability AI": "GB",
-    "Amazon": "US",
-    "OpenAI": "US",
+    Amazon: "US",
+    OpenAI: "US",
 };
 
 export type ImageModelPricing = {
@@ -138,7 +139,10 @@ export type ImageModelDefinition = {
 
 export function imageProviderToCountryCode(provider: string): string {
     const res = IMAGE_PROVIDERS[provider];
-    if (!res) throw new Error(`Unknown image provider: ${provider}. Add it to IMAGE_PROVIDERS in scraper/shared.ts.`);
+    if (!res)
+        throw new Error(
+            `Unknown image provider: ${provider}. Add it to IMAGE_PROVIDERS in scraper/shared.ts.`
+        );
     return res;
 }
 
@@ -164,7 +168,7 @@ export async function addImageModelToFormat(
         fmt.imageModels[slugifiedModel] = modelEntry;
     }
 
-    let vendor = modelEntry.vendors.find(v => v.vendorRef === vendorRef);
+    let vendor = modelEntry.vendors.find((v) => v.vendorRef === vendorRef);
     if (!vendor) {
         vendor = {
             vendorRef,
@@ -175,7 +179,7 @@ export async function addImageModelToFormat(
         modelEntry.vendors.push(vendor);
     }
 
-    vendor.regionPricing[regionCode] = model.pricing.map(p => ({
+    vendor.regionPricing[regionCode] = model.pricing.map((p) => ({
         resolution: p.resolution,
         pricePerImage: p.pricePerImage,
         generationSpeedMs: p.generationSpeedMs,

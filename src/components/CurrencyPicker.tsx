@@ -11,11 +11,7 @@ import {
     CommandItem,
     CommandList,
 } from "./ui/command";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "./ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 type ForexEntry = { rate: number; name: string };
 
@@ -27,7 +23,10 @@ const allCurrencies = Object.entries(forexData as Record<string, ForexEntry>);
 const priorityCurrencies = allCurrencies
     .filter(([code]) => PRIORITY_CURRENCIES.includes(code.toUpperCase()))
     .sort(([codeA], [codeB]) => {
-        return PRIORITY_CURRENCIES.indexOf(codeA.toUpperCase()) - PRIORITY_CURRENCIES.indexOf(codeB.toUpperCase());
+        return (
+            PRIORITY_CURRENCIES.indexOf(codeA.toUpperCase()) -
+            PRIORITY_CURRENCIES.indexOf(codeB.toUpperCase())
+        );
     });
 
 const otherCurrencies = allCurrencies

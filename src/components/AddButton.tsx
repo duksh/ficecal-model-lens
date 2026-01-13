@@ -60,7 +60,7 @@ function SelectionMode({
             loadedValuesRows.clear();
             setQueries(cb);
         },
-        [setQueries, loadedValuesRows],
+        [setQueries, loadedValuesRows]
     );
 
     switch (mode) {
@@ -131,7 +131,7 @@ function SelectionMode({
                 </button>
             </div>
         </div>
-    )
+    );
 }
 
 export default function AddButton({

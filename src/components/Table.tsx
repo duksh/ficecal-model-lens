@@ -16,10 +16,7 @@ import Link from "./Link";
 import PortalRoot from "./PortalRoot";
 import ReactDOM from "react-dom";
 
-export type ColumnDataType =
-    "boolean" |
-    "currency" |
-    "country";
+export type ColumnDataType = "boolean" | "currency" | "country";
 
 export type ColumnQuery = {
     query: string;
@@ -42,13 +39,7 @@ function QueryFilter({
     const specificType = query.columnExplicitlySetDataTypes[columnName];
 
     if (specificType === "boolean") {
-        return (
-            <BooleanFilter
-                columnName={columnName}
-                query={query}
-                updateQuery={updateQuery}
-            />
-        );
+        return <BooleanFilter columnName={columnName} query={query} updateQuery={updateQuery} />;
     }
 
     const valueTypeSet = new Set<string>();
@@ -63,28 +54,12 @@ function QueryFilter({
     switch (valueTypeSet.values().next().value) {
         case "boolean":
             return (
-                <BooleanFilter
-                    columnName={columnName}
-                    query={query}
-                    updateQuery={updateQuery}
-                />
+                <BooleanFilter columnName={columnName} query={query} updateQuery={updateQuery} />
             );
         case "string":
-            return (
-                <StringFilter
-                    columnName={columnName}
-                    query={query}
-                    updateQuery={updateQuery}
-                />
-            )
+            return <StringFilter columnName={columnName} query={query} updateQuery={updateQuery} />;
         case "number":
-            return (
-                <NumberFilter
-                    columnName={columnName}
-                    query={query}
-                    updateQuery={updateQuery}
-                />
-            )
+            return <NumberFilter columnName={columnName} query={query} updateQuery={updateQuery} />;
     }
 
     return null;
@@ -111,42 +86,48 @@ function TableHeader({
 }) {
     const [currentSorting, setCurrentSorting] = useStateItem("currentSorting");
 
-    const setSorting = React.useCallback((columnName: string, cb: (value: boolean | null) => boolean | null) => {
-        setCurrentSorting((old) => {
-            if (old?.[0] === queryIdx) {
-                const newSorting = cb(old[2]);
-                if (newSorting === null) {
-                    return null;
+    const setSorting = React.useCallback(
+        (columnName: string, cb: (value: boolean | null) => boolean | null) => {
+            setCurrentSorting((old) => {
+                if (old?.[0] === queryIdx) {
+                    const newSorting = cb(old[2]);
+                    if (newSorting === null) {
+                        return null;
+                    }
+                    return [old[0], old[1], newSorting] as [number, string, boolean];
                 }
-                return [old[0], old[1], newSorting] as [number, string, boolean];
-            }
-            return [queryIdx, columnName, cb(null)] as [number, string, boolean];
-        });
-    }, [queryColumns, queryIdx]);
+                return [queryIdx, columnName, cb(null)] as [number, string, boolean];
+            });
+        },
+        [queryColumns, queryIdx]
+    );
 
     if (queryColumns === null) {
         return (
             <th className="pb-1">
-                <div 
-                    className="absolute top-0 right-0 w-1 h-full cursor-col-resize bg-gray-200 hover:opacity-50 transition-all duration-150" 
-                />
+                <div className="absolute top-0 right-0 w-1 h-full cursor-col-resize bg-gray-200 hover:opacity-50 transition-all duration-150" />
             </th>
         );
     }
 
     const values = React.useMemo(() => {
-        return Array.from(loadedValuesPtr[0].values()).map((lv) => {
-            if (lv === null) {
-                return undefined;
-            }
-            return lv;
-        }).filter((v) => v !== undefined);
+        return Array.from(loadedValuesPtr[0].values())
+            .map((lv) => {
+                if (lv === null) {
+                    return undefined;
+                }
+                return lv;
+            })
+            .filter((v) => v !== undefined);
     }, [loadedValuesPtr]);
 
     return queryColumns.map((col, idx) => (
         <Column
-            columnType="th" initialWidth={query.widths?.[col] || DEFAULT_COLUMN_WIDTH}
-            key={col} className="pb-1" updateWidth={(width) => {
+            columnType="th"
+            initialWidth={query.widths?.[col] || DEFAULT_COLUMN_WIDTH}
+            key={col}
+            className="pb-1"
+            updateWidth={(width) => {
                 if (!query.widths) {
                     query.widths = {
                         [col]: width,
@@ -160,47 +141,49 @@ function TableHeader({
         >
             <div className="flex items-center mb-1 grow">
                 <div className="block grow">
-                    <div className="line-clamp-2" title={col}>{col}</div>
+                    <div className="line-clamp-2" title={col}>
+                        {col}
+                    </div>
                 </div>
                 <SortingButtons
                     ascending={currentSorting?.[0] === queryIdx ? currentSorting[2] : null}
                     setSorting={setSorting}
                     columnName={col}
                 />
-                {
-                    idx === queryColumns.length - 1 && (
-                        <>
-                            <button
-                                className="ml-2 px-2 py-1 text-xs text-red-600 hover:text-white hover:bg-red-600 rounded transition block"
-                                title="Delete column"
-                                onClick={deleteQuery}
-                            >
-                                &#x2715;
-                            </button>
-                            <SQLEditorButton
-                                query={query}
-                                updateQuery={updateQuery}
-                                firstId={firstId}
-                            />
-                        </>
-                    )
-                }
+                {idx === queryColumns.length - 1 && (
+                    <>
+                        <button
+                            className="ml-2 px-2 py-1 text-xs text-red-600 hover:text-white hover:bg-red-600 rounded transition block"
+                            title="Delete column"
+                            onClick={deleteQuery}
+                        >
+                            &#x2715;
+                        </button>
+                        <SQLEditorButton
+                            query={query}
+                            updateQuery={updateQuery}
+                            firstId={firstId}
+                        />
+                    </>
+                )}
             </div>
             <div className="w-full mt-auto">
                 <QueryFilter
                     columnName={col}
                     query={query}
                     updateQuery={updateQuery}
-                    values={values.map((lv) => {
-                        if (lv === null) {
-                            return undefined;
-                        }
-                        const queryFromIdx = lv[queryIdx];
-                        if (!Array.isArray(queryFromIdx)) {
-                            return undefined;
-                        }
-                        return queryFromIdx[idx];
-                    }).filter((v) => v !== undefined)}
+                    values={values
+                        .map((lv) => {
+                            if (lv === null) {
+                                return undefined;
+                            }
+                            const queryFromIdx = lv[queryIdx];
+                            if (!Array.isArray(queryFromIdx)) {
+                                return undefined;
+                            }
+                            return queryFromIdx[idx];
+                        })
+                        .filter((v) => v !== undefined)}
                 />
             </div>
         </Column>
@@ -214,7 +197,7 @@ async function loadSingleRowData(
     setQueryColumns: (cols: (string[] | null)[]) => void,
     setLoadedValues: (vals: (any[] | null | { error: string })[] | null) => void,
     setRowVisible: (visible: boolean) => void,
-    mountedRef: [boolean],
+    mountedRef: [boolean]
 ) {
     const loadedColumns: (any[] | null | { error: string })[] = [];
     const write = () => {
@@ -239,7 +222,9 @@ async function loadSingleRowData(
                     loadedColumns[index] = sortedColumns.map((col) => row[col]);
 
                     // Check filters
-                    if (!checkFilters(row, query.columnFilters, query.columnExplicitlySetDataTypes)) {
+                    if (
+                        !checkFilters(row, query.columnFilters, query.columnExplicitlySetDataTypes)
+                    ) {
                         noFiltersNegative = false;
                     }
                 } else if (queryColumns[index] === null) {
@@ -280,7 +265,14 @@ const cachedQueriesKey = new WeakMap<ColumnQuery[], string>();
 function getQueriesKey(queries: ColumnQuery[]): string {
     let key = cachedQueriesKey.get(queries);
     if (!key) {
-        key = queries.map((q) => q.query + JSON.stringify(q.columnFilters) + JSON.stringify(q.columnExplicitlySetDataTypes)).join("||");
+        key = queries
+            .map(
+                (q) =>
+                    q.query +
+                    JSON.stringify(q.columnFilters) +
+                    JSON.stringify(q.columnExplicitlySetDataTypes)
+            )
+            .join("||");
         cachedQueriesKey.set(queries, key);
     }
     return key;
@@ -318,7 +310,7 @@ function TableRow({
             setQueryColumns,
             setLoadedValues,
             setRowVisible,
-            mounted,
+            mounted
         );
 
         return () => {
@@ -337,27 +329,21 @@ function TableRow({
                 <div className="px-2">
                     <Link href={`/${modelPath}/${id}`}>{name}</Link>
                 </div>
-                <div
-                    className="absolute top-0 right-0 w-1 h-full bg-gray-200 hover:opacity-50 transition-all duration-150"
-                />
+                <div className="absolute top-0 right-0 w-1 h-full bg-gray-200 hover:opacity-50 transition-all duration-150" />
             </td>
-            {
-                loadedValues ? (
-                    <RowLoadedValues
-                        loadedValues={loadedValues}
-                        queryColumns={queryColumns}
-                        modelType={modelType}
-                    />
-                ) : (
-                    new Array({ length: queries.length }).map((_, i) => (
-                        <td key={i}>
-                            <div
-                                className="absolute top-0 right-0 w-1 h-full cursor-col-resize bg-gray-200 hover:opacity-50 transition-all duration-150"
-                            />
-                        </td>
-                    ))
-                )
-            }
+            {loadedValues ? (
+                <RowLoadedValues
+                    loadedValues={loadedValues}
+                    queryColumns={queryColumns}
+                    modelType={modelType}
+                />
+            ) : (
+                new Array({ length: queries.length }).map((_, i) => (
+                    <td key={i}>
+                        <div className="absolute top-0 right-0 w-1 h-full cursor-col-resize bg-gray-200 hover:opacity-50 transition-all duration-150" />
+                    </td>
+                ))
+            )}
         </tr>
     );
 }
@@ -367,7 +353,7 @@ function sortIdsAndNames(
     queries: ColumnQuery[],
     queryColumns: (string[] | null)[],
     loadedValuesMap: Map<string, LoadedValues>,
-    currentSorting: [number, string, boolean] | null,
+    currentSorting: [number, string, boolean] | null
 ) {
     // Get the query we are sorting by
     const queryIdx = currentSorting?.[0];
@@ -403,7 +389,12 @@ function sortIdsAndNames(
         // Get the values to sort by
         const aVal = aQueryValues[queryColumnIdx];
         const bVal = bQueryValues[queryColumnIdx];
-        return sortValue(aVal, bVal, ascending, queries[queryIdx].columnExplicitlySetDataTypes[currentSorting![1]]);
+        return sortValue(
+            aVal,
+            bVal,
+            ascending,
+            queries[queryIdx].columnExplicitlySetDataTypes[currentSorting![1]]
+        );
     });
 }
 
@@ -414,15 +405,17 @@ function NameFilter({
     nameFilter: string;
     setNameFilter: (nameFilter: string) => void;
 }) {
-    return <div className="px-2 flex flex-col h-full">
-        <div className="grow">Name</div>
-        <input
-            type="text"
-            value={nameFilter}
-            onChange={(e) => setNameFilter(e.target.value)}
-            className="w-full border text-sm border-gray-300 rounded-md p-1 mt-auto"
-        />
-    </div>;
+    return (
+        <div className="px-2 flex flex-col h-full">
+            <div className="grow">Name</div>
+            <input
+                type="text"
+                value={nameFilter}
+                onChange={(e) => setNameFilter(e.target.value)}
+                className="w-full border text-sm border-gray-300 rounded-md p-1 mt-auto"
+            />
+        </div>
+    );
 }
 
 export default function Table({
@@ -443,7 +436,7 @@ export default function Table({
     const setQueries = modelType === "llm" ? setLlmQueries : setImageQueries;
     const [nameFilter, setNameFilter] = useStateItem("nameFilter");
     const [queryColumns, setQueryColumns] = React.useState<(string[] | null)[]>(
-        Array(queries.length).fill(null),
+        Array(queries.length).fill(null)
     );
     const [loadedValuesRows, setLoadedValuesRows] = React.useState<[Map<string, LoadedValues>]>(
         () => [new Map(idsAndNames.map(({ id }) => [id, null]))]
@@ -456,14 +449,23 @@ export default function Table({
         setLoadedValuesRows([new Map(idsAndNames.map(({ id }) => [id, null]))]);
     }, [modelType]);
     const sortedIdsAndNames = React.useMemo(() => {
-        const v = sortIdsAndNames(idsAndNames, queries, queryColumns, loadedValuesRows[0], currentSorting);
+        const v = sortIdsAndNames(
+            idsAndNames,
+            queries,
+            queryColumns,
+            loadedValuesRows[0],
+            currentSorting
+        );
         if (nameFilter === "") {
             return v;
         }
         return v.filter(({ name }) => name.toLowerCase().includes(nameFilter.toLowerCase()));
     }, [idsAndNames, nameFilter, queries, queryColumns, loadedValuesRows, currentSorting]);
 
-    const portalRoot = ReactDOM.createPortal(<PortalRoot />, document.getElementById("portal-root")!);
+    const portalRoot = ReactDOM.createPortal(
+        <PortalRoot />,
+        document.getElementById("portal-root")!
+    );
 
     return (
         <>
@@ -478,75 +480,71 @@ export default function Table({
                                         nameFilter={nameFilter}
                                         setNameFilter={setNameFilter}
                                     />
-                                    <div 
-                                        className="absolute top-0 right-0 w-1 h-full bg-gray-200 hover:opacity-50 transition-all duration-150" 
-                                    />
+                                    <div className="absolute top-0 right-0 w-1 h-full bg-gray-200 hover:opacity-50 transition-all duration-150" />
                                 </th>
-                                {
-                                    queries.map((q, i) => (
-                                        <TableHeader
-                                            key={i}
-                                            queryIdx={i}
-                                            query={q}
-                                            updateQuery={(rerunQuery: boolean) => {
-                                                const newQueries = [...queries];
-                                                newQueries[i] = q;
-                                                setQueries(newQueries);
-                                                if (rerunQuery) {
-                                                    setCurrentSorting((old) => {
-                                                        if (old?.[0] === i) {
-                                                            return null;
-                                                        }
-                                                        return [i, q.query, true];
-                                                    });
-                                                    setQueryColumns((x) => {
-                                                        const newQueryColumns = [...x];
-                                                        newQueryColumns[i] = null;
-                                                        return newQueryColumns;
-                                                    })
-                                                }
-                                            }}
-                                            deleteQuery={() => {
-                                                // Handle the map
-                                                loadedValuesRows[0].forEach((v) => {
-                                                    v?.splice(i, 1);
+                                {queries.map((q, i) => (
+                                    <TableHeader
+                                        key={i}
+                                        queryIdx={i}
+                                        query={q}
+                                        updateQuery={(rerunQuery: boolean) => {
+                                            const newQueries = [...queries];
+                                            newQueries[i] = q;
+                                            setQueries(newQueries);
+                                            if (rerunQuery) {
+                                                setCurrentSorting((old) => {
+                                                    if (old?.[0] === i) {
+                                                        return null;
+                                                    }
+                                                    return [i, q.query, true];
                                                 });
-                                                setLoadedValuesRows([...loadedValuesRows]);
+                                                setQueryColumns((x) => {
+                                                    const newQueryColumns = [...x];
+                                                    newQueryColumns[i] = null;
+                                                    return newQueryColumns;
+                                                });
+                                            }
+                                        }}
+                                        deleteQuery={() => {
+                                            // Handle the map
+                                            loadedValuesRows[0].forEach((v) => {
+                                                v?.splice(i, 1);
+                                            });
+                                            setLoadedValuesRows([...loadedValuesRows]);
 
-                                                // Handle deletion of a query from that array
-                                                const newQueries = queries.filter((_, idx) => idx !== i);
-                                                setQueries(newQueries);
-                                                setQueryColumns((x) => x.filter((_, idx) => idx !== i));
-                                            }}
-                                            queryColumns={queryColumns[i] || []}
-                                            loadedValuesPtr={loadedValuesRows}
-                                            firstId={idsAndNames[0]?.id || ""}
-                                        />
-                                    ))
-                                }
+                                            // Handle deletion of a query from that array
+                                            const newQueries = queries.filter(
+                                                (_, idx) => idx !== i
+                                            );
+                                            setQueries(newQueries);
+                                            setQueryColumns((x) => x.filter((_, idx) => idx !== i));
+                                        }}
+                                        queryColumns={queryColumns[i] || []}
+                                        loadedValuesPtr={loadedValuesRows}
+                                        firstId={idsAndNames[0]?.id || ""}
+                                    />
+                                ))}
                             </tr>
                         </thead>
                         <tbody className="h-full overflow-y-scroll">
-                            {
-                                sortedIdsAndNames.map(({ id, name }) => (
-                                    <TableRow
-                                        id={id}
-                                        key={`${modelType}-${id}`}
-                                        name={name}
-                                        queryColumns={queryColumns}
-                                        setQueryColumns={setQueryColumns}
-                                        loadedValues={loadedValuesRows[0].get(id) || null}
-                                        setLoadedValues={(vals) => {
-                                            setLoadedValuesRows((prev) => {
-                                                prev[0].set(id, vals);
-                                                return [prev[0]];
-                                            });
-                                        }}
-                                        queries={queries}
-                                        modelType={modelType}
-                                    />
-                                ))
-                            }
+                            {sortedIdsAndNames.map(({ id, name }) => (
+                                <TableRow
+                                    id={id}
+                                    key={`${modelType}-${id}`}
+                                    name={name}
+                                    queryColumns={queryColumns}
+                                    setQueryColumns={setQueryColumns}
+                                    loadedValues={loadedValuesRows[0].get(id) || null}
+                                    setLoadedValues={(vals) => {
+                                        setLoadedValuesRows((prev) => {
+                                            prev[0].set(id, vals);
+                                            return [prev[0]];
+                                        });
+                                    }}
+                                    queries={queries}
+                                    modelType={modelType}
+                                />
+                            ))}
                         </tbody>
                     </table>
                     <div className="ml-4 shrink-0 sticky top-0 self-start">

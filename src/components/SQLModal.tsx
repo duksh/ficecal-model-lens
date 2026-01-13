@@ -14,7 +14,10 @@ export type SQLModalProps = {
 
 export const CodeMirror = React.lazy(() => import("./CodeMirror"));
 
-export async function testQuery(query: string, firstId: string): Promise<{ ok: boolean; error?: string; row?: { [column: string]: any } }> {
+export async function testQuery(
+    query: string,
+    firstId: string
+): Promise<{ ok: boolean; error?: string; row?: { [column: string]: any } }> {
     try {
         const rows = await loadMultipleRows(query, [firstId]);
         if (!rows || rows.length === 0) {
@@ -42,35 +45,34 @@ export async function testQuery(query: string, firstId: string): Promise<{ ok: b
     }
 }
 
-function SQLModalInner({
-    exit,
-    setQueries,
-    firstId,
-}: SQLModalProps) {
+function SQLModalInner({ exit, setQueries, firstId }: SQLModalProps) {
     const valueRef = React.useRef<string>("");
     const columnCustomTypes = React.useRef<{ [key: string]: ColumnDataType }>({});
     const [output, setOutput] = React.useState<React.JSX.Element | null>(null);
 
-    const submit = React.useCallback((e: React.FormEvent) => {
-        e.preventDefault();
-        testQuery(valueRef.current, firstId).then((res) => {
-            if (!res.ok) {
-                setOutput(<span className="text-red-600 mb-4">Error: {res.error}</span>);
-                return;
-            }
+    const submit = React.useCallback(
+        (e: React.FormEvent) => {
+            e.preventDefault();
+            testQuery(valueRef.current, firstId).then((res) => {
+                if (!res.ok) {
+                    setOutput(<span className="text-red-600 mb-4">Error: {res.error}</span>);
+                    return;
+                }
 
-            setQueries((prev) => [
-                ...prev,
-                {
-                    query: valueRef.current,
-                    columnExplicitlySetDataTypes: columnCustomTypes.current,
-                    columnFilters: {},
-                    columnOrdering: {},
-                },
-            ]);
-            exit();
-        });
-    }, [columnCustomTypes]);
+                setQueries((prev) => [
+                    ...prev,
+                    {
+                        query: valueRef.current,
+                        columnExplicitlySetDataTypes: columnCustomTypes.current,
+                        columnFilters: {},
+                        columnOrdering: {},
+                    },
+                ]);
+                exit();
+            });
+        },
+        [columnCustomTypes]
+    );
 
     return (
         <form className="block max-w-lg" onSubmit={submit}>
@@ -84,15 +86,11 @@ function SQLModalInner({
                     }}
                 />
             </React.Suspense>
-            <ColumnCustomTypeSelector
-                columnCustomTypes={columnCustomTypes.current}
-            />
+            <ColumnCustomTypeSelector columnCustomTypes={columnCustomTypes.current} />
             <QueryHelp />
-            <Button className="mt-4">
-                Add Columns
-            </Button>
+            <Button className="mt-4">Add Columns</Button>
         </form>
-    )
+    );
 }
 
 const SQLModal = React.forwardRef<HTMLDialogElement, SQLModalProps>((props, ref) => {
@@ -103,7 +101,7 @@ const SQLModal = React.forwardRef<HTMLDialogElement, SQLModalProps>((props, ref)
             onClick={() => props.exit()}
             onClose={() => props.exit()}
         >
-            <div onClick={e => e.stopPropagation()}>
+            <div onClick={(e) => e.stopPropagation()}>
                 <div className="bg-white p-4 block w-full h-full">
                     <header>
                         <div className="flex gap-2 items-center">

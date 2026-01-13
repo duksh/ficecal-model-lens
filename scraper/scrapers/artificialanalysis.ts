@@ -154,17 +154,17 @@ const PERFORMANCE_DATA: PerformanceEntry[] = [
 
 // Vendor ID mapping from Artificial Analysis provider names
 const VENDOR_MAP: Record<string, string> = {
-    'Amazon Bedrock': 'aws',
-    'Amazon Bedrock Standard': 'aws',
-    'Amazon Bedrock Latency Optimized': 'aws',
-    'OpenAI': 'openai',
-    'Anthropic': 'anthropic',
-    'Mistral': 'mistral',
-    'Google (Vertex)': 'gcp',
-    'Google (AI Studio)': 'gcp',
-    'Google Vertex': 'gcp',
-    'DeepSeek': 'deepseek',
-    'Alibaba Cloud': 'alibaba',
+    "Amazon Bedrock": "aws",
+    "Amazon Bedrock Standard": "aws",
+    "Amazon Bedrock Latency Optimized": "aws",
+    OpenAI: "openai",
+    Anthropic: "anthropic",
+    Mistral: "mistral",
+    "Google (Vertex)": "gcp",
+    "Google (AI Studio)": "gcp",
+    "Google Vertex": "gcp",
+    DeepSeek: "deepseek",
+    "Alibaba Cloud": "alibaba",
 };
 
 /**
@@ -172,15 +172,17 @@ const VENDOR_MAP: Record<string, string> = {
  * Removes version suffixes, parenthetical notes, and normalizes spacing.
  */
 function normalizeModelName(name: string): string {
-    return name
-        .toLowerCase()
-        // Remove parenthetical suffixes like "(high)", "(low)", "(Vertex)", "(AI Studio)"
-        .replace(/\s*\([^)]*\)\s*/g, ' ')
-        // Remove "vertex" suffix
-        .replace(/\s*vertex\s*/gi, ' ')
-        // Normalize whitespace
-        .replace(/\s+/g, ' ')
-        .trim();
+    return (
+        name
+            .toLowerCase()
+            // Remove parenthetical suffixes like "(high)", "(low)", "(Vertex)", "(AI Studio)"
+            .replace(/\s*\([^)]*\)\s*/g, " ")
+            // Remove "vertex" suffix
+            .replace(/\s*vertex\s*/gi, " ")
+            // Normalize whitespace
+            .replace(/\s+/g, " ")
+            .trim()
+    );
 }
 
 /**
@@ -189,52 +191,52 @@ function normalizeModelName(name: string): string {
 function modelNameToSlug(name: string): string {
     // Special case mappings
     const specialMappings: Record<string, string> = {
-        'claude opus 4.5': 'claude-opus-4-5',
-        'claude 4.5 sonnet': 'claude-sonnet-4-5',
-        'claude 4.5 haiku': 'claude-haiku-4-5',
-        'gpt-5.2': 'gpt-5-2',
-        'gpt-5.1': 'gpt-5-1',
-        'gpt-5': 'gpt-5',
-        'o3': 'o3',
-        'gemini 3 pro preview': 'gemini-3-0-pro',
-        'gemini 3 flash': 'gemini-3-0-flash',
-        'gemini 2.5 pro': 'gemini-2-5-pro',
-        'gemini 2.5 flash-lite': 'gemini-2-5-flash-lite',
-        'deepseek v3.2': 'deepseek-v3-2',
-        'deepseek v3': 'deepseek-v3',
-        'deepseek r1': 'deepseek-r1',
-        'llama 3.1 405b': 'llama-3-1-405b-instruct',
-        'llama 3.3 70b': 'llama-3-3-70b-instruct',
-        'llama 4 scout': 'llama-4-scout-17b-16e-instruct',
-        'llama 3.2 3b': 'llama-3-2-3b-instruct',
-        'llama 3.2 11b': 'llama-3-2-11b-vision-instruct',
-        'llama 3.2 90b': 'llama-3-2-90b-vision-instruct',
-        'mistral large 3': 'mistral-large-3',
-        'mistral medium 3.1': 'mistral-medium-3-1',
-        'mistral small 3.2': 'mistral-small-3-2',
-        'ministral 14b': 'ministral-14b',
-        'ministral 8b': 'ministral-8b',
-        'ministral 3b': 'ministral-3b',
-        'magistral medium 1.2': 'magistral-medium-1-2',
-        'magistral small 1.2': 'magistral-small-1-2',
-        'devstral 2': 'devstral-2',
-        'devstral small': 'devstral-small',
-        'qwen3 max': 'qwen3-max',
-        'qwen3 235b a22b': 'qwen3-235b-a22b',
-        'qwen3 30b a3b': 'qwen3-30b-a3b',
-        'nova 2.0 pro preview': 'amazon-nova-2-0-pro-preview',
-        'nova 2.0 lite': 'amazon-nova-2-0-lite',
-        'nova 2.0 omni': 'amazon-nova-2-0-omni',
-        'nova premier': 'amazon-nova-premier',
-        'nova micro': 'amazon-nova-micro',
-        'gemma 3 27b': 'gemma-3-27b-it',
-        'gemma 3 4b': 'gemma-3-4b-it',
-        'gemma 3 1b': 'gemma-3-1b-it',
-        'kimi k2 thinking': 'kimi-k2-thinking',
-        'minimax-m2': 'minimax-m2',
-        'gpt-oss-120b': 'gpt-oss-120b',
-        'gpt-oss-20b': 'gpt-oss-20b',
-        'nvidia nemotron nano 9b v2': 'nvidia-nemotron-nano-9b-v2',
+        "claude opus 4.5": "claude-opus-4-5",
+        "claude 4.5 sonnet": "claude-sonnet-4-5",
+        "claude 4.5 haiku": "claude-haiku-4-5",
+        "gpt-5.2": "gpt-5-2",
+        "gpt-5.1": "gpt-5-1",
+        "gpt-5": "gpt-5",
+        o3: "o3",
+        "gemini 3 pro preview": "gemini-3-0-pro",
+        "gemini 3 flash": "gemini-3-0-flash",
+        "gemini 2.5 pro": "gemini-2-5-pro",
+        "gemini 2.5 flash-lite": "gemini-2-5-flash-lite",
+        "deepseek v3.2": "deepseek-v3-2",
+        "deepseek v3": "deepseek-v3",
+        "deepseek r1": "deepseek-r1",
+        "llama 3.1 405b": "llama-3-1-405b-instruct",
+        "llama 3.3 70b": "llama-3-3-70b-instruct",
+        "llama 4 scout": "llama-4-scout-17b-16e-instruct",
+        "llama 3.2 3b": "llama-3-2-3b-instruct",
+        "llama 3.2 11b": "llama-3-2-11b-vision-instruct",
+        "llama 3.2 90b": "llama-3-2-90b-vision-instruct",
+        "mistral large 3": "mistral-large-3",
+        "mistral medium 3.1": "mistral-medium-3-1",
+        "mistral small 3.2": "mistral-small-3-2",
+        "ministral 14b": "ministral-14b",
+        "ministral 8b": "ministral-8b",
+        "ministral 3b": "ministral-3b",
+        "magistral medium 1.2": "magistral-medium-1-2",
+        "magistral small 1.2": "magistral-small-1-2",
+        "devstral 2": "devstral-2",
+        "devstral small": "devstral-small",
+        "qwen3 max": "qwen3-max",
+        "qwen3 235b a22b": "qwen3-235b-a22b",
+        "qwen3 30b a3b": "qwen3-30b-a3b",
+        "nova 2.0 pro preview": "amazon-nova-2-0-pro-preview",
+        "nova 2.0 lite": "amazon-nova-2-0-lite",
+        "nova 2.0 omni": "amazon-nova-2-0-omni",
+        "nova premier": "amazon-nova-premier",
+        "nova micro": "amazon-nova-micro",
+        "gemma 3 27b": "gemma-3-27b-it",
+        "gemma 3 4b": "gemma-3-4b-it",
+        "gemma 3 1b": "gemma-3-1b-it",
+        "kimi k2 thinking": "kimi-k2-thinking",
+        "minimax-m2": "minimax-m2",
+        "gpt-oss-120b": "gpt-oss-120b",
+        "gpt-oss-20b": "gpt-oss-20b",
+        "nvidia nemotron nano 9b v2": "nvidia-nemotron-nano-9b-v2",
     };
 
     const normalized = normalizeModelName(name);
@@ -252,9 +254,7 @@ function modelNameToSlug(name: string): string {
     }
 
     // Default: convert to slug format
-    return normalized
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '');
+    return normalized.replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 }
 
 // Build lookup map: vendorId -> modelSlug -> { tokensPerSecond, latencyMs }

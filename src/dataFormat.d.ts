@@ -4,7 +4,13 @@ type CachedInputTokenCost = number;
 type CachedOutputTokenCost = number;
 
 // Image generation types
-type ImageResolution = "256x256" | "512x512" | "1024x1024" | "1024x1792" | "1792x1024" | "2048x2048";
+type ImageResolution =
+    | "256x256"
+    | "512x512"
+    | "1024x1024"
+    | "1024x1792"
+    | "1792x1024"
+    | "2048x2048";
 
 type ImagePricingTier = {
     resolution: ImageResolution;
@@ -32,7 +38,12 @@ type ImageModel = {
 type VendorModelInfo = {
     vendorRef: string;
     regionPricing: {
-        [regionCode: string]: [InputTokenCost, OutputTokenCost, CachedInputTokenCost | null, CachedOutputTokenCost | null];
+        [regionCode: string]: [
+            InputTokenCost,
+            OutputTokenCost,
+            CachedInputTokenCost | null,
+            CachedOutputTokenCost | null,
+        ];
     };
     latencyMs: number;
     tokensPerSecond: number;

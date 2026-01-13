@@ -24,7 +24,7 @@ function renderColumn(
     cellVal: any,
     columnName: string | undefined,
     query: ColumnQuery,
-    currency: string,
+    currency: string
 ) {
     if (columnName) {
         const dataType = query.columnExplicitlySetDataTypes[columnName];
@@ -89,19 +89,18 @@ export default function RowLoadedValues({
 
     return loadedValues.map((val, i) => {
         if (val === null) {
-            return (
-                new Array({ length: getColSpan(i) }).map((_, j) => (
-                    <td key={`${i}-${j}`}>
-                        <div 
-                            className="absolute top-0 right-0 w-1 h-full cursor-col-resize bg-gray-200 hover:opacity-50 transition-all duration-150" 
-                        />
-                    </td>
-                ))
-            );
+            return new Array({ length: getColSpan(i) }).map((_, j) => (
+                <td key={`${i}-${j}`}>
+                    <div className="absolute top-0 right-0 w-1 h-full cursor-col-resize bg-gray-200 hover:opacity-50 transition-all duration-150" />
+                </td>
+            ));
         } else if (Array.isArray(val)) {
             const res = val.map((cellVal, j) => (
                 <Column
-                    columnType="td" initialWidth={queries[i]?.widths?.[queryColumns[i]?.[j] || ""] || DEFAULT_COLUMN_WIDTH}
+                    columnType="td"
+                    initialWidth={
+                        queries[i]?.widths?.[queryColumns[i]?.[j] || ""] || DEFAULT_COLUMN_WIDTH
+                    }
                     updateWidth={(newWidth: number) => {
                         const colName = queryColumns[i]?.[j];
                         if (colName) {
@@ -115,12 +114,7 @@ export default function RowLoadedValues({
                     }}
                     key={`${i}-${j}`}
                 >
-                    {renderColumn(
-                        cellVal,
-                        queryColumns[i]?.[j],
-                        queries[i],
-                        currency,
-                    )}
+                    {renderColumn(cellVal, queryColumns[i]?.[j], queries[i], currency)}
                 </Column>
             ));
             if (res.length === 0) {
@@ -129,7 +123,11 @@ export default function RowLoadedValues({
                     // Render <column count> empty cells
                     return Array.from({ length: columns.length }, (_, j) => (
                         <Column
-                            columnType="td" initialWidth={queries[i]?.widths?.[queryColumns[i]?.[j] || ""] || DEFAULT_COLUMN_WIDTH}
+                            columnType="td"
+                            initialWidth={
+                                queries[i]?.widths?.[queryColumns[i]?.[j] || ""] ||
+                                DEFAULT_COLUMN_WIDTH
+                            }
                             updateWidth={(newWidth: number) => {
                                 const colName = queryColumns[i]?.[j];
                                 if (colName) {
@@ -151,7 +149,11 @@ export default function RowLoadedValues({
             return res;
         } else {
             return (
-                <td key={i} style={{ width: DEFAULT_COLUMN_WIDTH * getColSpan(i) }} colSpan={getColSpan(i)}>
+                <td
+                    key={i}
+                    style={{ width: DEFAULT_COLUMN_WIDTH * getColSpan(i) }}
+                    colSpan={getColSpan(i)}
+                >
                     Error: {val.error}
                 </td>
             );
