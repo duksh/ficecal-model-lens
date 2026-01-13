@@ -8,6 +8,18 @@ export const DEFAULT_COLUMN_WIDTH = 150;
 const ZERO_ENDING_REGEX = /0+$/g;
 const DOT_ENDING_REGEX = /\.$/g;
 
+function countryCodeToFlag(countryCode: string): string {
+    const codePoints = countryCode
+        .toUpperCase()
+        .split("")
+        .map((char) => 127397 + char.charCodeAt(0));
+    try {
+        return `${String.fromCodePoint(...codePoints)} (${countryCode})`;
+    } catch {
+        return countryCode;
+    }
+}
+
 function renderColumn(
     cellVal: any,
     columnName: string | undefined,
@@ -31,8 +43,10 @@ function renderColumn(
             }).format(cellVal * rate);
         }
         if (dataType === "country") {
-            // TODO
-            return cellVal;
+            if (typeof cellVal === "string") {
+                return countryCodeToFlag(cellVal);
+            }
+            return "-";
         }
     }
 
