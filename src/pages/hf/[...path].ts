@@ -153,15 +153,29 @@ export const GET: APIRoute = async ({ params }) => {
             throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
         }
 
-        const data = await response.arrayBuffer();
-        cache.set(path, data);
+        let data: ArrayBuffer;
+        const isJson = path.endsWith(".json");
 
-        console.log(`Cached HuggingFace file ${path} (${(data.byteLength / 1024).toFixed(1)} KB)`);
+        if (isJson) {
+            // Minify JSON to reduce file size (HuggingFace serves pretty-printed JSON)
+            const text = await response.text();
+            const parsed = JSON.parse(text);
+            const minified = JSON.stringify(parsed);
+            data = new TextEncoder().encode(minified).buffer;
+            console.log(
+                `Cached HuggingFace file ${path} (${(text.length / 1024).toFixed(1)} KB -> ${(data.byteLength / 1024).toFixed(1)} KB minified)`
+            );
+        } else {
+            data = await response.arrayBuffer();
+            console.log(`Cached HuggingFace file ${path} (${(data.byteLength / 1024).toFixed(1)} KB)`);
+        }
+
+        cache.set(path, data);
 
         return new Response(data, {
             status: 200,
             headers: {
-                "Content-Type": "application/json",
+                "Content-Type": isJson ? "application/json" : "text/plain",
                 "Access-Control-Allow-Origin": "*",
             },
         });
