@@ -121,7 +121,7 @@ function RunQueryModal({ onClose }: { onClose: () => void }) {
                         />
                     </React.Suspense>
 
-                    <QueryHelp />
+                    <QueryHelp showParameterHelp={false} />
 
                     <div className="mt-4 flex items-center gap-4">
                         <Button onClick={runQuery} disabled={isLoading}>

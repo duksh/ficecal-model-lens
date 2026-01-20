@@ -1,7 +1,7 @@
 import React from "react";
 import { ChevronDownIcon } from "lucide-react";
 
-export default function QueryHelp() {
+export default function QueryHelp({ showParameterHelp = true }: { showParameterHelp?: boolean }) {
     return (
         <details className="mt-4 text-sm">
             <summary className="cursor-pointer select-none flex items-center gap-1 text-gray-600 hover:text-gray-900">
@@ -9,21 +9,23 @@ export default function QueryHelp() {
                 <span>Query Help</span>
             </summary>
             <div className="mt-2 p-3 bg-gray-50 rounded-md border border-gray-200 text-gray-700">
-                <section className="mb-3">
-                    <h4 className="font-semibold mb-1">How queries work</h4>
-                    <p className="mb-2">
-                        Your query runs once per row with{" "}
-                        <code className="bg-gray-200 px-1 rounded">?</code> replaced by the model
-                        ID. Use <code className="bg-gray-200 px-1 rounded">WHERE model_id = ?</code>{" "}
-                        to filter to the current row.
-                    </p>
-                    <p className="text-xs text-gray-500">
-                        Example:{" "}
-                        <code className="bg-gray-200 px-1 rounded">
-                            SELECT brand FROM models WHERE model_id = ?
-                        </code>
-                    </p>
-                </section>
+                {showParameterHelp && (
+                    <section className="mb-3">
+                        <h4 className="font-semibold mb-1">How queries work</h4>
+                        <p className="mb-2">
+                            Your query runs once per row with{" "}
+                            <code className="bg-gray-200 px-1 rounded">?</code> replaced by the model
+                            ID. Use <code className="bg-gray-200 px-1 rounded">WHERE model_id = ?</code>{" "}
+                            to filter to the current row.
+                        </p>
+                        <p className="text-xs text-gray-500">
+                            Example:{" "}
+                            <code className="bg-gray-200 px-1 rounded">
+                                SELECT brand FROM models WHERE model_id = ?
+                            </code>
+                        </p>
+                    </section>
+                )}
 
                 <section>
                     <h4 className="font-semibold mb-2">Available Tables</h4>
