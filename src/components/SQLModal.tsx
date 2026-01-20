@@ -55,7 +55,11 @@ function SQLModalInner({ exit, setQueries, firstId }: SQLModalProps) {
             e.preventDefault();
             testQuery(valueRef.current, firstId).then((res) => {
                 if (!res.ok) {
-                    setOutput(<span className="text-red-600 dark:text-red-400 mb-4">Error: {res.error}</span>);
+                    setOutput(
+                        <span className="text-red-600 dark:text-red-400 mb-4">
+                            Error: {res.error}
+                        </span>
+                    );
                     return;
                 }
 

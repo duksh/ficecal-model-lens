@@ -34,8 +34,12 @@ export default function ColumnCustomTypeSelector({
             <table id="col-editor-table" className="mt-4">
                 <thead>
                     <tr>
-                        <th className="border dark:border-gray-600 px-2 py-1 text-left">Column Name</th>
-                        <th className="border dark:border-gray-600 px-2 py-1 text-left">Data Type</th>
+                        <th className="border dark:border-gray-600 px-2 py-1 text-left">
+                            Column Name
+                        </th>
+                        <th className="border dark:border-gray-600 px-2 py-1 text-left">
+                            Data Type
+                        </th>
                         <th></th>
                     </tr>
                 </thead>

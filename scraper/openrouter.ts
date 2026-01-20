@@ -44,7 +44,9 @@ async function fetchOpenRouterModels(): Promise<Map<string, OpenRouterModel>> {
     cachedData = fetch(OPENROUTER_API_URL)
         .then((res) => {
             if (!res.ok) {
-                throw new Error(`Failed to fetch OpenRouter models: ${res.status} ${res.statusText}`);
+                throw new Error(
+                    `Failed to fetch OpenRouter models: ${res.status} ${res.statusText}`
+                );
             }
             return res.json() as Promise<OpenRouterResponse>;
         })
@@ -110,7 +112,10 @@ const MODEL_ID_MAPPINGS: Record<string, string[]> = {
     magistral: ["mistralai/magistral-medium", "mistralai/magistral-small"],
     // Meta
     "llama-3-3": ["meta-llama/llama-3.3-70b-instruct"],
-    "llama-3-2": ["meta-llama/llama-3.2-90b-vision-instruct", "meta-llama/llama-3.2-11b-vision-instruct"],
+    "llama-3-2": [
+        "meta-llama/llama-3.2-90b-vision-instruct",
+        "meta-llama/llama-3.2-11b-vision-instruct",
+    ],
     "llama-3-1": ["meta-llama/llama-3.1-405b-instruct", "meta-llama/llama-3.1-70b-instruct"],
     "llama-4": ["meta-llama/llama-4-scout", "meta-llama/llama-4-maverick"],
     // Qwen

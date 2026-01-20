@@ -29,7 +29,9 @@ export default function ImageModelPage({ modelId, model, vendors }: ImageModelPa
                         <dd className="font-medium">{model.selfhostable ? "Yes" : "No"}</dd>
                     </div>
                     <div>
-                        <dt className="text-sm text-gray-500 dark:text-gray-400">Negative Prompts</dt>
+                        <dt className="text-sm text-gray-500 dark:text-gray-400">
+                            Negative Prompts
+                        </dt>
                         <dd className="font-medium">
                             {model.supportsNegativePrompts ? "Supported" : "Not Supported"}
                         </dd>
@@ -40,7 +42,10 @@ export default function ImageModelPage({ modelId, model, vendors }: ImageModelPa
                 <h2 className="text-xl font-semibold mb-4">Supported Resolutions</h2>
                 <div className="flex flex-wrap gap-2">
                     {model.supportedResolutions.map((res) => (
-                        <span key={res} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm">
+                        <span
+                            key={res}
+                            className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm"
+                        >
                             {res}
                         </span>
                     ))}

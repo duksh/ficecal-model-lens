@@ -165,7 +165,7 @@ const MODEL_TRAINING_CUTOFFS: Record<string, string> = {
     "deepseek-r1": "2024-11",
     "deepseek-v3": "2024-11",
     // Qwen
-    "qwen3": "2024-09",
+    qwen3: "2024-09",
     "qwen-max": "2024-06",
     // Google
     "gemini-2-5": "2025-01",

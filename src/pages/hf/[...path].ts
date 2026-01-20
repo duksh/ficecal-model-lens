@@ -167,7 +167,9 @@ export const GET: APIRoute = async ({ params }) => {
             );
         } else {
             data = await response.arrayBuffer();
-            console.log(`Cached HuggingFace file ${path} (${(data.byteLength / 1024).toFixed(1)} KB)`);
+            console.log(
+                `Cached HuggingFace file ${path} (${(data.byteLength / 1024).toFixed(1)} KB)`
+            );
         }
 
         cache.set(path, data);

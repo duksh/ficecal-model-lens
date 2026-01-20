@@ -18,7 +18,9 @@ function isGemmaModel(modelId: string, brand: string): boolean {
 function GemmaLegalNotice() {
     return (
         <div className="mb-6 p-4 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg text-xs">
-            <h3 className="font-semibold text-amber-800 dark:text-amber-200 mb-2">Gemma Terms of Use</h3>
+            <h3 className="font-semibold text-amber-800 dark:text-amber-200 mb-2">
+                Gemma Terms of Use
+            </h3>
             <p className="text-amber-700 dark:text-amber-300 mb-2">
                 Gemma is provided under and subject to the{" "}
                 <a
@@ -28,7 +30,8 @@ function GemmaLegalNotice() {
                     className="underline hover:text-amber-900 dark:hover:text-amber-100"
                 >
                     Gemma Terms of Use
-                </a> and the{" "}
+                </a>{" "}
+                and the{" "}
                 <a
                     href="https://ai.google.dev/gemma/prohibited_use_policy"
                     target="_blank"
@@ -37,13 +40,13 @@ function GemmaLegalNotice() {
                 >
                     Gemma Prohibited Use Policy
                 </a>
-                , which prohibits certain uses including generating content that violates
-                rights, and attempting to circumvent safety filters. By using this model,
-                you agree to these terms.
+                , which prohibits certain uses including generating content that violates rights,
+                and attempting to circumvent safety filters. By using this model, you agree to these
+                terms.
             </p>
             <p className="text-amber-600 dark:text-amber-400">
-                Google reserves the right to restrict usage that violates these policies.
-                This service is not affiliated with Google.
+                Google reserves the right to restrict usage that violates these policies. This
+                service is not affiliated with Google.
             </p>
         </div>
     );

@@ -47,7 +47,9 @@ export default function SQLEditorButton({ query, firstId, updateQuery }: SQLEdit
             // Test the new query
             const res = await testQuery(valueRef.current, firstId);
             if (!res.ok) {
-                setOutput(<span className="text-red-600 dark:text-red-400 mb-4">Error: {res.error}</span>);
+                setOutput(
+                    <span className="text-red-600 dark:text-red-400 mb-4">Error: {res.error}</span>
+                );
                 return;
             }
 

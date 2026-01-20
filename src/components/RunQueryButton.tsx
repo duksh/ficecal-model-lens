@@ -22,7 +22,10 @@ function ResultsTable({ result }: { result: QueryResult }) {
                 <thead className="bg-gray-100 dark:bg-gray-800 sticky top-0">
                     <tr>
                         {result.columns.map((col) => (
-                            <th key={col} className="px-3 py-2 text-left font-medium border-b border-gray-200 dark:border-gray-700">
+                            <th
+                                key={col}
+                                className="px-3 py-2 text-left font-medium border-b border-gray-200 dark:border-gray-700"
+                            >
                                 {col}
                             </th>
                         ))}
@@ -30,7 +33,10 @@ function ResultsTable({ result }: { result: QueryResult }) {
                 </thead>
                 <tbody>
                     {result.rows.map((row, rowIdx) => (
-                        <tr key={rowIdx} className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
+                        <tr
+                            key={rowIdx}
+                            className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+                        >
                             {result.columns.map((col) => (
                                 <td key={col} className="px-3 py-2">
                                     {formatValue(row[col])}
@@ -104,14 +110,21 @@ function RunQueryModal({ onClose }: { onClose: () => void }) {
         >
             <div className="flex flex-col max-h-[90vh]">
                 <header className="flex items-center gap-2 p-4 border-b border-gray-200 dark:border-gray-700">
-                    <button onClick={onClose} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded">
+                    <button
+                        onClick={onClose}
+                        className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded"
+                    >
                         <XIcon className="w-5 h-5" />
                     </button>
                     <h2 className="text-lg font-bold">Run SQL Query</h2>
                 </header>
 
                 <div className="p-4 overflow-auto flex-1">
-                    <React.Suspense fallback={<div className="h-32 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />}>
+                    <React.Suspense
+                        fallback={
+                            <div className="h-32 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />
+                        }
+                    >
                         <CodeMirror
                             value={queryRef.current}
                             maxHeight="200px"

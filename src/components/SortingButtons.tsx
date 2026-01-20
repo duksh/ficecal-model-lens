@@ -23,7 +23,10 @@ export default function SortingButtons({
                 className="leading-2 p-0 border-none bg-none cursor-pointer"
                 aria-label="Sort ascending"
             >
-                <ArrowUp size={14} className={ascending === true ? "text-black dark:text-white" : "text-gray-400"} />
+                <ArrowUp
+                    size={14}
+                    className={ascending === true ? "text-black dark:text-white" : "text-gray-400"}
+                />
             </button>
             <button
                 onClick={() =>
@@ -37,7 +40,10 @@ export default function SortingButtons({
                 className="leading-2 p-0 border-none bg-none cursor-pointer"
                 aria-label="Sort descending"
             >
-                <ArrowDown size={14} className={ascending === false ? "text-black dark:text-white" : "text-gray-400"} />
+                <ArrowDown
+                    size={14}
+                    className={ascending === false ? "text-black dark:text-white" : "text-gray-400"}
+                />
             </button>
         </div>
     );

@@ -22,7 +22,9 @@ const initialQueries = defaultQueries.map(({ name, ...dq }) => ({
 initialQueries.push({
     columnOrdering: {},
     columnFilters: {},
-    columnExplicitlySetDataTypes: { "Average Cost per 1K Input Tokens": "currency" as ColumnDataType },
+    columnExplicitlySetDataTypes: {
+        "Average Cost per 1K Input Tokens": "currency" as ColumnDataType,
+    },
     query: `SELECT AVG(input_token_cost * 1000) AS \`Average Cost per 1K Input Tokens\`
     FROM models_vendors_regions
     WHERE model_id = ?`,
@@ -31,7 +33,9 @@ initialQueries.push({
 initialQueries.push({
     columnOrdering: {},
     columnFilters: {},
-    columnExplicitlySetDataTypes: { "Average Cost per 1K Output Tokens": "currency" as ColumnDataType },
+    columnExplicitlySetDataTypes: {
+        "Average Cost per 1K Output Tokens": "currency" as ColumnDataType,
+    },
     query: `SELECT AVG(output_token_cost * 1000) AS \`Average Cost per 1K Output Tokens\`
     FROM models_vendors_regions
     WHERE model_id = ?`,

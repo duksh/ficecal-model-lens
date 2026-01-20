@@ -14,8 +14,11 @@ export default function QueryHelp({ showParameterHelp = true }: { showParameterH
                         <h4 className="font-semibold mb-1">How queries work</h4>
                         <p className="mb-2">
                             Your query runs once per row with{" "}
-                            <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded">?</code> replaced by the model
-                            ID. Use <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded">WHERE model_id = ?</code>{" "}
+                            <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded">?</code>{" "}
+                            replaced by the model ID. Use{" "}
+                            <code className="bg-gray-200 dark:bg-gray-700 px-1 rounded">
+                                WHERE model_id = ?
+                            </code>{" "}
                             to filter to the current row.
                         </p>
                         <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -33,7 +36,9 @@ export default function QueryHelp({ showParameterHelp = true }: { showParameterH
                     <div className="space-y-3">
                         <div>
                             <h5 className="font-medium text-gray-800 dark:text-gray-200">models</h5>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Core model information</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                                Core model information
+                            </p>
                             <div className="text-xs grid grid-cols-2 gap-x-2">
                                 <span>
                                     <code>model_id</code> (PK)
@@ -66,8 +71,12 @@ export default function QueryHelp({ showParameterHelp = true }: { showParameterH
                         </div>
 
                         <div>
-                            <h5 className="font-medium text-gray-800 dark:text-gray-200">vendors</h5>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Cloud providers</p>
+                            <h5 className="font-medium text-gray-800 dark:text-gray-200">
+                                vendors
+                            </h5>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                                Cloud providers
+                            </p>
                             <div className="text-xs grid grid-cols-2 gap-x-2">
                                 <span>
                                     <code>vendor_id</code> (PK)
@@ -85,7 +94,9 @@ export default function QueryHelp({ showParameterHelp = true }: { showParameterH
                         </div>
 
                         <div>
-                            <h5 className="font-medium text-gray-800 dark:text-gray-200">models_vendors</h5>
+                            <h5 className="font-medium text-gray-800 dark:text-gray-200">
+                                models_vendors
+                            </h5>
                             <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
                                 Model availability per vendor
                             </p>
@@ -109,8 +120,12 @@ export default function QueryHelp({ showParameterHelp = true }: { showParameterH
                         </div>
 
                         <div>
-                            <h5 className="font-medium text-gray-800 dark:text-gray-200">models_vendors_regions</h5>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Pricing per region</p>
+                            <h5 className="font-medium text-gray-800 dark:text-gray-200">
+                                models_vendors_regions
+                            </h5>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                                Pricing per region
+                            </p>
                             <div className="text-xs grid grid-cols-2 gap-x-2">
                                 <span>
                                     <code>model_id</code>
@@ -137,8 +152,12 @@ export default function QueryHelp({ showParameterHelp = true }: { showParameterH
                         </div>
 
                         <div>
-                            <h5 className="font-medium text-gray-800 dark:text-gray-200">models_tokenizers</h5>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Tokenizer information</p>
+                            <h5 className="font-medium text-gray-800 dark:text-gray-200">
+                                models_tokenizers
+                            </h5>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                                Tokenizer information
+                            </p>
                             <div className="text-xs grid grid-cols-2 gap-x-2">
                                 <span>
                                     <code>model_id</code> (PK)
@@ -153,8 +172,12 @@ export default function QueryHelp({ showParameterHelp = true }: { showParameterH
                         </div>
 
                         <div>
-                            <h5 className="font-medium text-gray-800 dark:text-gray-200">vendor_regions</h5>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Region details per vendor</p>
+                            <h5 className="font-medium text-gray-800 dark:text-gray-200">
+                                vendor_regions
+                            </h5>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                                Region details per vendor
+                            </p>
                             <div className="text-xs grid grid-cols-2 gap-x-2">
                                 <span>
                                     <code>vendor_id</code>

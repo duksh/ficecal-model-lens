@@ -12,15 +12,15 @@ type CodeMirrorProps = {
 
 export default function CodeMirror(props: CodeMirrorProps) {
     const editor = React.useRef<HTMLDivElement>(null);
-    const [isDark, setIsDark] = React.useState(() =>
-        window.matchMedia('(prefers-color-scheme: dark)').matches
+    const [isDark, setIsDark] = React.useState(
+        () => window.matchMedia("(prefers-color-scheme: dark)").matches
     );
 
     React.useEffect(() => {
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
         const handler = (e: MediaQueryListEvent) => setIsDark(e.matches);
-        mediaQuery.addEventListener('change', handler);
-        return () => mediaQuery.removeEventListener('change', handler);
+        mediaQuery.addEventListener("change", handler);
+        return () => mediaQuery.removeEventListener("change", handler);
     }, []);
 
     React.useEffect(() => {
