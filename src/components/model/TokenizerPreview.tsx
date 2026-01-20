@@ -1,8 +1,8 @@
 import React from "react";
-import type { Tokenisers } from "../../dataFormat";
+import type { Tokenizers } from "../../dataFormat";
 
 type TokenizerPreviewProps = {
-    tokeniser: Tokenisers;
+    tokenizer: Tokenizers;
     modelName: string;
 };
 
@@ -23,7 +23,7 @@ type TokenInfo = {
     id: number;
 };
 
-export default function TokenizerPreview({ tokeniser, modelName }: TokenizerPreviewProps) {
+export default function TokenizerPreview({ tokenizer, modelName }: TokenizerPreviewProps) {
     const [text, setText] = React.useState("");
     const [tokens, setTokens] = React.useState<TokenInfo[]>([]);
     const [loading, setLoading] = React.useState(false);
@@ -42,20 +42,20 @@ export default function TokenizerPreview({ tokeniser, modelName }: TokenizerPrev
         setError(null);
 
         try {
-            switch (tokeniser.type) {
+            switch (tokenizer.type) {
                 case "tiktoken":
-                    await tokenizeTiktoken(tokeniser.bpePath, text, tokenizerRef, setTokens);
+                    await tokenizeTiktoken(tokenizer.bpePath, text, tokenizerRef, setTokens);
                     break;
                 case "transformers":
                     await tokenizeTransformers(
-                        tokeniser.pretrainedPath,
+                        tokenizer.pretrainedPath,
                         text,
                         tokenizerRef,
                         setTokens
                     );
                     break;
                 case "site-api":
-                    await tokenizeSiteApi(tokeniser.apiUrl, text, setTokens);
+                    await tokenizeSiteApi(tokenizer.apiUrl, text, setTokens);
                     break;
             }
         } catch (e) {
@@ -63,7 +63,7 @@ export default function TokenizerPreview({ tokeniser, modelName }: TokenizerPrev
         } finally {
             setLoading(false);
         }
-    }, [text, tokeniser]);
+    }, [text, tokenizer]);
 
     React.useEffect(() => {
         const timeout = setTimeout(tokenize, 300);
@@ -74,9 +74,9 @@ export default function TokenizerPreview({ tokeniser, modelName }: TokenizerPrev
         <div className="mb-8 p-4 border dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800">
             <h2 className="text-xl font-semibold mb-4">Tokenizer Preview</h2>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
-                Using {tokeniser.type === "tiktoken" && "tiktoken"}
-                {tokeniser.type === "transformers" && "HuggingFace Transformers"}
-                {tokeniser.type === "site-api" && "API"} tokenizer
+                Using {tokenizer.type === "tiktoken" && "tiktoken"}
+                {tokenizer.type === "transformers" && "HuggingFace Transformers"}
+                {tokenizer.type === "site-api" && "API"} tokenizer
             </p>
             <textarea
                 value={text}

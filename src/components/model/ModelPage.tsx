@@ -60,8 +60,8 @@ export default function ModelPage({ modelId, model, vendors }: ModelPageProps) {
             <ModelHeader model={model} />
             <ModelMetadata model={model} />
             {showGemmaNotice && <GemmaLegalNotice />}
-            {model.tokeniser && (
-                <TokenizerPreview tokeniser={model.tokeniser} modelName={model.cleanName} />
+            {model.tokenizer && (
+                <TokenizerPreview tokenizer={model.tokenizer} modelName={model.cleanName} />
             )}
             <PricingCalculator modelId={modelId} model={model} vendors={vendors} />
         </div>

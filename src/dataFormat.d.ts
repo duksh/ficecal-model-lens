@@ -50,22 +50,22 @@ type VendorModelInfo = {
     lowCapacity: boolean;
 };
 
-type TiktokenTokeniser = {
+type TiktokenTokenizer = {
     type: "tiktoken";
     bpePath: string;
 };
 
-type TransformersTokeniser = {
+type TransformersTokenizer = {
     type: "transformers";
     pretrainedPath: string;
 };
 
-type SiteAPITokeniser = {
+type SiteAPITokenizer = {
     type: "site-api";
     apiUrl: string;
 };
 
-type Tokenisers = TiktokenTokeniser | TransformersTokeniser | SiteAPITokeniser;
+type Tokenizers = TiktokenTokenizer | TransformersTokenizer | SiteAPITokenizer;
 
 type ReasoningTier = "none" | "basic" | "extended";
 
@@ -81,7 +81,7 @@ type Model = {
     maxOutputTokens?: number;
     trainingCutoff?: string; // Date string like "2024-04"
     releaseDate?: string; // Date string like "2024-03-14"
-    tokeniser?: Tokenisers;
+    tokenizer?: Tokenizers;
     humanitysLastExamPercentage?: number;
     sweBenchResolvedPercentage?: number;
     skatebenchScore?: number;

@@ -1,4 +1,4 @@
-import type { Tokenisers } from "@/src/dataFormat";
+import type { Tokenizers } from "@/src/dataFormat";
 import {
     nullable,
     array,
@@ -311,7 +311,7 @@ const TIKTOKEN_CL100K = "/tiktoken/cl100k_base.tiktoken";
 const TIKTOKEN_O200K = "/tiktoken/o200k_base.tiktoken";
 
 // Map of model prefixes to their HuggingFace tokenizer paths
-const TRANSFORMERS_TOKENISER_PATHS: Record<string, string> = {
+const TRANSFORMERS_TOKENIZER_PATHS: Record<string, string> = {
     // Meta/Llama
     "llama-4": "meta-llama/Llama-4-Scout-17B-16E-Instruct",
     "llama-3-3": "meta-llama/Llama-3.3-70B-Instruct",
@@ -351,7 +351,7 @@ const TRANSFORMERS_TOKENISER_PATHS: Record<string, string> = {
     granite: "ibm-granite/granite-3.0-8b-instruct",
 };
 
-export function getTokeniserForModel(modelId: string, provider: string): Tokenisers | undefined {
+export function getTokenizerForModel(modelId: string, provider: string): Tokenizers | undefined {
     // OpenAI models use tiktoken
     if (provider === "OpenAI") {
         // GPT-5, GPT-4.1, GPT-4o, o-series and newer use o200k_base
@@ -385,7 +385,7 @@ export function getTokeniserForModel(modelId: string, provider: string): Tokenis
 
     // For other providers, look up in the transformers tokenizer map
     // Sort by prefix length (longest first) for more specific matches
-    const sortedPrefixes = Object.keys(TRANSFORMERS_TOKENISER_PATHS).sort(
+    const sortedPrefixes = Object.keys(TRANSFORMERS_TOKENIZER_PATHS).sort(
         (a, b) => b.length - a.length
     );
 
@@ -393,7 +393,7 @@ export function getTokeniserForModel(modelId: string, provider: string): Tokenis
         if (modelId.startsWith(prefix)) {
             return {
                 type: "transformers",
-                pretrainedPath: TRANSFORMERS_TOKENISER_PATHS[prefix],
+                pretrainedPath: TRANSFORMERS_TOKENIZER_PATHS[prefix],
             };
         }
     }

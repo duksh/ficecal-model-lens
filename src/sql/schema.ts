@@ -32,9 +32,9 @@ CREATE TABLE models (
     skatebench_score REAL
 );
 
-CREATE TABLE models_tokenisers (
+CREATE TABLE models_tokenizers (
     model_id TEXT PRIMARY KEY,
-    tokeniser TEXT NOT NULL,
+    tokenizer TEXT NOT NULL,
     url TEXT NOT NULL,
     FOREIGN KEY (model_id) REFERENCES models(model_id)
 );

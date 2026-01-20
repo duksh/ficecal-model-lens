@@ -137,14 +137,14 @@ export default function QueryHelp({ showParameterHelp = true }: { showParameterH
                         </div>
 
                         <div>
-                            <h5 className="font-medium text-gray-800 dark:text-gray-200">models_tokenisers</h5>
+                            <h5 className="font-medium text-gray-800 dark:text-gray-200">models_tokenizers</h5>
                             <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Tokenizer information</p>
                             <div className="text-xs grid grid-cols-2 gap-x-2">
                                 <span>
                                     <code>model_id</code> (PK)
                                 </span>
                                 <span>
-                                    <code>tokeniser</code>
+                                    <code>tokenizer</code>
                                 </span>
                                 <span>
                                     <code>url</code>

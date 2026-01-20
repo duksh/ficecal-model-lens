@@ -55,8 +55,8 @@ export const GET: APIRoute = () => {
         const modelsPrep = db.prepare(
             "INSERT INTO models (model_id, clean_name, brand, company_country_code, selfhostable, reasoning, reasoning_tier, max_input_tokens, max_output_tokens, training_cutoff, release_date, humanitys_last_exam_percentage, swe_bench_resolved_percentage, skatebench_score) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         );
-        const modelsTokenisersPrep = db.prepare(
-            "INSERT INTO models_tokenisers (model_id, tokeniser, url) VALUES (?, ?, ?)"
+        const modelsTokenizersPrep = db.prepare(
+            "INSERT INTO models_tokenizers (model_id, tokenizer, url) VALUES (?, ?, ?)"
         );
         const modelsVendorsPrep = db.prepare(
             "INSERT INTO models_vendors (model_id, vendor_id, latency_ms, tokens_per_second, low_capacity) VALUES (?, ?, ?, ?, ?)"
@@ -81,24 +81,24 @@ export const GET: APIRoute = () => {
                 modelData.sweBenchResolvedPercentage ?? null,
                 modelData.skatebenchScore ?? null,
             ]);
-            switch (modelData.tokeniser?.type) {
+            switch (modelData.tokenizer?.type) {
                 case undefined:
                     break;
                 case "site-api":
-                    modelsTokenisersPrep.run([modelId, "site-api", modelData.tokeniser.apiUrl]);
+                    modelsTokenizersPrep.run([modelId, "site-api", modelData.tokenizer.apiUrl]);
                     break;
                 case "tiktoken":
-                    modelsTokenisersPrep.run([modelId, "tiktoken", modelData.tokeniser.bpePath]);
+                    modelsTokenizersPrep.run([modelId, "tiktoken", modelData.tokenizer.bpePath]);
                     break;
                 case "transformers":
-                    modelsTokenisersPrep.run([
+                    modelsTokenizersPrep.run([
                         modelId,
                         "transformers",
-                        modelData.tokeniser.pretrainedPath,
+                        modelData.tokenizer.pretrainedPath,
                     ]);
                     break;
                 default:
-                    throw new Error(`Unknown tokeniser type: ${modelData.tokeniser}`);
+                    throw new Error(`Unknown tokenizer type: ${modelData.tokenizer}`);
             }
             for (const vendor of modelData.vendors) {
                 modelsVendorsPrep.run([

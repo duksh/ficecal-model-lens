@@ -1,6 +1,6 @@
 import type { DataFormat } from "@/src/dataFormat";
 import {
-    getTokeniserForModel,
+    getTokenizerForModel,
     isReasoningModel,
     isSelfHostableModel,
     addBenchmarkDataForModel,
@@ -71,7 +71,7 @@ async function processPriceDimension(
             vendors: [],
             reasoning: isReasoningModel(slugifiedModel),
             selfhostable: isSelfHostableModel(slugifiedModel, attributes.provider),
-            tokeniser: getTokeniserForModel(slugifiedModel, attributes.provider),
+            tokenizer: getTokenizerForModel(slugifiedModel, attributes.provider),
             ...(await addBenchmarkDataForModel(slugifiedModel)),
         };
         fmt.models[slugifiedModel] = modelEntry;

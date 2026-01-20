@@ -1,6 +1,6 @@
 import type { DataFormat, ImageResolution } from "@/src/dataFormat";
 import {
-    getTokeniserForModel,
+    getTokenizerForModel,
     isReasoningModel,
     isSelfHostableModel,
     addBenchmarkDataForModel,
@@ -103,7 +103,7 @@ export async function addModelToFormat(
             trainingCutoff: model.trainingCutoff ?? getTrainingCutoff(slugifiedModel),
             releaseDate:
                 model.releaseDate ?? getReleaseDate(slugifiedModel) ?? openRouterMeta.releaseDate,
-            tokeniser: getTokeniserForModel(slugifiedModel, model.provider),
+            tokenizer: getTokenizerForModel(slugifiedModel, model.provider),
             ...(await addBenchmarkDataForModel(slugifiedModel)),
         };
         fmt.models[slugifiedModel] = modelEntry;
