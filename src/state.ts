@@ -94,15 +94,40 @@ function setUrlId(id: string | null) {
 }
 
 async function writeToRemoteStorage(state: State) {
-    // TODO: Implement remote storage saving
+    const u = new URL(window.location.href);
+    const type_ = u.pathname === "/" ? "llm" : "image";
+    const res = await fetch(
+        "https://modelskv.vantage-api.com/",
+        {
+            method: "POST",
+            body: JSON.stringify({
+                t: type_,
+                state: state,
+            }),
+        }
+    );
+    if (!res.ok) {
+        console.error(`Failed to write to remote storage: ${res.status} ${res.statusText} ${await res.text()}`);
+    }
+    u.searchParams.set("id", await res.text());
+    window.history.replaceState({}, "", u.toString());
 }
 
 async function readFromRemoteStorage(): Promise<{
     t: "llm" | "image";
     state: State;
 } | null> {
-    // TODO: Implement remote storage reading
-    return null;
+    const u = new URL(window.location.href);
+    const id = u.searchParams.get("id");
+    if (!id) {
+        return null;
+    }
+    const res = await fetch(`https://modelskv.vantage-api.com/${encodeURIComponent(id)}`);
+    if (!res.ok) {
+        console.error(`Failed to read from remote storage: ${res.status} ${res.statusText} ${await res.text()}`);
+        return null;
+    }
+    return res.json();
 }
 
 readFromRemoteStorage().then((remoteState) => {
@@ -110,8 +135,8 @@ readFromRemoteStorage().then((remoteState) => {
         const o = remoteState.t === "llm" ? currentLlmState : currentImageState;
         o.currency = remoteState.state.currency;
         o.queries = remoteState.state.queries;
-        o.nameFilter = remoteState.state.nameFilter;
-        o.currentSorting = remoteState.state.currentSorting;
+        o.nameFilter = remoteState.state.nameFilter || o.nameFilter;
+        o.currentSorting = remoteState.state.currentSorting || o.currentSorting;
         listenerMap.forEach((listeners) => {
             listeners.forEach((listener) => listener());
         });
