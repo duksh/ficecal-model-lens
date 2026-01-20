@@ -47,7 +47,7 @@ export default function SQLEditorButton({ query, firstId, updateQuery }: SQLEdit
             // Test the new query
             const res = await testQuery(valueRef.current, firstId);
             if (!res.ok) {
-                setOutput(<span className="text-red-600 mb-4">Error: {res.error}</span>);
+                setOutput(<span className="text-red-600 dark:text-red-400 mb-4">Error: {res.error}</span>);
                 return;
             }
 
@@ -79,12 +79,12 @@ export default function SQLEditorButton({ query, firstId, updateQuery }: SQLEdit
         <>
             <dialog
                 ref={ref}
-                className="m-auto p-0 rounded-md max-w-lg text-left font-normal"
+                className="m-auto p-0 rounded-md max-w-lg text-left font-normal bg-white dark:bg-gray-800 dark:text-gray-100 backdrop:bg-black/50"
                 onClick={exit}
                 onClose={exit}
             >
                 <div onClick={(e) => e.stopPropagation()}>
-                    <div className="bg-white p-4 block w-full h-full">
+                    <div className="bg-white dark:bg-gray-800 p-4 block w-full h-full">
                         <header>
                             <div className="flex gap-2 items-center">
                                 <form method="dialog">
@@ -95,7 +95,7 @@ export default function SQLEditorButton({ query, firstId, updateQuery }: SQLEdit
                                 <h2 className="text-lg font-bold">Edit SQL</h2>
                             </div>
                         </header>
-                        <hr className="mt-2 mb-4 border-gray-200" />
+                        <hr className="mt-2 mb-4 border-gray-200 dark:border-gray-600" />
                         <form className="block max-w-lg" onSubmit={submit}>
                             {output && <output>{output}</output>}
                             <React.Suspense fallback={<></>}>
@@ -117,7 +117,7 @@ export default function SQLEditorButton({ query, firstId, updateQuery }: SQLEdit
                 </div>
             </dialog>
             <button
-                className="ml-2 px-2 py-1 text-xs rounded hover:bg-gray-100 transition"
+                className="ml-2 px-2 py-1 text-xs rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition"
                 title="Edit SQL Query"
                 onClick={() => {
                     ref.current?.showModal();

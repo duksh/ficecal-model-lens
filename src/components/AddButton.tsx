@@ -47,7 +47,7 @@ function SelectionMode({
 
     const closer = (
         <button
-            className="text-gray-500 hover:text-gray-800"
+            className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
             onClick={exit}
             aria-label="Close selection mode"
         >
@@ -100,7 +100,7 @@ function SelectionMode({
             {closer}
             <div className="ml-4 flex flex-col gap-2">
                 <button
-                    className="py-1 px-2 flex items-center border border-gray-400 rounded hover:bg-gray-200"
+                    className="py-1 px-2 flex items-center border border-gray-400 dark:border-gray-600 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
                     onClick={() => {
                         setMode("default");
                         setChanges((c) => c + 1);
@@ -110,7 +110,7 @@ function SelectionMode({
                     Default Queries
                 </button>
                 <button
-                    className="py-1 px-2 flex items-center border border-gray-400 rounded hover:bg-gray-200"
+                    className="py-1 px-2 flex items-center border border-gray-400 dark:border-gray-600 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
                     onClick={() => {
                         setMode("vendor");
                         setChanges((c) => c + 1);
@@ -120,7 +120,7 @@ function SelectionMode({
                     Vendor Queries
                 </button>
                 <button
-                    className="py-1 px-2 flex items-center border border-gray-400 rounded hover:bg-gray-200"
+                    className="py-1 px-2 flex items-center border border-gray-400 dark:border-gray-600 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
                     onClick={() => {
                         modalRef.current?.showModal();
                         setChanges((c) => c + 1);
@@ -156,7 +156,7 @@ export default function AddButton({
 
     let innerContent = (
         <button
-            className={`py-1 px-2 mt-2 mr-2 border border-gray-400 rounded hover:bg-gray-200 ${selectionMode ? "hidden" : ""}`}
+            className={`py-1 px-2 mt-2 mr-2 border border-gray-400 dark:border-gray-600 rounded hover:bg-gray-200 dark:hover:bg-gray-700 ${selectionMode ? "hidden" : ""}`}
             onClick={() => {
                 setSelectionMode((old) => {
                     if (old) {

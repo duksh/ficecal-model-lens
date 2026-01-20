@@ -34,28 +34,28 @@ export default function ColumnCustomTypeSelector({
             <table id="col-editor-table" className="mt-4">
                 <thead>
                     <tr>
-                        <th className="border px-2 py-1 text-left">Column Name</th>
-                        <th className="border px-2 py-1 text-left">Data Type</th>
+                        <th className="border dark:border-gray-600 px-2 py-1 text-left">Column Name</th>
+                        <th className="border dark:border-gray-600 px-2 py-1 text-left">Data Type</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     {columnKeys.map((col, idx) => (
                         <tr key={col}>
-                            <td className="border px-2 py-1">{col}</td>
-                            <td className="border px-2 py-1">
+                            <td className="border dark:border-gray-600 px-2 py-1">{col}</td>
+                            <td className="border dark:border-gray-600 px-2 py-1">
                                 <select
                                     data-name={col}
                                     defaultValue={columnCustomTypes[col] || "other"}
                                     onChange={handleTypeChange}
-                                    className="border px-1 py-0.5"
+                                    className="border dark:border-gray-600 dark:bg-gray-800 px-1 py-0.5"
                                 >
                                     <option value="other">SQL Native</option>
                                     <option value="boolean">Boolean</option>
                                     <option value="currency">Currency</option>
                                 </select>
                             </td>
-                            <td className="border px-2 py-1">
+                            <td className="border dark:border-gray-600 px-2 py-1">
                                 <button
                                     type="button"
                                     data-name={col}
@@ -63,7 +63,7 @@ export default function ColumnCustomTypeSelector({
                                         delete columnCustomTypes[col];
                                         setColumnKeys((prev) => prev.filter((_, i) => i !== idx));
                                     }}
-                                    className="text-red-500 hover:underline"
+                                    className="text-red-500 dark:text-red-400 hover:underline"
                                 >
                                     Remove
                                 </button>
@@ -82,7 +82,7 @@ export default function ColumnCustomTypeSelector({
                         setColumnKeys((prev) => [...prev, newColName]);
                     }
                 }}
-                className="mt-2 px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                className="mt-2 px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
             >
                 Add Custom Column Type
             </button>

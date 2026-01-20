@@ -55,7 +55,7 @@ export default function DefaultSelector({
                                 type="checkbox"
                                 checked={checkedQueries.includes(dq.name)}
                                 onChange={() => handleChange(dq.name)}
-                                className="form-checkbox h-5 w-5 text-blue-600"
+                                className="form-checkbox h-5 w-5 text-blue-600 dark:bg-gray-800 dark:border-gray-600"
                             />
                             <span className="ml-2">{dq.name}</span>
                         </label>

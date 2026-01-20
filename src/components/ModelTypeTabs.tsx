@@ -18,7 +18,7 @@ export default function ModelTypeTabs() {
                     onClick={() => setModelView(tab.id)}
                     className={`px-4 py-1.5 rounded text-sm font-medium transition-colors ${
                         modelView === tab.id
-                            ? "bg-white text-[#6742d6]"
+                            ? "bg-white dark:bg-gray-800 text-[#6742d6] dark:text-purple-300"
                             : "text-white/80 hover:text-white hover:bg-[#7a52e6]"
                     }`}
                 >

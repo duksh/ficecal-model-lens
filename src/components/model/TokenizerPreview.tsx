@@ -71,9 +71,9 @@ export default function TokenizerPreview({ tokeniser, modelName }: TokenizerPrev
     }, [text, tokenize]);
 
     return (
-        <div className="mb-8 p-4 border rounded-lg">
+        <div className="mb-8 p-4 border dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800">
             <h2 className="text-xl font-semibold mb-4">Tokenizer Preview</h2>
-            <p className="text-sm text-gray-500 mb-3">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
                 Using {tokeniser.type === "tiktoken" && "tiktoken"}
                 {tokeniser.type === "transformers" && "HuggingFace Transformers"}
                 {tokeniser.type === "site-api" && "API"} tokenizer
@@ -82,17 +82,17 @@ export default function TokenizerPreview({ tokeniser, modelName }: TokenizerPrev
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 placeholder="Enter text to count tokens..."
-                className="w-full p-3 border rounded-md min-h-[100px] font-mono text-sm"
+                className="w-full p-3 border dark:border-gray-600 dark:bg-gray-800 rounded-md min-h-[100px] font-mono text-sm"
             />
             <div className="mt-3 flex items-center gap-4">
                 {loading ? (
-                    <span className="text-gray-500">Counting...</span>
+                    <span className="text-gray-500 dark:text-gray-400">Counting...</span>
                 ) : error ? (
-                    <span className="text-red-500 text-sm">{error}</span>
+                    <span className="text-red-500 dark:text-red-400 text-sm">{error}</span>
                 ) : (
                     <span className="font-medium">Token count: {tokens.length}</span>
                 )}
-                <label className="flex items-center gap-2 text-sm text-gray-600 ml-auto">
+                <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 ml-auto">
                     <input
                         type="checkbox"
                         checked={showVisualization}
@@ -105,15 +105,15 @@ export default function TokenizerPreview({ tokeniser, modelName }: TokenizerPrev
 
             {/* Token visualization */}
             {showVisualization && tokens.length > 0 && (
-                <div className="mt-4 p-3 bg-gray-50 rounded-md border">
-                    <div className="text-xs text-gray-500 mb-2">
+                <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-900 rounded-md border dark:border-gray-700">
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
                         Token visualization (each color = one token):
                     </div>
                     <div className="font-mono text-sm leading-relaxed whitespace-pre-wrap break-all">
                         {tokens.map((token, idx) => (
                             <span
                                 key={idx}
-                                className={`${TOKEN_COLORS[idx % TOKEN_COLORS.length]} rounded px-0.5 border border-gray-300/50`}
+                                className={`${TOKEN_COLORS[idx % TOKEN_COLORS.length]} text-gray-800 rounded px-0.5 border border-gray-300/50 dark:border-gray-500/50`}
                                 title={`Token ${idx + 1}: "${token.text}" (ID: ${token.id})`}
                             >
                                 {formatTokenText(token.text)}

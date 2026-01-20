@@ -325,7 +325,7 @@ function VendorItems({
                 <select
                     value={queryBuilderIndex}
                     onChange={handleQueryBuilderChange}
-                    className="w-full p-2 border rounded-md"
+                    className="w-full p-2 border dark:border-gray-600 dark:bg-gray-800 rounded-md"
                     autoComplete="off"
                 >
                     <option value={-1} disabled>
@@ -353,7 +353,7 @@ function VendorItems({
                                 setRegion(null);
                             }
                         }}
-                        className="w-full p-2 border rounded-md"
+                        className="w-full p-2 border dark:border-gray-600 dark:bg-gray-800 rounded-md"
                         autoComplete="off"
                     >
                         <option value="">All Regions (Average)</option>
@@ -384,7 +384,7 @@ function VendorItems({
                 </div>
             )}
             <button
-                className={`py-1 px-4 rounded text-white ${disabled ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
+                className={`py-1 px-4 rounded text-white ${disabled ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
                 onClick={submit}
                 disabled={disabled}
             >
@@ -416,7 +416,7 @@ export default function VendorSelector({
             <select
                 value={selectedVendorSlug}
                 onChange={handleVendorChange}
-                className="w-full p-2 border rounded-md mb-4"
+                className="w-full p-2 border dark:border-gray-600 dark:bg-gray-800 rounded-md mb-4"
                 autoComplete="off"
             >
                 <option value="">All Vendors</option>

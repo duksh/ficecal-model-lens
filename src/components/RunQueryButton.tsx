@@ -13,16 +13,16 @@ type QueryResult = {
 
 function ResultsTable({ result }: { result: QueryResult }) {
     if (result.rows.length === 0) {
-        return <p className="text-gray-500 italic">Query returned no rows.</p>;
+        return <p className="text-gray-500 dark:text-gray-400 italic">Query returned no rows.</p>;
     }
 
     return (
-        <div className="overflow-auto max-h-80 border border-gray-200 rounded">
+        <div className="overflow-auto max-h-80 border border-gray-200 dark:border-gray-700 rounded">
             <table className="w-full text-sm">
-                <thead className="bg-gray-100 sticky top-0">
+                <thead className="bg-gray-100 dark:bg-gray-800 sticky top-0">
                     <tr>
                         {result.columns.map((col) => (
-                            <th key={col} className="px-3 py-2 text-left font-medium border-b border-gray-200">
+                            <th key={col} className="px-3 py-2 text-left font-medium border-b border-gray-200 dark:border-gray-700">
                                 {col}
                             </th>
                         ))}
@@ -30,7 +30,7 @@ function ResultsTable({ result }: { result: QueryResult }) {
                 </thead>
                 <tbody>
                     {result.rows.map((row, rowIdx) => (
-                        <tr key={rowIdx} className="border-b border-gray-100 hover:bg-gray-50">
+                        <tr key={rowIdx} className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
                             {result.columns.map((col) => (
                                 <td key={col} className="px-3 py-2">
                                     {formatValue(row[col])}
@@ -94,7 +94,7 @@ function RunQueryModal({ onClose }: { onClose: () => void }) {
     return (
         <dialog
             ref={dialogRef}
-            className="backdrop:bg-black/50 bg-white rounded-lg shadow-xl p-0 m-auto max-w-3xl w-[calc(100%-2rem)] max-h-[90vh] overflow-hidden"
+            className="backdrop:bg-black/50 bg-white dark:bg-gray-900 dark:text-gray-100 rounded-lg shadow-xl p-0 m-auto max-w-3xl w-[calc(100%-2rem)] max-h-[90vh] overflow-hidden"
             onClose={onClose}
             onClick={(e) => {
                 if (e.target === dialogRef.current) {
@@ -103,15 +103,15 @@ function RunQueryModal({ onClose }: { onClose: () => void }) {
             }}
         >
             <div className="flex flex-col max-h-[90vh]">
-                <header className="flex items-center gap-2 p-4 border-b border-gray-200">
-                    <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded">
+                <header className="flex items-center gap-2 p-4 border-b border-gray-200 dark:border-gray-700">
+                    <button onClick={onClose} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded">
                         <XIcon className="w-5 h-5" />
                     </button>
                     <h2 className="text-lg font-bold">Run SQL Query</h2>
                 </header>
 
                 <div className="p-4 overflow-auto flex-1">
-                    <React.Suspense fallback={<div className="h-32 bg-gray-100 rounded animate-pulse" />}>
+                    <React.Suspense fallback={<div className="h-32 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />}>
                         <CodeMirror
                             value={queryRef.current}
                             maxHeight="200px"
@@ -131,7 +131,7 @@ function RunQueryModal({ onClose }: { onClose: () => void }) {
                             </span>
                         </Button>
                         {result && (
-                            <span className="text-sm text-gray-500">
+                            <span className="text-sm text-gray-500 dark:text-gray-400">
                                 {result.rows.length === 100
                                     ? "Showing first 100 rows"
                                     : `${result.rows.length} row${result.rows.length === 1 ? "" : "s"}`}
@@ -140,7 +140,7 @@ function RunQueryModal({ onClose }: { onClose: () => void }) {
                     </div>
 
                     {error && (
-                        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
+                        <div className="mt-4 p-3 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded text-red-700 dark:text-red-300 text-sm">
                             {error}
                         </div>
                     )}

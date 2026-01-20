@@ -15,38 +15,38 @@ export default function ImageModelPage({ modelId, model, vendors }: ImageModelPa
             </div>
             <div className="mb-6">
                 <h1 className="text-3xl font-bold mb-2">{model.cleanName}</h1>
-                <p className="text-gray-600">by {model.brand}</p>
+                <p className="text-gray-600 dark:text-gray-400">by {model.brand}</p>
             </div>
-            <div className="bg-white rounded-lg shadow p-6 mb-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
                 <h2 className="text-xl font-semibold mb-4">Model Details</h2>
                 <dl className="grid grid-cols-2 gap-4">
                     <div>
-                        <dt className="text-sm text-gray-500">Country</dt>
+                        <dt className="text-sm text-gray-500 dark:text-gray-400">Country</dt>
                         <dd className="font-medium">{model.companyCountryCode}</dd>
                     </div>
                     <div>
-                        <dt className="text-sm text-gray-500">Self-hostable</dt>
+                        <dt className="text-sm text-gray-500 dark:text-gray-400">Self-hostable</dt>
                         <dd className="font-medium">{model.selfhostable ? "Yes" : "No"}</dd>
                     </div>
                     <div>
-                        <dt className="text-sm text-gray-500">Negative Prompts</dt>
+                        <dt className="text-sm text-gray-500 dark:text-gray-400">Negative Prompts</dt>
                         <dd className="font-medium">
                             {model.supportsNegativePrompts ? "Supported" : "Not Supported"}
                         </dd>
                     </div>
                 </dl>
             </div>
-            <div className="bg-white rounded-lg shadow p-6 mb-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
                 <h2 className="text-xl font-semibold mb-4">Supported Resolutions</h2>
                 <div className="flex flex-wrap gap-2">
                     {model.supportedResolutions.map((res) => (
-                        <span key={res} className="px-3 py-1 bg-gray-100 rounded-full text-sm">
+                        <span key={res} className="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm">
                             {res}
                         </span>
                     ))}
                 </div>
             </div>
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                 <h2 className="text-xl font-semibold mb-4">Pricing by Vendor</h2>
                 {model.vendors.map((vendorModel) => {
                     const vendor = vendors[vendorModel.vendorRef.split(":")[0]];
@@ -58,7 +58,7 @@ export default function ImageModelPage({ modelId, model, vendors }: ImageModelPa
                             <div className="overflow-x-auto">
                                 <table className="min-w-full text-sm">
                                     <thead>
-                                        <tr className="border-b">
+                                        <tr className="border-b dark:border-gray-700">
                                             <th className="text-left py-2 pr-4">Region</th>
                                             <th className="text-left py-2 pr-4">Resolution</th>
                                             <th className="text-left py-2">Price per Image</th>
@@ -70,7 +70,7 @@ export default function ImageModelPage({ modelId, model, vendors }: ImageModelPa
                                                 tiers.map((tier, idx) => (
                                                     <tr
                                                         key={`${region}-${tier.resolution}`}
-                                                        className="border-b border-gray-100"
+                                                        className="border-b border-gray-100 dark:border-gray-700"
                                                     >
                                                         {idx === 0 && (
                                                             <td

@@ -55,7 +55,7 @@ function SQLModalInner({ exit, setQueries, firstId }: SQLModalProps) {
             e.preventDefault();
             testQuery(valueRef.current, firstId).then((res) => {
                 if (!res.ok) {
-                    setOutput(<span className="text-red-600 mb-4">Error: {res.error}</span>);
+                    setOutput(<span className="text-red-600 dark:text-red-400 mb-4">Error: {res.error}</span>);
                     return;
                 }
 
@@ -97,12 +97,12 @@ const SQLModal = React.forwardRef<HTMLDialogElement, SQLModalProps>((props, ref)
     return (
         <dialog
             ref={ref}
-            className="m-auto p-0 rounded-md max-w-lg"
+            className="m-auto p-0 rounded-md max-w-lg bg-white dark:bg-gray-800 dark:text-gray-100 backdrop:bg-black/50"
             onClick={() => props.exit()}
             onClose={() => props.exit()}
         >
             <div onClick={(e) => e.stopPropagation()}>
-                <div className="bg-white p-4 block w-full h-full">
+                <div className="bg-white dark:bg-gray-800 p-4 block w-full h-full">
                     <header>
                         <div className="flex gap-2 items-center">
                             <form method="dialog">
@@ -113,7 +113,7 @@ const SQLModal = React.forwardRef<HTMLDialogElement, SQLModalProps>((props, ref)
                             <h2 className="text-lg font-bold">Add SQL Columns</h2>
                         </div>
                     </header>
-                    <hr className="mt-2 mb-4 border-gray-200" />
+                    <hr className="mt-2 mb-4 border-gray-200 dark:border-gray-600" />
                     <SQLModalInner {...props} />
                 </div>
             </div>

@@ -10,7 +10,7 @@ export default function Link({ href, children }: { href: string; children: React
                 e.preventDefault();
                 navigate(href);
             }}
-            className="text-[#6742d6] hover:underline"
+            className="text-[#6742d6] dark:text-purple-300 hover:underline"
         >
             {children}
         </a>

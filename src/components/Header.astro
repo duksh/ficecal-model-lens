@@ -14,7 +14,7 @@ const pathname = Astro.url.pathname;
                     />
                     <div class="block h-max">
                         <p class="font-semibold">models.vantage.sh</p>
-                        <p class="text-sm text-gray-200">Powered by Vantage</p>
+                        <p class="text-sm text-gray-200 dark:text-gray-300">Powered by Vantage</p>
                     </div>
                 </div>
             </a>
@@ -23,7 +23,7 @@ const pathname = Astro.url.pathname;
                     href="/"
                     class:list={[
                         "px-4 py-1.5 rounded text-sm font-medium transition-colors",
-                        pathname === "/" ? "bg-white text-[#6742d6]" : "text-white/80 hover:text-white hover:bg-[#7a52e6]"
+                        pathname === "/" ? "bg-white dark:bg-gray-800 text-[#6742d6] dark:text-purple-300" : "text-white/80 hover:text-white hover:bg-[#7a52e6]"
                     ]}
                 >
                     LLM
@@ -32,7 +32,7 @@ const pathname = Astro.url.pathname;
                     href="/image-gen"
                     class:list={[
                         "px-4 py-1.5 rounded text-sm font-medium transition-colors",
-                        pathname.startsWith("/image-gen") ? "bg-white text-[#6742d6]" : "text-white/80 hover:text-white hover:bg-[#7a52e6]"
+                        pathname.startsWith("/image-gen") ? "bg-white dark:bg-gray-800 text-[#6742d6] dark:text-purple-300" : "text-white/80 hover:text-white hover:bg-[#7a52e6]"
                     ]}
                 >
                     Image Gen

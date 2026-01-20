@@ -8,12 +8,12 @@ function MetadataItem({ label, value, href }: { label: string; value: string; hr
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-blue-600 hover:underline"
+                    className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
                 >
                     {label}
                 </a>
             ) : (
-                <span className="text-sm text-gray-500">{label}</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">{label}</span>
             )}
             <span className="font-medium">{value}</span>
         </div>
@@ -39,7 +39,7 @@ function formatReasoningTier(tier: string | undefined, reasoning: boolean): stri
 
 export default function ModelMetadata({ model }: { model: Model }) {
     return (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8 p-4 bg-gray-50 rounded-lg">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
             <MetadataItem label="Self-hostable" value={model.selfhostable ? "Yes" : "No"} />
             <MetadataItem
                 label="Reasoning Tier"

@@ -105,7 +105,7 @@ function TableHeader({
     if (queryColumns === null) {
         return (
             <th className="pb-1">
-                <div className="absolute top-0 right-0 w-1 h-full cursor-col-resize bg-gray-200 hover:opacity-50 transition-all duration-150" />
+                <div className="absolute top-0 right-0 w-1 h-full cursor-col-resize bg-gray-200 dark:bg-gray-700 hover:opacity-50 transition-all duration-150" />
             </th>
         );
     }
@@ -153,7 +153,7 @@ function TableHeader({
                 {idx === queryColumns.length - 1 && (
                     <>
                         <button
-                            className="ml-2 px-2 py-1 text-xs text-red-600 hover:text-white hover:bg-red-600 rounded transition block"
+                            className="ml-2 px-2 py-1 text-xs text-red-600 dark:text-red-400 hover:text-white hover:bg-red-600 rounded transition block"
                             title="Delete column"
                             onClick={deleteQuery}
                         >
@@ -324,12 +324,12 @@ function TableRow({
 
     const modelPath = modelType === "llm" ? "models" : "image-models";
     return (
-        <tr className="border-t border-gray-300">
+        <tr className="border-t border-gray-300 dark:border-gray-600">
             <td className="relative">
                 <div className="px-2">
                     <Link href={`/${modelPath}/${id}`}>{name}</Link>
                 </div>
-                <div className="absolute top-0 right-0 w-1 h-full bg-gray-200 hover:opacity-50 transition-all duration-150" />
+                <div className="absolute top-0 right-0 w-1 h-full bg-gray-200 dark:bg-gray-700 hover:opacity-50 transition-all duration-150" />
             </td>
             {loadedValues ? (
                 <RowLoadedValues
@@ -340,7 +340,7 @@ function TableRow({
             ) : (
                 new Array({ length: queries.length }).map((_, i) => (
                     <td key={i}>
-                        <div className="absolute top-0 right-0 w-1 h-full cursor-col-resize bg-gray-200 hover:opacity-50 transition-all duration-150" />
+                        <div className="absolute top-0 right-0 w-1 h-full cursor-col-resize bg-gray-200 dark:bg-gray-700 hover:opacity-50 transition-all duration-150" />
                     </td>
                 ))
             )}
@@ -412,7 +412,7 @@ function NameFilter({
                 type="text"
                 value={nameFilter}
                 onChange={(e) => setNameFilter(e.target.value)}
-                className="w-full border text-sm border-gray-300 rounded-md p-1 mt-auto"
+                className="w-full border text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-800 rounded-md p-1 mt-auto"
             />
         </div>
     );
@@ -473,14 +473,14 @@ export default function Table({
             <div className="flex-1 overflow-x-auto h-full">
                 <div className="flex items-start min-w-max">
                     <table className="h-full">
-                        <thead className="sticky top-0 bg-white z-10 shadow-[0_2px_0_0_rgb(209,213,219)]">
+                        <thead className="sticky top-0 bg-white dark:bg-gray-900 z-10 shadow-[0_2px_0_0_rgb(209,213,219)] dark:shadow-[0_2px_0_0_rgb(75,85,99)]">
                             <tr>
-                                <th className="pb-1 relative bg-white align-bottom">
+                                <th className="pb-1 relative bg-white dark:bg-gray-900 align-bottom">
                                     <NameFilter
                                         nameFilter={nameFilter}
                                         setNameFilter={setNameFilter}
                                     />
-                                    <div className="absolute top-0 right-0 w-1 h-full bg-gray-200 hover:opacity-50 transition-all duration-150" />
+                                    <div className="absolute top-0 right-0 w-1 h-full bg-gray-200 dark:bg-gray-700 hover:opacity-50 transition-all duration-150" />
                                 </th>
                                 {queries.map((q, i) => (
                                     <TableHeader

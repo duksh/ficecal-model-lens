@@ -33,7 +33,7 @@ export default function BooleanFilter({
                     setFilter(false);
                 }
             }}
-            className="w-full border text-sm border-gray-300 rounded-md p-1"
+            className="w-full border text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-800 rounded-md p-1"
         >
             <option value="any">Any</option>
             <option value="true">Yes</option>

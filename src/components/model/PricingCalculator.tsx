@@ -82,7 +82,7 @@ export default function PricingCalculator({ modelId, model, vendors }: PricingCa
     };
 
     return (
-        <div className="p-6 border rounded-lg bg-white shadow-sm">
+        <div className="p-6 border dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 shadow-sm">
             <div className="flex items-center gap-4 mb-6">
                 <div className="flex flex-col items-center">
                     <DollarSign className="w-8 h-8" />
@@ -90,7 +90,7 @@ export default function PricingCalculator({ modelId, model, vendors }: PricingCa
                 </div>
                 <div>
                     <div className="text-3xl font-bold">{formattedCost}</div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
                         <span>Input: {formatCurrency(inputCostTotal)}</span>
                         <span className="mx-2">·</span>
                         <span>Output: {formatCurrency(outputCostTotal)}</span>
@@ -149,7 +149,7 @@ export default function PricingCalculator({ modelId, model, vendors }: PricingCa
                         type="number"
                         value={inputTokens}
                         onChange={(e) => setInputTokens(Number(e.target.value))}
-                        className="w-full p-2 border rounded-md"
+                        className="w-full p-2 border dark:border-gray-600 dark:bg-gray-700 rounded-md"
                         min={0}
                     />
                 </div>
@@ -159,7 +159,7 @@ export default function PricingCalculator({ modelId, model, vendors }: PricingCa
                         type="number"
                         value={outputTokens}
                         onChange={(e) => setOutputTokens(Number(e.target.value))}
-                        className="w-full p-2 border rounded-md"
+                        className="w-full p-2 border dark:border-gray-600 dark:bg-gray-700 rounded-md"
                         min={0}
                     />
                 </div>
@@ -172,7 +172,7 @@ export default function PricingCalculator({ modelId, model, vendors }: PricingCa
                             type="number"
                             value={cachedInputTokens}
                             onChange={(e) => setCachedInputTokens(Number(e.target.value))}
-                            className="w-full p-2 border rounded-md"
+                            className="w-full p-2 border dark:border-gray-600 dark:bg-gray-700 rounded-md"
                             min={0}
                         />
                     </div>

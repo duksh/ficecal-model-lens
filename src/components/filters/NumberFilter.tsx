@@ -27,7 +27,7 @@ export function NumberFilter({
                     setFilterValue(newFilter);
                     updateQuery(false);
                 }}
-                className="border text-sm border-gray-300 rounded-md p-1 mr-1"
+                className="border text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-800 rounded-md p-1 mr-1"
                 aria-label={`Operator for filtering ${columnName}`}
             >
                 <option value=">=">&gt;=</option>
@@ -46,7 +46,7 @@ export function NumberFilter({
                     setFilterValue(newFilter);
                     updateQuery(false);
                 }}
-                className="border text-sm border-gray-300 rounded-md p-1 w-full"
+                className="border text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-800 rounded-md p-1 w-full"
                 aria-label={`Value for filtering ${columnName}`}
             />
         </div>

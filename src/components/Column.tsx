@@ -46,7 +46,7 @@ export default function Column({
         >
             <div className="px-2 flex flex-col h-full">{children}</div>
             <div
-                className="absolute top-0 right-0 w-1 h-full cursor-col-resize bg-gray-200 hover:opacity-50 transition-all duration-150"
+                className="absolute top-0 right-0 w-1 h-full cursor-col-resize bg-gray-200 dark:bg-gray-700 hover:opacity-50 transition-all duration-150"
                 onMouseDown={handleMouseDown}
             />
         </Tag>
