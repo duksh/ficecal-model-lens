@@ -2,7 +2,6 @@ import type { ImageModel, VendorInfo } from "../../dataFormat";
 import Link from "../Link";
 
 type ImageModelPageProps = {
-    modelId: string;
     model: ImageModel;
     vendors: Record<string, VendorInfo>;
 };
@@ -15,7 +14,7 @@ function countryCodeToFlag(countryCode: string): string {
     return String.fromCodePoint(...codePoints);
 }
 
-export default function ImageModelPage({ modelId, model, vendors }: ImageModelPageProps) {
+export default function ImageModelPage({ model, vendors }: ImageModelPageProps) {
     return (
         <div className="max-w-4xl mx-auto p-6">
             <div className="mb-4">

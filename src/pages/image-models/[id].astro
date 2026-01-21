@@ -16,7 +16,6 @@ const modelName = model?.cleanName ?? id;
 
 <MainLayout titleExtra={modelName} description={`Pricing and details for ${modelName} by ${model?.company}`}>
     <ImageModelPage
-        modelId={id}
         model={model}
         vendors={data.vendors}
         client:only="react"
