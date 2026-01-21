@@ -21,7 +21,6 @@ const llmVendors = {
 export const defaultQueries = [
     singleValue("company", "Company"),
     llmVendors,
-    singleValue("company_country_code", "Company Country Code", "country"),
     singleValue("selfhostable", "Self-hostable", "boolean"),
     singleValue("reasoning", "Supports Reasoning", "boolean"),
     singleValue("reasoning_tier", "Reasoning Tier"),
@@ -56,7 +55,6 @@ const imageVendors = {
 export const defaultImageQueries = [
     imageSingleValue("company", "Company"),
     imageVendors,
-    imageSingleValue("company_country_code", "Company Country Code", "country"),
     {
         name: "Resolutions",
         query: `SELECT GROUP_CONCAT(resolution, ', ') AS \`Resolutions\`
