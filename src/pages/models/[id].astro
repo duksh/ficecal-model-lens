@@ -2,6 +2,7 @@
 import data from "../../data";
 import MainLayout from "../../layouts/MainLayout.astro";
 import ModelPage from "../../components/model/ModelPage";
+import { oxfordify } from "@/src/lib/utils";
 
 export function getStaticPaths() {
     return Object.keys(data.models).map((modelId) => ({
@@ -12,13 +13,20 @@ export function getStaticPaths() {
 const { id } = Astro.params;
 const model = data.models[id];
 const modelName = model?.cleanName ?? id;
+
+const vendors = oxfordify(
+    model.vendors.map((vendor) => data.vendors[vendor.vendorRef].cleanName),
+);
+
+const description = `${modelName} is a ${model.reasoning ? "reasoning" : "non-reasoning"} model created by ${model.company}. It is served by ${vendors}.`;
 ---
 
-<MainLayout titleExtra={modelName} description={`Pricing and details for ${modelName} by ${model?.company}`}>
+<MainLayout titleExtra={`${modelName} Pricing, Scores, and Information`} description={description}>
     <ModelPage
         modelId={id}
         model={model}
         vendors={data.vendors}
+        description={description}
         client:only="react"
     />
 </MainLayout>

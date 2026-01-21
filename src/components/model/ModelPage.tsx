@@ -9,6 +9,7 @@ type ModelPageProps = {
     modelId: string;
     model: Model;
     vendors: Record<string, VendorInfo>;
+    description: string;
 };
 
 function isGemmaModel(modelId: string, company: string): boolean {
@@ -52,7 +53,7 @@ function GemmaLegalNotice() {
     );
 }
 
-export default function ModelPage({ modelId, model, vendors }: ModelPageProps) {
+export default function ModelPage({ modelId, model, vendors, description }: ModelPageProps) {
     const showGemmaNotice = isGemmaModel(modelId, model.company);
 
     return (
@@ -60,7 +61,7 @@ export default function ModelPage({ modelId, model, vendors }: ModelPageProps) {
             <div className="mb-4">
                 <Link href="/">&larr; Back to all models</Link>
             </div>
-            <ModelHeader model={model} />
+            <ModelHeader model={model} description={description} />
             <ModelMetadata model={model} />
             {showGemmaNotice && <GemmaLegalNotice />}
             {model.tokenizer && (

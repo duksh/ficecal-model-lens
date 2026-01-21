@@ -8,7 +8,7 @@ function countryCodeToFlag(countryCode: string): string {
     return String.fromCodePoint(...codePoints);
 }
 
-export default function ModelHeader({ model }: { model: Model }) {
+export default function ModelHeader({ model, description }: { model: Model, description: string }) {
     return (
         <div className="mb-8">
             <div className="flex items-center gap-3">
@@ -17,7 +17,7 @@ export default function ModelHeader({ model }: { model: Model }) {
                     {countryCodeToFlag(model.companyCountryCode)}
                 </span>
             </div>
-            <p className="text-lg text-gray-600 dark:text-gray-400 mt-1">by {model.company}</p>
+            <p className="text-lg text-gray-600 dark:text-gray-400 mt-1">{description}</p>
         </div>
     );
 }
