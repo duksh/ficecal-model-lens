@@ -7,6 +7,14 @@ type ImageModelPageProps = {
     vendors: Record<string, VendorInfo>;
 };
 
+function countryCodeToFlag(countryCode: string): string {
+    const codePoints = countryCode
+        .toUpperCase()
+        .split("")
+        .map((char) => 127397 + char.charCodeAt(0));
+    return String.fromCodePoint(...codePoints);
+}
+
 export default function ImageModelPage({ modelId, model, vendors }: ImageModelPageProps) {
     return (
         <div className="max-w-4xl mx-auto p-6">
@@ -14,7 +22,12 @@ export default function ImageModelPage({ modelId, model, vendors }: ImageModelPa
                 <Link href="/image-gen">&larr; Back to all image models</Link>
             </div>
             <div className="mb-6">
-                <h1 className="text-3xl font-bold mb-2">{model.cleanName}</h1>
+                <div className="flex items-center gap-3">
+                    <h1 className="text-3xl font-bold">{model.cleanName}</h1>
+                    <span className="text-2xl" title={model.companyCountryCode}>
+                        {countryCodeToFlag(model.companyCountryCode)}
+                    </span>
+                </div>
                 <p className="text-gray-600 dark:text-gray-400">by {model.company}</p>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
