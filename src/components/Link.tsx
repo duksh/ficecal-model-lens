@@ -1,7 +1,13 @@
 import { prefetch } from "astro:prefetch";
 import { navigate } from "astro:transitions/client";
 
-export default function Link({ href, children }: { href: string; children: React.ReactNode }) {
+type LinkProps = {
+    href: string;
+    children: React.ReactNode;
+    unstyled?: boolean;
+};
+
+export default function Link({ href, children, unstyled = false }: LinkProps) {
     return (
         <a
             href={href}
@@ -10,7 +16,7 @@ export default function Link({ href, children }: { href: string; children: React
                 e.preventDefault();
                 navigate(href);
             }}
-            className="text-[#6742d6] dark:text-purple-300 hover:underline"
+            className={unstyled ? "" : "text-[#6742d6] dark:text-purple-300 hover:underline"}
         >
             {children}
         </a>
