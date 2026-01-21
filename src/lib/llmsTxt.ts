@@ -1,7 +1,7 @@
 import type { DataFormat, Model, ImageModel } from "@/src/dataFormat";
 import dataJson from "../../public/data.json";
 
-const data = dataJson as DataFormat;
+const data = dataJson as unknown as DataFormat;
 
 export const BASE_URL =
     import.meta.env.PUBLIC_BASE_URL || "https://models.vantage.sh";

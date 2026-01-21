@@ -66,7 +66,7 @@ export default function ModelPage({ modelId, model, vendors }: ModelPageProps) {
             {model.tokenizer && (
                 <TokenizerPreview tokenizer={model.tokenizer} modelName={model.cleanName} />
             )}
-            <PricingCalculator modelId={modelId} model={model} vendors={vendors} />
+            <PricingCalculator model={model} vendors={vendors} />
         </div>
     );
 }

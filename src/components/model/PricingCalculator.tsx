@@ -6,12 +6,11 @@ import forexData from "../../forex.json";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 type PricingCalculatorProps = {
-    modelId: string;
     model: Model;
     vendors: Record<string, VendorInfo>;
 };
 
-export default function PricingCalculator({ modelId, model, vendors }: PricingCalculatorProps) {
+export default function PricingCalculator({ model, vendors }: PricingCalculatorProps) {
     const availableVendors = model.vendors.map((v) => ({
         slug: v.vendorRef,
         info: vendors[v.vendorRef],
