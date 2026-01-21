@@ -24,7 +24,7 @@ export default function PricingCalculator({ model, vendors }: PricingCalculatorP
     const [inputTokens, setInputTokens] = React.useState<number>(1000);
     const [outputTokens, setOutputTokens] = React.useState<number>(1000);
     const [cachedInputTokens, setCachedInputTokens] = React.useState<number>(0);
-    const [currency] = useStateItem("currency");
+    const [currency] = useStateItem("currency", "/");
 
     const selectedVendorModel = model.vendors.find((v) => v.vendorRef === selectedVendorSlug);
     const selectedVendorInfo = vendors[selectedVendorSlug];
@@ -134,7 +134,7 @@ export default function PricingCalculator({ model, vendors }: PricingCalculatorP
 
             <div className="mb-6">
                 <label className="block text-sm font-medium mb-1">Currency</label>
-                <CurrencyPicker className="w-full" />
+                <CurrencyPicker modelType="llm" className="w-full" />
             </div>
 
             <div className="grid grid-cols-2 gap-4">

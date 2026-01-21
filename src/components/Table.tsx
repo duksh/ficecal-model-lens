@@ -84,7 +84,7 @@ function TableHeader({
     loadedValuesPtr: [Map<string, LoadedValues>];
     firstId: string;
 }) {
-    const [currentSorting, setCurrentSorting] = useStateItem("currentSorting");
+    const [currentSorting, setCurrentSorting] = useStateItem("currentSorting", window?.location.pathname ?? "/");
 
     const setSorting = React.useCallback(
         (columnName: string, cb: (value: boolean | null) => boolean | null) => {
@@ -427,17 +427,18 @@ export default function Table({
     vendors: Record<string, VendorInfo>;
     modelType: "llm" | "image";
 }) {
-    const [queries, setQueries] = useStateItem("queries");
+    const path = modelType === "llm" ? "/" : "/image-models";
+    const [queries, setQueries] = useStateItem("queries", path);
 
     // Select appropriate data based on modelType prop
-    const [nameFilter, setNameFilter] = useStateItem("nameFilter");
+    const [nameFilter, setNameFilter] = useStateItem("nameFilter", path);
     const [queryColumns, setQueryColumns] = React.useState<(string[] | null)[]>(
         Array(queries.length).fill(null)
     );
     const [loadedValuesRows, setLoadedValuesRows] = React.useState<[Map<string, LoadedValues>]>(
         () => [new Map(models.map(({ id }) => [id, null]))]
     );
-    const [currentSorting, setCurrentSorting] = useStateItem("currentSorting");
+    const [currentSorting, setCurrentSorting] = useStateItem("currentSorting", path);
 
     // Reset state when modelType changes
     React.useEffect(() => {
@@ -459,7 +460,7 @@ export default function Table({
     }, [models, nameFilter, queries, queryColumns, loadedValuesRows, currentSorting]);
 
     const portalRoot = ReactDOM.createPortal(
-        <PortalRoot />,
+        <PortalRoot modelType={modelType} />,
         document.getElementById("portal-root")!
     );
 

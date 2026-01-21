@@ -145,7 +145,7 @@ export default function AddButton({
     vendors: Record<string, VendorInfo>;
     modelType: "llm" | "image";
 }) {
-    const [queries, setQueries] = useStateItem("queries");
+    const [queries, setQueries] = useStateItem("queries", modelType === "llm" ? "/" : "/image-models");
     const [selectionMode, setSelectionMode] = React.useState(false);
     const externalClickHandler = React.useRef<() => void>(null);
 

@@ -166,10 +166,12 @@ export function clearState() {
 }
 
 export function useStateItem<Key extends keyof State>(
-    key: Key
+    key: Key,
+    path: string,
 ): [State[Key], (newValue: State[Key] | ((prevValue: State[Key]) => State[Key])) => void] {
-    const isLlm = window.location.pathname === "/";
+    const isLlm = path === "/";
     const currentState = isLlm ? currentLlmState : currentImageState;
+    const initialState = isLlm ? initialLlmState : initialImageState;
 
     const setter = React.useCallback(
         (newValue: State[Key] | ((prevValue: State[Key]) => State[Key])) => {
@@ -209,7 +211,8 @@ export function useStateItem<Key extends keyof State>(
                 }
             };
         },
-        () => currentState[key]
+        () => currentState[key],
+        () => initialState[key],
     );
 
     return [getter, setter];

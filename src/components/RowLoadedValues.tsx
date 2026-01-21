@@ -68,13 +68,15 @@ function renderColumn(
 export default function RowLoadedValues({
     loadedValues,
     queryColumns,
+    modelType,
 }: {
     loadedValues: (any[] | null | { error: string })[];
     queryColumns: (string[] | null)[];
     modelType: "llm" | "image";
 }) {
-    const [queries, setQueries] = useStateItem("queries");
-    const [currency] = useStateItem("currency");
+    const path = modelType === "llm" ? "/" : "/image-models";
+    const [queries, setQueries] = useStateItem("queries", path);
+    const [currency] = useStateItem("currency", path);
 
     const getColSpan = (index: number) => {
         const cols = queryColumns[index];

@@ -1,7 +1,7 @@
 import { PlusIcon } from "lucide-react";
 import CurrencyPicker from "./CurrencyPicker";
 
-export default function PortalRoot() {
+export default function PortalRoot({ modelType }: { modelType: "llm" | "image" }) {
     return (
         <>
             <button
@@ -13,7 +13,7 @@ export default function PortalRoot() {
                 <PlusIcon className="inline mr-1" size={16} />
                 Add Query
             </button>
-            <CurrencyPicker />
+            <CurrencyPicker modelType={modelType} />
         </>
     );
 }
