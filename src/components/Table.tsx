@@ -522,9 +522,9 @@ export default function Table({
                 <div className="flex-1 overflow-x-auto">
                     <div className="flex items-start min-w-max">
                         <table className="h-full">
-                            <thead className="sticky top-0 bg-white dark:bg-gray-900 z-10 shadow-[0_2px_0_0_rgb(209,213,219)] dark:shadow-[0_2px_0_0_rgb(75,85,99)]">
+                            <thead className="sticky top-0 bg-[#F7F7F9] dark:bg-gray-900 z-10 shadow-[0_2px_0_0_rgb(209,213,219)] dark:shadow-[0_2px_0_0_rgb(75,85,99)]">
                                 <tr>
-                                    <th className="pb-1 relative bg-white dark:bg-gray-900 align-bottom">
+                                    <th className="pb-1 relative bg-[#F7F7F9] dark:bg-gray-900 align-bottom">
                                         <NameFilter
                                             nameFilter={nameFilter}
                                             setNameFilter={setNameFilter}
