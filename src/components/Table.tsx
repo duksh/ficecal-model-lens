@@ -143,19 +143,21 @@ function TableHeader({
         >
             <div className="flex items-center mb-1 grow">
                 <div className="block grow">
-                    <div className="line-clamp-2 font-inter-header" title={col}>
-                        {col}
+                    <div className="flex items-center gap-2">
+                        <div className="line-clamp-2 font-inter-header text-left" title={col}>
+                            {col}
+                        </div>
+                        <SortingButtons
+                            ascending={currentSorting?.[0] === queryIdx ? currentSorting[2] : null}
+                            setSorting={setSorting}
+                            columnName={col}
+                        />
                     </div>
                 </div>
-                <SortingButtons
-                    ascending={currentSorting?.[0] === queryIdx ? currentSorting[2] : null}
-                    setSorting={setSorting}
-                    columnName={col}
-                />
                 {idx === queryColumns.length - 1 && (
                     <>
                         <button
-                            className="ml-2 px-2 py-1 text-xs text-red-600 dark:text-red-400 hover:text-white hover:bg-red-600 rounded transition block"
+                            className="px-2 py-1 text-xs text-red-600 dark:text-red-400 hover:text-white hover:bg-red-600 rounded transition block"
                             title="Delete column"
                             onClick={deleteQuery}
                         >

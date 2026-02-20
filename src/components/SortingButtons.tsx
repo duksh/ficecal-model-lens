@@ -1,4 +1,4 @@
-import { ArrowUp, ArrowDown } from "lucide-react";
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 
 export default function SortingButtons({
     ascending,
@@ -10,8 +10,13 @@ export default function SortingButtons({
     columnName: string;
 }) {
     return (
-        <div className="flex flex-col ml-1">
+        <div className="top-0 mt-0.5 mr-1 inline-block dark:invert">
             <button
+                className={`${
+                    ascending === false ? "text-gray-800" : "text-gray-400"
+                } p-0 text-xs block cursor-pointer hover:text-gray-700 overflow-hidden w-4 h-3`}
+                title="Sort ascending"
+                aria-pressed={ascending === false}
                 onClick={() =>
                     setSorting(columnName, (oldValue) => {
                         if (oldValue === true) {
@@ -20,15 +25,15 @@ export default function SortingButtons({
                         return true;
                     })
                 }
-                className="leading-2 p-0 border-none bg-none cursor-pointer"
-                aria-label="Sort ascending"
             >
-                <ArrowUp
-                    size={14}
-                    className={ascending === true ? "text-black dark:text-white" : "text-gray-400"}
-                />
+                <ChevronUpIcon className="relative w-4 h-4" />
             </button>
             <button
+                className={`${
+                    ascending === true ? "text-gray-800" : "text-gray-400"
+                } p-0 text-xs block cursor-pointer hover:text-gray-700 overflow-hidden w-4 h-3 mt-[1px]`}
+                title="Sort descending"
+                aria-pressed={ascending === true}
                 onClick={() =>
                     setSorting(columnName, (oldValue) => {
                         if (oldValue === false) {
@@ -37,13 +42,8 @@ export default function SortingButtons({
                         return false;
                     })
                 }
-                className="leading-2 p-0 border-none bg-none cursor-pointer"
-                aria-label="Sort descending"
             >
-                <ArrowDown
-                    size={14}
-                    className={ascending === false ? "text-black dark:text-white" : "text-gray-400"}
-                />
+                <ChevronDownIcon className="relative -top-1 w-4 h-4" />
             </button>
         </div>
     );

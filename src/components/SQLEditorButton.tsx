@@ -116,7 +116,7 @@ export default function SQLEditorButton({ query, firstId, updateQuery }: SQLEdit
                 </div>
             </dialog>
             <button
-                className="ml-2 px-2 py-1 text-xs rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                className="px-2 py-1 text-xs rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition"
                 title="Edit SQL Query"
                 onClick={() => {
                     ref.current?.showModal();
