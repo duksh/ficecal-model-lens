@@ -41,7 +41,10 @@ export default function AddButton({
             <SQLModal
                 ref={modalRef}
                 setQueries={setQueriesAndPurgeLoadedValues}
-                exit={() => {}}
+                exit={() => {
+                    modalRef.current?.close();
+                    onClose();
+                }}
                 firstId={firstId}
             />
             <div className="w-80 shrink-0 border-l border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-y-auto">
