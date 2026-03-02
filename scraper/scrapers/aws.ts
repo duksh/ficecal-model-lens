@@ -40,6 +40,8 @@ const PROVIDERS = {
     "Kimi AI": "CN",
     Nvidia: "US",
     "Minimax AI": "CN",
+    "Moonshot AI": "CN",
+    "Z AI": "CN",
 } as const;
 
 function providerToCountryCode(provider: string): string {

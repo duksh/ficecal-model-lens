@@ -72,11 +72,14 @@ const MODEL_REASONING_PREFIXES = {
     granite: true,
     // Kimi AI
     "kimi-k2-thinking": true,
+    "kimi-k2-5": false,
     qwen3: true,
     // Nvidia
     "nvidia-nemotron-nano": true,
     // Minimax AI
     "minimax-m2": false,
+    // GLM
+    "glm-": true,
 } as const;
 
 export function isReasoningModel(modelId: string): boolean {
@@ -301,6 +304,16 @@ export function isSelfHostableModel(modelId: string, provider: string): boolean 
         return true;
     }
 
+    if (provider === "Moonshot AI") {
+        // Moonshot AI models are self-hostable
+        return true;
+    }
+
+    if (provider === "Z AI") {
+        // Z AI models are self-hostable
+        return true;
+    }
+
     throw new Error(
         `Unknown self-hostable status for model ID: ${modelId} with provider: ${provider}. Please update isSelfHostableModel in scraper/constants.ts.`
     );
@@ -474,7 +487,7 @@ async function getSweBenchScores() {
 
 const hleLeaderboardItem = object({
     model_id: string(),
-    score: number(),
+    benchmark_score: number(),
 });
 
 let hleResult: Promise<Array<InferOutput<typeof hleLeaderboardItem>>> | null = null;
@@ -486,9 +499,9 @@ async function getHumanitysLastExamScores() {
     const res = fetchAndParse(
         "https://api.zeroeval.com/leaderboard/benchmarks/humanity's-last-exam",
         object({
-            models: array(hleLeaderboardItem),
+            entries: array(hleLeaderboardItem),
         })
-    ).then((x) => x.models);
+    ).then((x) => x.entries);
     hleResult = res;
     return res;
 }
