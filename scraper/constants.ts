@@ -272,7 +272,7 @@ export function isSelfHostableModel(modelId: string, provider: string): boolean 
         return true;
     }
 
-    if (provider === "Mistral") {
+    if (provider.startsWith("Mistral")) {
         // All Mistral models are self-hostable
         return true;
     }
