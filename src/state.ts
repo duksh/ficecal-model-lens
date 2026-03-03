@@ -130,8 +130,8 @@ let listenerMap: Map<string, (() => void)[]> = new Map();
 export function clearState() {
     const isLlm = true; // FIXME: THIS IS A BODGE - IN THE FUTURE HANDLE PATHS PROPERLY HERE!
     const o = isLlm ? currentLlmState : currentImageState;
-    o.currency = isLlm ? initialLlmState.currency : initialImageState.currency;
-    o.queries = isLlm ? initialLlmState.queries : initialImageState.queries;
+    o.currency = JSON.parse(JSON.stringify(isLlm ? initialLlmState.currency : initialImageState.currency));
+    o.queries = JSON.parse(JSON.stringify(isLlm ? initialLlmState.queries : initialImageState.queries));
     o.currentSorting = null;
     o.nameFilter = "";
     window?.localStorage?.removeItem(`appState_${isLlm ? "llms" : "images"}`);
