@@ -10,23 +10,24 @@ export default function StringFilter({
     query: ColumnQuery;
     updateQuery: (rerunQuery: boolean) => void;
 }) {
-    const filterValue = React.useRef<string>(
-        query.columnFilters[columnName] || ""
-    );
+    const filterValue = React.useRef<string>(query.columnFilters[columnName] || "");
 
     React.useEffect(() => {
         filterValue.current = query.columnFilters[columnName] || "";
     }, [query.columnFilters[columnName]]);
 
-    const setFilterValue = React.useCallback((val: string) => {
-        filterValue.current = val;
-        if (val === "") {
-            delete query.columnFilters[columnName];
-        } else {
-            query.columnFilters[columnName] = val;
-        }
-        updateQuery(false);
-    }, [columnName, query, updateQuery]);
+    const setFilterValue = React.useCallback(
+        (val: string) => {
+            filterValue.current = val;
+            if (val === "") {
+                delete query.columnFilters[columnName];
+            } else {
+                query.columnFilters[columnName] = val;
+            }
+            updateQuery(false);
+        },
+        [columnName, query, updateQuery]
+    );
 
     return (
         <input
