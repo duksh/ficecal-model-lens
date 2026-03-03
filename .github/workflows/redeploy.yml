@@ -14,4 +14,4 @@ jobs:
             - name: Re-deploy the last deployment
               run: |
                 vercel teams switch vantage-sh --token=${{ secrets.VERCEL_TOKEN }}
-                vercel redeploy https://models-vantage-sh.vercel.app --token=${{ secrets.VERCEL_TOKEN }}
+                vercel redeploy https://models-vantage-sh.vercel.app --token=${{ secrets.VERCEL_TOKEN }} --scope=vantage-sh
