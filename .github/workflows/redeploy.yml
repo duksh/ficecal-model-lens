@@ -12,4 +12,4 @@ jobs:
             - name: Install Vercel CLI
               run: npm install --global vercel@latest
             - name: Re-deploy the last deployment
-              run: vercel redeploy https://models-vantage-sh.vercel.app --token=${{ secrets.VERCEL_TOKEN }} --scope=vantage-sh
+              run: vercel redeploy https://models-vantage-sh.vercel.app --token=${{ secrets.VERCEL_TOKEN }}
