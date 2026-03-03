@@ -418,7 +418,7 @@ function NameFilter({
         <div className="px-2 flex flex-col h-full">
             <div
                 id="name-filter-header"
-                className="grow flex items-center w-full justify-center font-inter-header"
+                className="grow flex items-center w-full font-inter-header"
             >
                 <p>Name</p>
             </div>
