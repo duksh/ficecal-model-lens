@@ -94,7 +94,7 @@ function TableHeader({
     const setSorting = React.useCallback(
         (columnName: string, cb: (value: boolean | null) => boolean | null) => {
             setCurrentSorting((old) => {
-                if (old?.[0] === queryIdx) {
+                if (old?.[0] === queryIdx && old[1] === columnName) {
                     const newSorting = cb(old[2]);
                     if (newSorting === null) {
                         return null;
@@ -151,7 +151,7 @@ function TableHeader({
                             {col}
                         </div>
                         <SortingButtons
-                            ascending={currentSorting?.[0] === queryIdx ? currentSorting[2] : null}
+                            ascending={currentSorting?.[0] === queryIdx && currentSorting[1] === col ? currentSorting[2] : null}
                             setSorting={setSorting}
                             columnName={col}
                         />
@@ -560,7 +560,7 @@ export default function Table({
                                                         if (old?.[0] === i) {
                                                             return null;
                                                         }
-                                                        return [i, q.query, true];
+                                                        return old;
                                                     });
                                                     setQueryColumns((x) => {
                                                         const newQueryColumns = [...x];

@@ -11,20 +11,23 @@ type ColumnCustomTypeSelectorProps = {
 export default function ColumnCustomTypeSelector({
     columnCustomTypes,
 }: ColumnCustomTypeSelectorProps) {
-    const [columnKeys, setColumnKeys] = React.useState(() => Object.keys(columnCustomTypes));
+    const [types, setTypes] = React.useState<Record<string, ColumnDataType>>(() => ({ ...columnCustomTypes }));
     const [newColName, setNewColName] = React.useState("");
     const [newColType, setNewColType] = React.useState<ColumnDataType>("boolean");
     const [isAdding, setIsAdding] = React.useState(false);
 
     React.useEffect(() => {
-        setColumnKeys(Object.keys(columnCustomTypes));
+        setTypes({ ...columnCustomTypes });
     }, [columnCustomTypes]);
+
+    const columnKeys = Object.keys(types);
 
     const handleTypeChange = React.useCallback(
         (e: React.ChangeEvent<HTMLSelectElement>) => {
             const { name } = e.target.dataset;
             const newType = e.target.value as ColumnDataType;
             columnCustomTypes[name!] = newType;
+            setTypes((prev) => ({ ...prev, [name!]: newType }));
         },
         [columnCustomTypes]
     );
@@ -33,7 +36,7 @@ export default function ColumnCustomTypeSelector({
         const trimmed = newColName.trim();
         if (trimmed && !columnKeys.includes(trimmed)) {
             columnCustomTypes[trimmed] = newColType;
-            setColumnKeys((prev) => [...prev, trimmed]);
+            setTypes((prev) => ({ ...prev, [trimmed]: newColType }));
             setNewColName("");
             setNewColType("boolean");
             setIsAdding(false);
@@ -60,7 +63,7 @@ export default function ColumnCustomTypeSelector({
                         </tr>
                     </thead>
                     <tbody>
-                        {columnKeys.map((col, idx) => (
+                        {columnKeys.map((col) => (
                             <tr key={col}>
                                 <td className="border dark:border-gray-600 px-2 py-1">
                                     <div className="flex items-center gap-1.5">
@@ -71,7 +74,7 @@ export default function ColumnCustomTypeSelector({
                                 <td className="border dark:border-gray-600 px-2 py-1">
                                     <select
                                         data-name={col}
-                                        defaultValue={columnCustomTypes[col] || "other"}
+                                        value={types[col] || "boolean"}
                                         onChange={handleTypeChange}
                                         className="border dark:border-gray-600 dark:bg-gray-800 px-1 py-0.5 text-sm rounded"
                                     >
@@ -84,9 +87,11 @@ export default function ColumnCustomTypeSelector({
                                         type="button"
                                         onClick={() => {
                                             delete columnCustomTypes[col];
-                                            setColumnKeys((prev) =>
-                                                prev.filter((_, i) => i !== idx)
-                                            );
+                                            setTypes((prev) => {
+                                                const next = { ...prev };
+                                                delete next[col];
+                                                return next;
+                                            });
                                         }}
                                         className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 p-0.5"
                                         title="Remove"

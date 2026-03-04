@@ -15,9 +15,6 @@ type SQLEditorButtonProps = {
 };
 
 export default function SQLEditorButton({ query, firstId, updateQuery }: SQLEditorButtonProps) {
-    // FIXME: This button is not working as expected. It should update state properly, but it doesn't.
-    return null;
-
     const ref = React.useRef<HTMLDialogElement>(null);
     const valueRef = React.useRef<string>(query.query);
     const columnCustomTypes = React.useRef<{ [key: string]: ColumnDataType }>({
