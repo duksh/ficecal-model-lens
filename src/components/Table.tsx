@@ -151,7 +151,11 @@ function TableHeader({
                             {col}
                         </div>
                         <SortingButtons
-                            ascending={currentSorting?.[0] === queryIdx && currentSorting[1] === col ? currentSorting[2] : null}
+                            ascending={
+                                currentSorting?.[0] === queryIdx && currentSorting[1] === col
+                                    ? currentSorting[2]
+                                    : null
+                            }
                             setSorting={setSorting}
                             columnName={col}
                         />

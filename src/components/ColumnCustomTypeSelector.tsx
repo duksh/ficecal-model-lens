@@ -11,7 +11,9 @@ type ColumnCustomTypeSelectorProps = {
 export default function ColumnCustomTypeSelector({
     columnCustomTypes,
 }: ColumnCustomTypeSelectorProps) {
-    const [types, setTypes] = React.useState<Record<string, ColumnDataType>>(() => ({ ...columnCustomTypes }));
+    const [types, setTypes] = React.useState<Record<string, ColumnDataType>>(() => ({
+        ...columnCustomTypes,
+    }));
     const [newColName, setNewColName] = React.useState("");
     const [newColType, setNewColType] = React.useState<ColumnDataType>("boolean");
     const [isAdding, setIsAdding] = React.useState(false);
@@ -46,7 +48,8 @@ export default function ColumnCustomTypeSelector({
     return (
         <div className="mt-4">
             <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-                Define column binding information for the query. This is generally not needed, but can be used to override the default column type (such as currency or boolean).
+                Define column binding information for the query. This is generally not needed, but
+                can be used to override the default column type (such as currency or boolean).
             </p>
 
             {columnKeys.length > 0 && (
@@ -105,7 +108,7 @@ export default function ColumnCustomTypeSelector({
                 </table>
             )}
 
-            {isAdding ? (
+            {columnKeys.length === 0 && isAdding ? (
                 <div className="flex items-center gap-2 mt-2">
                     <input
                         type="text"
@@ -152,7 +155,7 @@ export default function ColumnCustomTypeSelector({
                         Cancel
                     </button>
                 </div>
-            ) : (
+            ) : columnKeys.length === 0 ? (
                 <button
                     aria-label="Add Column Binding Information"
                     type="button"
@@ -162,7 +165,7 @@ export default function ColumnCustomTypeSelector({
                     <PlusIcon className="w-3.5 h-3.5" />
                     Add Column Binding Information
                 </button>
-            )}
+            ) : null}
         </div>
     );
 }
