@@ -164,6 +164,42 @@ const vendorQueryBuilders: VendorQueryBuilder[] = [
             "currency"
         ),
     },
+    {
+        name: "Cost per 1M Input Tokens",
+        region: true,
+        queryBuilder: vendorAndRegionSelectAsWrapper(
+            "? Cost per 1M Input Tokens",
+            "input_token_cost * 1000000",
+            "currency"
+        ),
+    },
+    {
+        name: "Cost per 1M Output Tokens",
+        region: true,
+        queryBuilder: vendorAndRegionSelectAsWrapper(
+            "? Cost per 1M Output Tokens",
+            "output_token_cost * 1000000",
+            "currency"
+        ),
+    },
+    {
+        name: "Cost per 1M Cached Input Tokens",
+        region: true,
+        queryBuilder: vendorAndRegionSelectAsWrapper(
+            "? Cost per 1M Cached Input Tokens",
+            "cached_input_token_cost * 1000000",
+            "currency"
+        ),
+    },
+    {
+        name: "Cost per 1M Cached Output Tokens",
+        region: true,
+        queryBuilder: vendorAndRegionSelectAsWrapper(
+            "? Cost per 1M Cached Output Tokens",
+            "cached_output_token_cost * 1000000",
+            "currency"
+        ),
+    },
 ];
 
 // Image model vendor query builders
